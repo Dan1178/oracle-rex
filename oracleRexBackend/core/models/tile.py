@@ -2,6 +2,7 @@ from django.db import models
 
 from .system import System
 
+
 class Tile(models.Model):
     designation = models.CharField(max_length=3, unique=True)
     adjacent_tiles = models.ManyToManyField('self', symmetrical=True, blank=True)

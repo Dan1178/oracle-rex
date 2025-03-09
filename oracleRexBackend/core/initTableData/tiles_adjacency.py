@@ -1,5 +1,6 @@
 from django.db import migrations
 
+
 def load_tile_data(apps, schema_editor):
     Tile = apps.get_model("core", "Tile")
 
@@ -63,6 +64,7 @@ def load_tile_data(apps, schema_editor):
         tile = tile_objects[tile_designation]
         for adj_designation in adjacent_list:
             tile.adjacent_tiles.add(tile_objects[adj_designation])
+
 
 class Migration(migrations.Migration):
     dependencies = [

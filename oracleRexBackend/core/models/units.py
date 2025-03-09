@@ -1,8 +1,9 @@
 from django.db import models
+
+from .constants.unitConstants import ShipClass, StructureClass, GroundUnitClass
+from .planet import Planet
 from .player import Player
 from .system import System
-from .planet import Planet
-from .constants.unitConstants import ShipClass, StructureClass, GroundUnitClass
 
 
 class Ship(models.Model):

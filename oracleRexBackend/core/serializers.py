@@ -1,10 +1,13 @@
 from rest_framework import serializers
+
 from .models import Faction, Player, Planet, System, Tile
+
 
 class FactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Faction
         fields = ['id', 'name', 'home_system']
+
 
 class PlayerSerializer(serializers.ModelSerializer):
     faction = FactionSerializer(read_only=True)
@@ -16,17 +19,20 @@ class PlayerSerializer(serializers.ModelSerializer):
         model = Player
         fields = ['id', 'username', 'faction', 'faction_id']
 
+
 class PlanetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Planet
         fields = ['id', 'name', 'resources', 'influence', 'trait', 'tech_specialty']
+
 
 class SystemSerializer(serializers.ModelSerializer):
     planets = PlanetSerializer(many=True, read_only=True)
 
     class Meta:
         model = System
-        fields = ['id', 'name', 'planets', 'anomaly', 'wormhole']
+        fields = ['tile_id', 'name', 'planets', 'anomaly', 'wormhole']
+
 
 class TileSerializer(serializers.ModelSerializer):
     adjacent_tiles = serializers.SlugRelatedField(

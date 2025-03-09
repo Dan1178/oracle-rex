@@ -1,0 +1,45 @@
+from django.db import transaction
+
+from .default_adjacency import DEFAULT_ADJACENCY
+from .default_factions import DEFAULT_FACTIONS
+from .default_planets import DEFAULT_PLANETS
+from .default_systems import DEFAULT_SYSTEMS
+from .default_tiles import DEFAULT_TILES
+from ..models import Tile, System, Planet, Faction
+
+
+def clear_data():
+    Planet.objects.all().delete()
+    System.objects.all().delete()
+    Tile.objects.all().delete()
+
+
+def load_default_data():
+    planet_objects = {p["name"]: Planet.objects.create(**p) for p in DEFAULT_PLANETS}
+
+    system_objects = {}
+    for sys_data in DEFAULT_SYSTEMS:
+        system = System.objects.create(tile_id=sys_data["tile_id"], name=sys_data["name"], anomaly=sys_data["anomaly"],
+                                       wormhole=sys_data["wormhole"])
+        for planet_name in sys_data["planets"]:
+            system.planets.add(planet_objects[planet_name])
+        system_objects[sys_data["name"]] = system
+
+    tile_objects = {designation: Tile.objects.create(designation=designation) for designation in DEFAULT_TILES}
+
+    for tile_designation, adjacent_list in DEFAULT_ADJACENCY.items():
+        tile = tile_objects[tile_designation]
+        for adj_designation in adjacent_list:
+            tile.adjacent_tiles.add(tile_objects[adj_designation])
+
+    for faction_data in DEFAULT_FACTIONS:
+        Faction.objects.create(
+            name=faction_data["name"],
+            home_system=system_objects[faction_data["home_system"]]
+        )
+
+
+@transaction.atomic
+def reset_database():
+    clear_data()
+    load_default_data()
