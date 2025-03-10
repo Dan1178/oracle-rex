@@ -4,7 +4,7 @@ from .constants.planetConstants import PlanetTraits, PlanetTechs
 
 
 class Planet(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
     resources = models.PositiveIntegerField(default=0)
     influence = models.PositiveIntegerField(default=0)
     trait = models.CharField(max_length=20, choices=PlanetTraits, default="none")

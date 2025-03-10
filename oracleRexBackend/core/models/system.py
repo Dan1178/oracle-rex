@@ -6,8 +6,8 @@ from .planet import Planet
 
 
 class System(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    tile_id = models.CharField(max_length=4, unique=True)
+    name = models.CharField(max_length=100)
+    tile_id = models.CharField(max_length=4)
     planets = models.ManyToManyField(Planet, related_name="systems")
     anomaly = models.CharField(
         max_length=20,
