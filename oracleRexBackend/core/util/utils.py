@@ -1,11 +1,11 @@
 from django.db import transaction
 
-from .default_adjacency import DEFAULT_ADJACENCY
-from .default_factions import DEFAULT_FACTIONS
-from .default_games import DEFAULT_GAMES
-from .default_planets import DEFAULT_PLANETS
-from .default_systems import DEFAULT_SYSTEMS
-from .default_tiles import DEFAULT_TILES
+from .default_data.default_adjacency import DEFAULT_ADJACENCY
+from .default_data.default_factions import DEFAULT_FACTIONS
+from .default_data.default_games import DEFAULT_GAMES
+from .default_data.default_planets import DEFAULT_PLANETS
+from .default_data.default_systems import DEFAULT_SYSTEMS
+from .default_data.default_tiles import DEFAULT_TILES
 from ..models import Tile, System, Planet, Faction, Player, Game
 
 
