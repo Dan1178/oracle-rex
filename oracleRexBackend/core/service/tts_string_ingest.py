@@ -1,12 +1,12 @@
-from django.core.exceptions import ValidationError
 import numpy as np
+from django.core.exceptions import ValidationError
 
-from ..models.tile import Tile
+from ..models import Tile, System, Faction, Player, Game
 
-expected_tile_count = 36
-max_id_num = 82  # Highest ID in standard TI + PoK tileset for 6-player game
-min_id_num = 1
-home_system_ids = np.concatenate([np.arange(1, 18), np.arange(52, 59)])
+EXPECTED_STR_LEN = 36  # Expected id count for TTS String (string does not include Mechatol's ID)
+MAX_ID_NUM = 82  # Highest ID in standard TI + PoK tileset
+MIN_ID_NUM = 1
+HOME_SYSTEM_IDS = np.concatenate([np.arange(1, 18), np.arange(52, 59)])
 
 
 def split_array(arr, indices):
@@ -19,49 +19,56 @@ def split_array(arr, indices):
     return result
 
 
-def validate_string(id_list):
-    if len(id_list) != expected_tile_count:
-        raise ValidationError(f"Wrong number of input ids. Please ensure id count is equal to {expected_tile_count}")
-    if len(set(id_list)) != len(id_list):
-        raise ValidationError(f"Invalid input: Duplicate tile IDs found.")
-    invalid_ids = [id_ for id_ in id_list if id_ > max_id_num] + [id_ for id_ in id_list if id_ < min_id_num]
-    if invalid_ids:
-        raise ValidationError(
-            f"Invalid IDs: {invalid_ids} found in TTS String. All IDs should be between {min_id_num} and {max_id_num}.")
-
-
-def transformString(tts_string):
+def validate_string(tts_string):
     id_list = tts_string.strip().split()
     id_list = [int(id_) for id_ in id_list]
-    validate_string(id_list)
-
+    if len(id_list) != EXPECTED_STR_LEN:
+        raise ValidationError(f"Wrong number of input ids. Please ensure id count is equal to {EXPECTED_STR_LEN}")
+    if len(set(id_list)) != len(id_list):
+        raise ValidationError(f"Invalid input: Duplicate tile IDs found.")
+    invalid_ids = [id_ for id_ in id_list if id_ > MAX_ID_NUM] + [id_ for id_ in id_list if id_ < MIN_ID_NUM]
+    if invalid_ids:
+        raise ValidationError(
+            f"Invalid IDs: {invalid_ids} found in TTS String. All IDs should be between {MIN_ID_NUM} and {MAX_ID_NUM}.")
     ring_split_indices = [6, 18]
-    all_rings = split_array(id_list, ring_split_indices)
-    inner_ring = all_rings[0]
-    middle_ring = all_rings[1]
-    outer_ring = all_rings[2]
+    outer_ring = split_array(id_list, ring_split_indices)[2]
     home_systems = outer_ring[::3]
-    non_home_ids = [home_ids for home_ids in home_systems if home_ids not in home_system_ids]
+    non_home_ids = [home_ids for home_ids in home_systems if home_ids not in HOME_SYSTEM_IDS]
     if non_home_ids:
         raise ValidationError(f"Invalid IDs for home systems found in TTS String: {non_home_ids}.")
+    id_list.insert(0, 18)  # insert ID for Mechatol Rex at beginning
+    return id_list
 
-    # tiles = [Tile.objects.get(designation="0-0")]
-    # for player in range(1, 7):
-    #     tiles.append(Tile.objects.get(designation=str(player)))  # Home tile
-    #     for tile_num in range(5):
-    #         tiles.append(Tile.objects.get(designation=f"{player}-{tile_num}"))
+def map_systems_to_tiles(id_list, game):
+    tiles = game.board.all()
+    systems = sorted(System.objects.all(), key=lambda sys: int(sys.tile_id))
+    starting_positions = []
 
-# test string
-# 78 40 42 67 28 38 76 43 21 44 77 63 50 64 74 48 49 39 1 71 35 16 27 36 55 31 20 58 69 45 4 23 22 57 34 25
+    for i, tile in enumerate(tiles):
+        if i < len(id_list):
+            tile.system = systems[id_list[i] - 1]  # need to offset to match values
+            if len(tile.designation) == 1:
+                starting_positions.append(tile)
 
-# expected inner ring
-# 78 40 42 67 28 38
+    Tile.objects.bulk_update(tiles, ["system"])
+    return starting_positions
 
-# middle
-# 76 43 21 44 77 63 50 64 74 48 49 39
+def create_players(game_name, starting_positions):
+    new_players = []
+    for player in range(1, 7):
+        new_player = Player.objects.create(username=f"{game_name} Player {player}",
+                                           faction=Faction.objects.get(
+                                               home_system__tile_id=starting_positions[player - 1].system.tile_id),
+                                           starting_position=starting_positions[player - 1])
+        new_players.append(new_player)
+    Player.objects.bulk_update(new_players, ["username", "faction", "starting_position"])
+    return new_players
 
-# outer
-# 1 71 35 16 27 36 55 31 20 58 69 45 4 23 22 57 34 25
-
-# home system ids
-# 1 16 55 58 4 57
+def build_game_from_string(tts_string, game_name):
+    game = Game.objects.get(name=game_name) #todo null check, etc
+    id_list = validate_string(tts_string)
+    starting_positions = map_systems_to_tiles(id_list, game)
+    new_players = create_players(game_name, starting_positions)
+    game.players.set(new_players)
+    game.save()
+    return game

@@ -4,7 +4,7 @@ from rest_framework import generics
 
 from .models import Faction, Player, System, Tile
 from .serializers import FactionSerializer, PlayerSerializer, SystemSerializer, TileSerializer
-from .service.tts_string_ingest import transformString
+from .service.tts_string_ingest import build_game_from_string
 from .util.utils import reset_database
 
 
@@ -51,8 +51,8 @@ class TileListView(generics.ListAPIView):
 @require_GET
 def test_api(request):
     try:
-        transformString(
-            "8 40 42 67 28 38 76 43 21 44 77 63 50 64 74 48 49 39 1 71 35 16 27 36 55 31 20 58 69 45 4 23 22 57 34 25")
+        build_game_from_string(
+            "78 40 42 67 28 38 76 43 21 44 77 63 50 64 74 48 49 39 1 71 35 16 27 36 55 31 20 58 69 45 4 23 22 57 34 25", "test")
         return JsonResponse({"message": "Test board created successfully."}, status=200)
     except Exception as e:
         return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
