@@ -3,7 +3,7 @@ from django.urls import path
 from .views import (
     FactionListView, FactionDetailView,
     PlayerListCreateView, PlayerDetailView,
-    SystemListView, TileListView, reset_database_api, test_api
+    SystemListView, TileListView, reset_database_api, test_json_api, test_api
 )
 
 urlpatterns = [
@@ -16,4 +16,5 @@ urlpatterns = [
     path('tiles/', TileListView.as_view(), name='tile-list'),
     # todo: remove or rename when testing complete
     path('test/', test_api, name='test'),
+    path('testJson/', test_json_api, name='testJson'),
 ]
