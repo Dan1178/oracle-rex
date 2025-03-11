@@ -13,7 +13,7 @@ class TestCreateBoardFromIds(TestCase):
     def test_valid_case(self):
         id_string = "78 40 42 67 28 38 76 43 21 44 77 63 50 64 74 48 49 39 1 71 35 16 27 36 55 31 20 58 69 45 4 23 22 57 34 25"
         result_game = build_game_from_string(id_string, "Test")
-        #Test correct tile amount and sanity check a few
+        # Test correct tile amount and sanity check a few
         tile_list = list(result_game.board.all())
         self.assertEqual(37, len(tile_list))
         self.assertEqual("18", tile_list[0].system.tile_id)
@@ -22,7 +22,9 @@ class TestCreateBoardFromIds(TestCase):
         self.assertEqual("Beta Wormhole System", tile_list[2].system.name)
         self.assertEqual("25", tile_list[36].system.tile_id)
         self.assertEqual("Quann System", tile_list[36].system.name)
-        #Test Players starting positions and factions
+        self.assertEqual("1-2", tile_list[36].designation)
+        self.assertEqual("3-2", tile_list[24].designation)
+        # Test Players starting positions and factions
         player_list = list(result_game.players.all())
         self.assertEqual(6, len(player_list))
         self.assertEqual("Test Player 1", player_list[0].username)

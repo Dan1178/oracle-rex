@@ -22,3 +22,12 @@ class System(models.Model):
 
     def __str__(self):
         return self.name
+
+    def to_json(self):
+        return {
+            "name": self.name,
+            "anomaly": self.anomaly,
+            "wormhole": self.wormhole,
+            "planets": [planet.to_json() for planet in self.planets.all()]
+            # todo: units
+        }

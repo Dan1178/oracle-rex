@@ -14,10 +14,10 @@ class Game(models.Model):
     def __str__(self):
         return self.name
 
-    def to_json(self): #todo: change this so it includes all relevant info the LLM will need
+    def to_json(self):
         data = {
             "name": self.name,
-            "players": [player.id for player in self.players.all()],
-            "board": [tile.__str__() for tile in self.board.all()]
+            "players": [player.to_json() for player in self.players.all()],
+            "board": [tile.to_json() for tile in self.board.all()]
         }
         return data

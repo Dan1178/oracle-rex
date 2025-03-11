@@ -8,9 +8,12 @@ for player in range(1, 7):
 for player in range(1, 7):
     DEFAULT_TILES.append(f"{player}")
     DEFAULT_TILES.append(f"{player}-0")
-    DEFAULT_TILES.append(f"{player}-2")
+    if player < 6:
+        DEFAULT_TILES.append(f"{player + 1}-2")
+    else:
+        DEFAULT_TILES.append(f"1-2")
 
-#Original Method
+# Original Method
 
 # DEFAULT_TILES = ["0-0"]  # Mecatol Rex
 # for player in range(1, 7):

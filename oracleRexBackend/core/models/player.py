@@ -12,3 +12,10 @@ class Player(models.Model):
 
     def __str__(self):
         return self.username
+
+    def to_json(self):
+        return {
+            "username": self.username,
+            "faction": self.faction.name if self.faction else None,
+            "starting_position": self.starting_position.designation if self.starting_position else None
+        }

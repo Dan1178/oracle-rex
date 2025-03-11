@@ -13,5 +13,15 @@ class Planet(models.Model):
     def __str__(self):
         return self.name
 
+    def to_json(self):
+        return {
+            "name": self.name,
+            "resources": self.resources,
+            "influence": self.influence,
+            "trait": self.trait,
+            "tech_specialty": self.tech_specialty
+            # todo: units, structures
+        }
+
     class Meta:
         managed = True

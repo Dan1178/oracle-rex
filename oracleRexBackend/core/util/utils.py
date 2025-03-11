@@ -22,8 +22,8 @@ def load_new_6p_tileset():
     tile_objects = {designation: Tile.objects.create(designation=designation) for designation in DEFAULT_TILES}
     for tile_designation, adjacent_list in DEFAULT_ADJACENCY.items():
         tile = tile_objects[tile_designation]
-    for adj_designation in adjacent_list:
-        tile.adjacent_tiles.add(tile_objects[adj_designation])
+        for adj_designation in adjacent_list:
+            tile.adjacent_tiles.add(tile_objects[adj_designation])
     return tile_objects
 
 
@@ -56,7 +56,6 @@ def create_default_game_objects():
 
 def load_default_data():
     system_objects = load_default_planet_and_system_data()
-    load_new_6p_tileset()
     load_default_faction_data(system_objects)
     create_default_game_objects()
 
