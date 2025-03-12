@@ -3,7 +3,10 @@ from django.urls import path
 from .views import (
     FactionListView, FactionDetailView,
     PlayerListCreateView, PlayerDetailView,
-    SystemListView, TileListView, reset_database_api, rules_chat_api, test_json_api, test_api, test_rule_chatbot_api
+    SystemListView, TileListView, reset_database_api, rules_chat_api, strategy_suggester_api,
+
+    #todo remove
+    test_json_api, test_api, test_rule_chatbot_api
 )
 
 urlpatterns = [
@@ -15,8 +18,10 @@ urlpatterns = [
     path('systems/', SystemListView.as_view(), name='system-list'),
     path('tiles/', TileListView.as_view(), name='tile-list'),
     path('rules-chat/', rules_chat_api, name='rules-chat'),
+    path('strategy-suggester/', strategy_suggester_api, name='strategy_suggester'),
     # todo: remove or rename when testing complete
     path('test/', test_api, name='test'),
     path('testJson/', test_json_api, name='testJson'),
     path('testChatbot/', test_rule_chatbot_api, name='testChatbot'),
+    path('testStrategySuggester/', test_rule_chatbot_api, name='testChatbot'),
 ]

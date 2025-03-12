@@ -16,4 +16,4 @@ def get_rule_answer(h_input_question):  # todo: modernize
     and the active system. However, ships can only drop off units in the active system (the system where the ship ends its movement). ''')
     message_h_input = HumanMessage(h_input_question)
     response = chat.invoke([message_s, message_h_carrier_move, message_ai_carrier_move, message_h_input])
-    return response
+    return response.content

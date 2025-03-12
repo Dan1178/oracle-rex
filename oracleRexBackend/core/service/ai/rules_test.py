@@ -6,3 +6,4 @@ def test_rule_chatbot():
     data = {'question': 'If another player moves a ship through a system adjacent to my PDS, and my pds is upgraded, can I fire at their ship?'}
     response = requests.post(url, json=data)
     print(response.json())
+    return response.json()

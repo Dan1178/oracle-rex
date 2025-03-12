@@ -12,6 +12,8 @@ from .service.tts_string_ingest import build_game_from_string
 from .util.utils import reset_database
 from .service.ai.rules_chatbot import get_rule_answer
 from .service.ai.rules_test import test_rule_chatbot
+from .service.ai.strategy_suggester import get_strategy_suggestion
+from .service.ai.strategy_test import test_strategy_suggester
 
 
 @require_GET
@@ -52,7 +54,8 @@ class TileListView(generics.ListAPIView):
     queryset = Tile.objects.all()
     serializer_class = TileSerializer
 
-#todo: replace with actual csrf settings
+
+# todo: replace with actual csrf settings
 @csrf_exempt
 def rules_chat_api(request):
     if request.method == 'POST':
@@ -61,13 +64,12 @@ def rules_chat_api(request):
             data = json.loads(request.body)
             question = data.get('question', '')
 
-
             if not question:
                 return JsonResponse({'error': 'No question provided'}, status=400)
 
             # Get the answer from your rules chatbot
             answer = get_rule_answer(question)
-            print(answer) #todo: remove when satisfied with testing
+            print(answer)  # todo: remove when satisfied with testing
 
             # Return the response as JSON
             return JsonResponse({
@@ -81,6 +83,34 @@ def rules_chat_api(request):
             return JsonResponse({'error': f'Unexpected error: {str(e)}'}, status=500)
 
     return JsonResponse({'error': 'Method not allowed, use POST'}, status=405)
+
+
+@csrf_exempt
+def strategy_suggester_api(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            game_json = data.get('game_json', {})
+            player_faction = data.get('player_faction', '')
+            system_prompt = data.get('system_prompt', None)
+
+            if not game_json or not player_faction:
+                return JsonResponse({'error': 'Missing game_json or player_faction'}, status=400)
+
+            strategy = get_strategy_suggestion(game_json, player_faction, system_prompt)
+
+            return JsonResponse({
+                'faction': player_faction,
+                'strategy': strategy
+            })
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': f'Unexpected error: {str(e)}'}, status=500)
+
+    return JsonResponse({'error': 'Method not allowed, use POST'}, status=405)
+
 
 # todo remove or rename when testing complete
 @require_GET
@@ -112,3 +142,10 @@ def test_rule_chatbot_api(request):
         return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
 
 
+@require_GET
+def test_rule_chatbot_api(request):
+    try:
+        strategy_answer = test_strategy_suggester()
+        return JsonResponse(strategy_answer, status=200)
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
