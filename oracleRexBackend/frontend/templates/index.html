@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oracle Rex</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Oracle Rex - Twilight Imperium Companion</h1>
+
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <button class="tab-button active" data-tab="rules">Rules Q&A</button>
+            <button class="tab-button" data-tab="strategy">Strategy Suggester</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- Rules Q&A Tab -->
+            <div id="rules" class="tab-pane active">
+                <h2>Rules Q&A</h2>
+                <textarea id="rules-question" placeholder="Ask a rules question (e.g., Can I move a carrier two tiles?)"></textarea>
+                <button onclick="askRules()">Ask Oracle Rex</button>
+                <div id="rules-answer" class="response-box"></div>
+            </div>
+
+            <!-- Strategy Suggester Tab -->
+            <div id="strategy" class="tab-pane">
+                <h2>Strategy Suggester</h2>
+                <select id="faction-select">
+                    <option value="">Select Faction</option>
+                    <option value="sol">Federation of Sol</option>
+                    <option value="hacan">Emirates of Hacan</option>
+                    <option value="ul">Universities of Jol-Nar</option>
+                    <option value="argent">Argent Flight</option>
+                    <option value="muatt">Embers of Muaat</option>
+                    <option value="naazrokha">Naaz-Rokha Alliance</option>
+                </select>
+                <button onclick="suggestStrategy()">Get Strategy</button>
+                <div id="board-preview" class="board-preview">
+                    <!-- Board preview with tiles -->
+                </div>
+                <div id="strategy-response" class="response-box"></div>
+            </div>
+        </div>
+    </div>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

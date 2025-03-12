@@ -1,20 +1,28 @@
 import json
 
 from django.http import JsonResponse
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 from rest_framework import generics
 
 from .models import Faction, Player, System, Tile
 from .serializers import FactionSerializer, PlayerSerializer, SystemSerializer, TileSerializer
-from .service.json_output import output_game_as_json
-from .service.tts_string_ingest import build_game_from_string
-from .util.utils import reset_database
 from .service.ai.rules_chatbot import get_rule_answer
 from .service.ai.rules_test import test_rule_chatbot
 from .service.ai.strategy_suggester import get_strategy_suggestion
 from .service.ai.strategy_test import test_strategy_suggester
+from .service.json_output import output_game_as_json
+from .service.tts_string_ingest import build_game_from_string
+from .util.utils import reset_database
 
+
+###########         FRONTEND        ################################
+def frontend_view(request):
+    return render(request, 'index.html')
+
+
+###########         BACKEND         ################################
 
 @require_GET
 def reset_database_api(request):
