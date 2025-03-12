@@ -67,7 +67,7 @@ def rules_chat_api(request):
 
             # Get the answer from your rules chatbot
             answer = get_rule_answer(question)
-            print(answer)
+            print(answer) #todo: remove when satisfied with testing
 
             # Return the response as JSON
             return JsonResponse({
