@@ -1,12 +1,17 @@
+import json
+
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 from rest_framework import generics
 
 from .models import Faction, Player, System, Tile
 from .serializers import FactionSerializer, PlayerSerializer, SystemSerializer, TileSerializer
-from .service.tts_string_ingest import build_game_from_string
 from .service.json_output import output_game_as_json
+from .service.tts_string_ingest import build_game_from_string
 from .util.utils import reset_database
+from .service.ai.rules_chatbot import get_rule_answer
+from .service.ai.rules_test import test_rule_chatbot
 
 
 @require_GET
@@ -47,6 +52,35 @@ class TileListView(generics.ListAPIView):
     queryset = Tile.objects.all()
     serializer_class = TileSerializer
 
+#todo: replace with actual csrf settings
+@csrf_exempt
+def rules_chat_api(request):
+    if request.method == 'POST':
+        try:
+            # Parse JSON body from POST request
+            data = json.loads(request.body)
+            question = data.get('question', '')
+
+
+            if not question:
+                return JsonResponse({'error': 'No question provided'}, status=400)
+
+            # Get the answer from your rules chatbot
+            answer = get_rule_answer(question)
+            print(answer)
+
+            # Return the response as JSON
+            return JsonResponse({
+                'question': question,
+                'answer': answer
+            })
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': f'Unexpected error: {str(e)}'}, status=500)
+
+    return JsonResponse({'error': 'Method not allowed, use POST'}, status=405)
 
 # todo remove or rename when testing complete
 @require_GET
@@ -67,3 +101,14 @@ def test_json_api(request):
         return JsonResponse(json, status=200)
     except Exception as e:
         return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
+
+
+@require_GET
+def test_rule_chatbot_api(request):
+    try:
+        rule_answer = test_rule_chatbot()
+        return JsonResponse(rule_answer, status=200)
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
+
+
