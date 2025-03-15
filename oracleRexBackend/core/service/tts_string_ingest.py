@@ -2,6 +2,7 @@ import numpy as np
 from django.core.exceptions import ValidationError
 
 from ..models import Tile, System, Faction, Player, Game
+from ..util.utils import reset_to_default_for_game
 
 EXPECTED_STR_LEN = 36  # Expected id count for TTS String (string does not include Mechatol's ID)
 MAX_ID_NUM = 82  # Highest ID in standard TI + PoK tileset
@@ -23,7 +24,7 @@ def validate_string(tts_string):
     id_list = tts_string.strip().split()
     id_list = [int(id_) for id_ in id_list]
     if len(id_list) != EXPECTED_STR_LEN:
-        raise ValidationError(f"Wrong number of input ids. Please ensure id count is equal to {EXPECTED_STR_LEN}")
+        raise ValidationError(f"Wrong number of input ids. Please ensure id count is equal to {EXPECTED_STR_LEN}") #todo: this should be returned in alert on frontend
     if len(set(id_list)) != len(id_list):
         raise ValidationError(f"Invalid input: Duplicate tile IDs found.")
     invalid_ids = [id_ for id_ in id_list if id_ > MAX_ID_NUM] + [id_ for id_ in id_list if id_ < MIN_ID_NUM]
@@ -65,10 +66,13 @@ def create_players(game_name, starting_positions):
     return new_players
 
 def build_game_from_string(tts_string, game_name):
-    game = Game.objects.get(name=game_name) #todo null check, etc
+    game = reset_to_default_for_game(game_name)
     id_list = validate_string(tts_string)
+    print("TTS String successfully validated.")
     starting_positions = map_systems_to_tiles(id_list, game)
+    print("Systems successfully mapped to tiles.")
     new_players = create_players(game_name, starting_positions)
+    print("New players created.")
     game.players.set(new_players)
     game.save()
     print("New Game object created for component: " + game_name)

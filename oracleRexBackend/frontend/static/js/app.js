@@ -28,10 +28,12 @@ function askRules() {
     });
 }
 
+
+// Strategy Suggester - Generate Game from TTS String and Set Images
 function generateGame() {
     const ttsString = document.getElementById('tts-input').value.trim();
     if (!ttsString) {
-        document.getElementById('board-preview').textContent = 'Please enter a TTS string.';
+        alert('Please enter a TTS string.');
         return;
     }
 
@@ -40,18 +42,39 @@ function generateGame() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ tts_string: ttsString, game_name: 'strategy' })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            document.getElementById('board-preview').textContent = data.error;
-            return;
-        }
-        currentGameJson = data.game_json;
-        document.getElementById('board-preview').textContent = 'Game generated successfully! Select a faction and get your strategy.';
-    })
-    .catch(error => {
-        document.getElementById('board-preview').textContent = 'Error: ' + error;
-    });
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to generate game');
+            return response.json();
+        })
+        .then(data => {
+            const gameData = data.game;
+            const board = gameData.board;
+
+            const hexes = document.querySelectorAll('.hex');
+            hexes.forEach(hex => {
+                const pos = hex.getAttribute('data-position');
+                const tile = board.find(t => t.designation === pos);
+                let tileId = '0';
+
+                if (tile && tile.system && tile.system.tile_id !== undefined) {
+                    tileId = tile.system.tile_id.toString();
+                }
+
+                // Special case: Mecatol Rex at 0-0
+                if (pos === "0-0" && !tile) {
+                    tileId = "18"; // Mecatol Rex system ID
+                }
+
+                hex.style.backgroundImage = `url('/static/images/systems/ST_${tileId}.png')`;
+                hex.style.backgroundSize = 'cover';
+                hex.style.backgroundPosition = 'center';
+                hex.style.backgroundRepeat = 'no-repeat';
+            });
+            window.gameData = gameData;
+        })
+        .catch(error => {
+            alert('Error generating game: ' + error.message);
+        });
 }
 
 // Strategy Suggester

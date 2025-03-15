@@ -53,6 +53,24 @@ def create_default_game_objects():
         new_game = Game.objects.create(name=games["name"])
         new_game.board.set(load_new_6p_tileset().values())
 
+def clear_objects_in_game(game_to_reset):
+    try:
+        for player in game_to_reset.players.all():
+            player.delete()
+        for tile in game_to_reset.board.all():
+            tile.delete()
+    except Exception as e:
+        print(e)
+    #todo: may need further refinement; once move suggester is implemented, ensure units are getting deleted as well.
+    game_to_reset.delete()
+
+def reset_to_default_for_game(game_name):
+    game_to_reset = Game.objects.get(name=game_name)
+    clear_objects_in_game(game_to_reset)
+    new_game = Game.objects.create(name=game_name)
+    new_game.board.set(load_new_6p_tileset().values())
+    return new_game
+
 
 def load_default_data():
     system_objects = load_default_planet_and_system_data()

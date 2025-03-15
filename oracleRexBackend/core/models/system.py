@@ -26,6 +26,7 @@ class System(models.Model):
     def to_json(self):
         return {
             "name": self.name,
+            "tile_id": self.tile_id, #todo: make a different set of to_json methods for passing to LLM
             "anomaly": self.anomaly,
             "wormhole": self.wormhole,
             "planets": [planet.to_json() for planet in self.planets.all()]

@@ -106,7 +106,7 @@ def build_game_from_tts_api(request):
             game = build_game_from_string(tts_string, game_name)
             game_json = game.to_json()
 
-            return JsonResponse({'game_json': game_json})
+            return JsonResponse({'game': game_json})
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON format'}, status=400)
