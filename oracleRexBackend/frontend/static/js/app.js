@@ -28,36 +28,48 @@ function askRules() {
     });
 }
 
+function generateGame() {
+    const ttsString = document.getElementById('tts-input').value.trim();
+    if (!ttsString) {
+        document.getElementById('board-preview').textContent = 'Please enter a TTS string.';
+        return;
+    }
+
+    fetch('/api/build-game-from-tts/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tts_string: ttsString, game_name: 'strategy' })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            document.getElementById('board-preview').textContent = data.error;
+            return;
+        }
+        currentGameJson = data.game_json;
+        document.getElementById('board-preview').textContent = 'Game generated successfully! Select a faction and get your strategy.';
+    })
+    .catch(error => {
+        document.getElementById('board-preview').textContent = 'Error: ' + error;
+    });
+}
+
 // Strategy Suggester
 function suggestStrategy() {
     const faction = document.getElementById('faction-select').value;
-    if (!faction) return;
+    if (!faction || !currentGameJson) {
+        document.getElementById('strategy-response').textContent = 'Please generate a game and select a faction.';
+        return;
+    }
 
-    // Fetch game JSON from backend (assumes game ID 1 for demo)
-    fetch('/api/game/1/')
+    fetch('/api/strategy-suggester/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ game_json: currentGameJson, player_faction: faction })
+    })
     .then(response => response.json())
-    .then(gameJson => {
-        // Render board preview
-        const boardPreview = document.getElementById('board-preview');
-        boardPreview.innerHTML = '';
-        gameJson.board.forEach(tile => {
-            const img = document.createElement('img');
-            img.src = `/static/images/tiles/tile_${tile.designation}.png`;
-            img.alt = tile.system.name;
-            img.style.width = '50px'; // Adjust size as needed
-            boardPreview.appendChild(img);
-        });
-
-        // Fetch strategy
-        fetch('/api/strategy-suggester/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ game_json: gameJson, player_faction: faction })
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('strategy-response').textContent = data.strategy || data.error;
-        });
+    .then(data => {
+        document.getElementById('strategy-response').textContent = data.strategy || data.error;
     })
     .catch(error => {
         document.getElementById('strategy-response').textContent = 'Error: ' + error;

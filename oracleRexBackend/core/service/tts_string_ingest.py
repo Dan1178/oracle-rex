@@ -71,4 +71,5 @@ def build_game_from_string(tts_string, game_name):
     new_players = create_players(game_name, starting_positions)
     game.players.set(new_players)
     game.save()
+    print("New Game object created for component: " + game_name)
     return game

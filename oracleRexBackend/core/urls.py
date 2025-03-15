@@ -5,7 +5,8 @@ from .views import (
 #Backend
     FactionListView, FactionDetailView,
     PlayerListCreateView, PlayerDetailView,
-    SystemListView, TileListView, reset_database_api, rules_chat_api, strategy_suggester_api,
+    SystemListView, TileListView, reset_database_api, rules_chat_api, build_game_from_tts_api,
+    strategy_suggester_api,
 
 # Front end
 
@@ -25,6 +26,7 @@ urlpatterns = [
     path('systems/', SystemListView.as_view(), name='system-list'),
     path('tiles/', TileListView.as_view(), name='tile-list'),
     path('rules-chat/', rules_chat_api, name='rules-chat'),
+    path('build-game-from-tts/', build_game_from_tts_api, name='build_game_from_tts'),
     path('strategy-suggester/', strategy_suggester_api, name='strategy_suggester'),
 
     ### FRONTEND

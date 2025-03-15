@@ -92,6 +92,27 @@ def rules_chat_api(request):
 
     return JsonResponse({'error': 'Method not allowed, use POST'}, status=405)
 
+@csrf_exempt
+def build_game_from_tts_api(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            tts_string = data.get('tts_string', '')
+            game_name = data.get('game_name', '')
+
+            if not tts_string:
+                return JsonResponse({'error': 'No TTS string provided'}, status=400)
+
+            game = build_game_from_string(tts_string, game_name)
+            game_json = game.to_json()
+
+            return JsonResponse({'game_json': game_json})
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': f'Unexpected error: {str(e)}'}, status=500)
+    return JsonResponse({'error': 'Method not allowed, use POST'}, status=405)
 
 @csrf_exempt
 def strategy_suggester_api(request):
