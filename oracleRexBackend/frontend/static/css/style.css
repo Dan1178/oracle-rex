@@ -1,8 +1,8 @@
 :root {
-    --hex-grid-width: 8vw;
+    --hex-grid-width: 12.5vw;
     --hex-grid-height: calc((var(--hex-grid-width)/2)*1.732);
-    --hex-grid-vert: 1.08em;
-    --hex-grid-horz: .94em;
+    --hex-grid-vert: 1.68em;
+    --hex-grid-horz: 1.46em;
     --hex-grid-vert-up: calc((var(--hex-grid-vert)*-1));
     --hex-grid-vert-angle: calc((var(--hex-grid-vert)/2));
     --hex-grid-vert-angle-up: calc((var(--hex-grid-vert-angle)*-1));
@@ -19,7 +19,7 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1500px;
     margin: 0 auto;
     background: white;
     padding: 20px;
@@ -129,9 +129,9 @@ button:disabled {
 .hex-grid {
     position: relative;
     width: 80vw;
-    height: 90vh;
-    max-width: 1200px;
-    max-height: 1100px;
+    height: 160vh;
+    /*max-width: 1200px;*/
+    /*max-height: 2000px;*/
     margin: 0 auto;
     font-size: 6.5vw;
 }

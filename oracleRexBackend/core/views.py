@@ -11,7 +11,6 @@ from .serializers import FactionSerializer, PlayerSerializer, SystemSerializer, 
 from .service.ai.rules_chatbot import get_rule_answer
 from .service.ai.rules_test import test_rule_chatbot
 from .service.ai.strategy_suggester import get_strategy_suggestion
-from .service.ai.strategy_test import test_strategy_suggester
 from .service.json_output import output_game_as_json
 from .service.tts_string_ingest import build_game_from_string
 from .util.utils import reset_database
@@ -170,11 +169,3 @@ def test_rule_chatbot_api(request):
     except Exception as e:
         return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
 
-
-@require_GET
-def test_rule_chatbot_api(request):
-    try:
-        strategy_answer = test_strategy_suggester()
-        return JsonResponse(strategy_answer, status=200)
-    except Exception as e:
-        return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
