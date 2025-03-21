@@ -57,12 +57,11 @@ def map_systems_to_tiles(id_list, game):
 def create_players(game_name, starting_positions):
     new_players = []
     for player in range(1, 7):
-        new_player = Player.objects.create(username=f"{game_name} Player {player}",
+        new_player = Player.objects.create(username=f"{game_name} player {player}",
                                            faction=Faction.objects.get(
                                                home_system__tile_id=starting_positions[player - 1].system.tile_id),
                                            starting_position=starting_positions[player - 1])
         new_players.append(new_player)
-    Player.objects.bulk_update(new_players, ["username", "faction", "starting_position"])
     return new_players
 
 def build_game_from_string(tts_string, game_name):

@@ -34,16 +34,10 @@
                 <input type="text" id="tts-input" placeholder="Paste TTS String from Milty draft tool">
                 <button onclick="generateGame()">Generate</button>
             </div>
-            <select id="faction-select">
-                <option value="">Select Faction</option>
-                <option value="sol">Federation of Sol</option>
-                <option value="hacan">Emirates of Hacan</option>
-                <option value="ul">Universities of Jol-Nar</option>
-                <option value="argent">Argent Flight</option>
-                <option value="muatt">Embers of Muaat</option>
-                <option value="naazrokha">Naaz-Rokha Alliance</option>
+            <select id="faction-select" disabled>
+                <option value="" selected>Enter a TTS String to load a board state</option>
             </select>
-            <button onclick="suggestStrategy()">Get Strategy</button>
+            <button id="get-strategy-btn" onclick="suggestStrategy()" disabled>Get Strategy</button>
             <div id="board-preview" class="board-preview">
                 <div class="grid-wrapper">
                     <div class="hex-grid">

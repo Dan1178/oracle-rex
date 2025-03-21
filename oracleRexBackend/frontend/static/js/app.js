@@ -49,6 +49,7 @@ function generateGame() {
         .then(data => {
             const gameData = data.game;
             const board = gameData.board;
+            const players = gameData.players;
 
             const hexes = document.querySelectorAll('.hex');
             hexes.forEach(hex => {
@@ -70,7 +71,36 @@ function generateGame() {
                 hex.style.backgroundPosition = 'center';
                 hex.style.backgroundRepeat = 'no-repeat';
             });
-            window.gameData = gameData;
+
+            // Update the faction dropdown
+            const factionSelect = document.getElementById('faction-select');
+            const getStrategyBtn = document.getElementById('get-strategy-btn');
+            factionSelect.innerHTML = '';
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.text = 'Select Faction';
+            defaultOption.selected = true;
+            factionSelect.appendChild(defaultOption);
+
+            // Populate dropdown with factions from game.players
+            if (players) {
+                players.forEach(player => {
+                    if (player.faction) {
+                        const option = document.createElement('option');
+                        option.value = player.faction;
+                        option.text = player.faction;
+                        factionSelect.appendChild(option);
+                    }
+                });
+            }
+            factionSelect.disabled = false;
+            getStrategyBtn.disabled = true;
+
+            factionSelect.addEventListener('change', () => {
+                getStrategyBtn.disabled = factionSelect.value === '';
+            });
+
+            window.strategyGameData = gameData;
         })
         .catch(error => {
             alert('Error generating game: ' + error.message);
@@ -80,7 +110,8 @@ function generateGame() {
 // Strategy Suggester
 function suggestStrategy() {
     const faction = document.getElementById('faction-select').value;
-    if (!faction || !currentGameJson) {
+    const gameData = window.strategyGameData;
+    if (!faction || !gameData) {
         document.getElementById('strategy-response').textContent = 'Please generate a game and select a faction.';
         return;
     }
@@ -88,7 +119,7 @@ function suggestStrategy() {
     fetch('/api/strategy-suggester/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_json: currentGameJson, player_faction: faction })
+        body: JSON.stringify({ game_json: gameData, player_faction: faction })
     })
     .then(response => response.json())
     .then(data => {
