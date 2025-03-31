@@ -101,7 +101,15 @@ button:disabled {
     margin-bottom: 15px;
 }
 
-#tts-input {
+#tts-input-strategy {
+    flex-grow: 1;
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#tts-input-fleet {
     flex-grow: 1;
     padding: 10px;
     margin-right: 10px;

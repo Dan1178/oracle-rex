@@ -6,7 +6,7 @@ from .tile import Tile
 
 class Player(models.Model):
     username = models.CharField(max_length=100, unique=True)
-    faction = models.OneToOneField(Faction, on_delete=models.SET_NULL, null=True, blank=True)
+    faction = models.ForeignKey(Faction, on_delete=models.SET_NULL, null=True, unique=False)
     starting_position = models.ForeignKey(Tile, on_delete=models.SET_NULL,
                                           null=True)
 

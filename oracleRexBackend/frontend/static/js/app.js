@@ -30,8 +30,8 @@ function askRules() {
 
 
 // Strategy Suggester - Generate Game from TTS String and Set Images
-function generateGame() {
-    const ttsString = document.getElementById('tts-input').value.trim();
+function generateGame(gameName) {
+    const ttsString = document.getElementById('tts-input-'+gameName).value.trim();
     if (!ttsString) {
         alert('Please enter a TTS string.');
         return;
@@ -40,7 +40,7 @@ function generateGame() {
     fetch('/api/build-game-from-tts/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tts_string: ttsString, game_name: 'strategy' })
+        body: JSON.stringify({ tts_string: ttsString, game_name: gameName })
     })
         .then(response => {
             if (!response.ok) throw new Error('Failed to generate game');
@@ -51,7 +51,7 @@ function generateGame() {
             const board = gameData.board;
             const players = gameData.players;
 
-            const hexes = document.querySelectorAll('.hex');
+            const hexes = document.querySelectorAll('.hex-grid.' + gameName + ' .hex');
             hexes.forEach(hex => {
                 const pos = hex.getAttribute('data-position');
                 const tile = board.find(t => t.designation === pos);

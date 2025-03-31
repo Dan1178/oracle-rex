@@ -14,12 +14,14 @@
     <div class="tab-nav">
         <button class="tab-button active" data-tab="rules">Rules Q&A</button>
         <button class="tab-button" data-tab="strategy">Strategy Suggester</button>
+        <button class="tab-button" data-tab="fleet">Fleet Manager</button>
+        <button class="tab-button" data-tab="move">Move Suggester</button>
     </div>
 
     <!-- Tab Content -->
     <div class="tab-content">
         <!-- Rules Q&A Tab -->
-        <div id="rules" class="tab-pane">
+        <div id="rules" class="tab-pane active">
             <h2>Rules Q&A</h2>
             <textarea id="rules-question"
                       placeholder="Ask a rules question (e.g., Can I move a carrier two tiles?)"></textarea>
@@ -28,11 +30,11 @@
         </div>
 
         <!-- Strategy Suggester Tab -->
-        <div id="strategy" class="tab-pane active">
+        <div id="strategy" class="tab-pane">
             <h2>Strategy Suggester</h2>
             <div class="tts-input-container">
-                <input type="text" id="tts-input" placeholder="Paste TTS String from Milty draft tool">
-                <button onclick="generateGame()">Generate</button>
+                <input type="text" id="tts-input-strategy" placeholder="Paste TTS String from Milty draft tool">
+                <button onclick="generateGame('strategy')">Generate</button>
             </div>
             <select id="faction-select" disabled>
                 <option value="" selected>Enter a TTS String to load a board state</option>
@@ -40,7 +42,7 @@
             <button id="get-strategy-btn" onclick="suggestStrategy()" disabled>Get Strategy</button>
             <div id="board-preview" class="board-preview">
                 <div class="grid-wrapper">
-                    <div class="hex-grid">
+                    <div class="hex-grid strategy">
                         <!-- 37 empty hexes -->
                         <div class="hex mecatol" data-position="0-0"></div>
                         <!-- Inner Ring (6 tiles) -->
@@ -86,6 +88,119 @@
                 </div>
             </div>
             <div id="strategy-response" class="response-box"></div>
+        </div>
+
+        <!--Fleet manager-->
+        <div id="fleet" class="tab-pane">
+            <h2>Fleet Manager</h2>
+            <div class="tts-input-container">
+                <input type="text" id="tts-input-fleet" placeholder="Paste TTS String from Milty draft tool">
+                <button onclick="generateGame('fleet')">Generate</button>
+            </div>
+            <div id="board-preview fleet" class="board-preview">
+                <div class="grid-wrapper">
+                    <div class="hex-grid fleet">
+                        <!-- 37 empty hexes -->
+                        <div class="hex mecatol" data-position="0-0"></div>
+                        <!-- Inner Ring (6 tiles) -->
+                        <div class="hex inner" data-position="1-4"></div>
+                        <div class="hex inner" data-position="2-4"></div>
+                        <div class="hex inner" data-position="3-4"></div>
+                        <div class="hex inner" data-position="4-4"></div>
+                        <div class="hex inner" data-position="5-4"></div>
+                        <div class="hex inner" data-position="6-4"></div>
+                        <!-- Middle Ring (12 tiles) -->
+                        <div class="hex middle" data-position="1-1"></div>
+                        <div class="hex middle" data-position="1-3"></div>
+                        <div class="hex middle" data-position="2-1"></div>
+                        <div class="hex middle" data-position="2-3"></div>
+                        <div class="hex middle" data-position="3-1"></div>
+                        <div class="hex middle" data-position="3-3"></div>
+                        <div class="hex middle" data-position="4-1"></div>
+                        <div class="hex middle" data-position="4-3"></div>
+                        <div class="hex middle" data-position="5-1"></div>
+                        <div class="hex middle" data-position="5-3"></div>
+                        <div class="hex middle" data-position="6-1"></div>
+                        <div class="hex middle" data-position="6-3"></div>
+                        <!-- Outer Ring (18 tiles) -->
+                        <div class="hex" data-position="1"></div>
+                        <div class="hex" data-position="1-0"></div>
+                        <div class="hex" data-position="2-2"></div>
+                        <div class="hex" data-position="2"></div>
+                        <div class="hex" data-position="2-0"></div>
+                        <div class="hex" data-position="3-2"></div>
+                        <div class="hex" data-position="3"></div>
+                        <div class="hex" data-position="3-0"></div>
+                        <div class="hex" data-position="4-2"></div>
+                        <div class="hex" data-position="4"></div>
+                        <div class="hex" data-position="4-0"></div>
+                        <div class="hex" data-position="5-2"></div>
+                        <div class="hex" data-position="5"></div>
+                        <div class="hex" data-position="5-0"></div>
+                        <div class="hex" data-position="6-2"></div>
+                        <div class="hex" data-position="6"></div>
+                        <div class="hex" data-position="6-0"></div>
+                        <div class="hex" data-position="1-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Move Suggester Tab -->
+        <div id="move" class="tab-pane">
+            <h2>Move Suggester</h2>
+            <select id="faction-select move" disabled>
+                <option value="" selected>Create a board state in the Fleet Manager</option>
+            </select>
+            <button id="get-strategy-btn move" disabled>Suggest Move</button>
+            <div id="board-preview move" class="board-preview">
+                <div class="grid-wrapper">
+                    <div class="hex-grid move">
+                        <!-- 37 empty hexes -->
+                        <div class="hex mecatol" data-position="0-0"></div>
+                        <!-- Inner Ring (6 tiles) -->
+                        <div class="hex inner" data-position="1-4"></div>
+                        <div class="hex inner" data-position="2-4"></div>
+                        <div class="hex inner" data-position="3-4"></div>
+                        <div class="hex inner" data-position="4-4"></div>
+                        <div class="hex inner" data-position="5-4"></div>
+                        <div class="hex inner" data-position="6-4"></div>
+                        <!-- Middle Ring (12 tiles) -->
+                        <div class="hex middle" data-position="1-1"></div>
+                        <div class="hex middle" data-position="1-3"></div>
+                        <div class="hex middle" data-position="2-1"></div>
+                        <div class="hex middle" data-position="2-3"></div>
+                        <div class="hex middle" data-position="3-1"></div>
+                        <div class="hex middle" data-position="3-3"></div>
+                        <div class="hex middle" data-position="4-1"></div>
+                        <div class="hex middle" data-position="4-3"></div>
+                        <div class="hex middle" data-position="5-1"></div>
+                        <div class="hex middle" data-position="5-3"></div>
+                        <div class="hex middle" data-position="6-1"></div>
+                        <div class="hex middle" data-position="6-3"></div>
+                        <!-- Outer Ring (18 tiles) -->
+                        <div class="hex" data-position="1"></div>
+                        <div class="hex" data-position="1-0"></div>
+                        <div class="hex" data-position="2-2"></div>
+                        <div class="hex" data-position="2"></div>
+                        <div class="hex" data-position="2-0"></div>
+                        <div class="hex" data-position="3-2"></div>
+                        <div class="hex" data-position="3"></div>
+                        <div class="hex" data-position="3-0"></div>
+                        <div class="hex" data-position="4-2"></div>
+                        <div class="hex" data-position="4"></div>
+                        <div class="hex" data-position="4-0"></div>
+                        <div class="hex" data-position="5-2"></div>
+                        <div class="hex" data-position="5"></div>
+                        <div class="hex" data-position="5-0"></div>
+                        <div class="hex" data-position="6-2"></div>
+                        <div class="hex" data-position="6"></div>
+                        <div class="hex" data-position="6-0"></div>
+                        <div class="hex" data-position="1-2"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="move-response" class="response-box"></div>
         </div>
     </div>
 </div>
