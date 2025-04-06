@@ -2,17 +2,15 @@ from django.urls import path
 
 from .views import (
 
-#Backend
+    # Backend
     FactionListView, FactionDetailView,
     PlayerListCreateView, PlayerDetailView,
     SystemListView, TileListView, reset_database_api, rules_chat_api, build_game_from_tts_api,
-    strategy_suggester_api,
+    strategy_suggester_api, move_suggester_api,
 
-# Front end
+    # Front end
 
     frontend_view,
-    #todo remove
-    test_json_api, test_api, test_rule_chatbot_api
 )
 
 urlpatterns = [
@@ -28,13 +26,8 @@ urlpatterns = [
     path('rules-chat/', rules_chat_api, name='rules-chat'),
     path('build-game-from-tts/', build_game_from_tts_api, name='build_game_from_tts'),
     path('strategy-suggester/', strategy_suggester_api, name='strategy_suggester'),
+    path('move-suggester/', move_suggester_api, name='move_suggester'),
 
     ### FRONTEND
     path('', frontend_view, name='frontend'),
-
-    # todo: remove or rename when testing complete
-    path('test/', test_api, name='test'),
-    path('testJson/', test_json_api, name='testJson'),
-    path('testChatbot/', test_rule_chatbot_api, name='testChatbot'),
-    path('testStrategySuggester/', test_rule_chatbot_api, name='testChatbot'),
 ]

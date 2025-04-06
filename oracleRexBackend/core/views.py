@@ -11,6 +11,7 @@ from .serializers import FactionSerializer, PlayerSerializer, SystemSerializer, 
 from .service.ai.rules_chatbot import get_rule_answer
 from .service.ai.rules_test import test_rule_chatbot
 from .service.ai.strategy_suggester import get_strategy_suggestion
+from .service.ai.move_suggester import get_move_suggestion
 from .service.json_output import output_game_as_json
 from .service.tts_string_ingest import build_game_from_string
 from .util.utils import reset_database
@@ -113,8 +114,7 @@ def build_game_from_tts_api(request):
             return JsonResponse({'error': f'Unexpected error: {str(e)}'}, status=500)
     return JsonResponse({'error': 'Method not allowed, use POST'}, status=405)
 
-@csrf_exempt
-def strategy_suggester_api(request):
+def ai_suggest(request, type):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -125,7 +125,11 @@ def strategy_suggester_api(request):
             if not game_json or not player_faction:
                 return JsonResponse({'error': 'Missing game_json or player_faction'}, status=400)
 
-            strategy = get_strategy_suggestion(game_json, player_faction, system_prompt)
+            strategy = "replaceme"
+            if type == 'strategy':
+                strategy = get_strategy_suggestion(game_json, player_faction, system_prompt)
+            elif type == 'move':
+                strategy = get_move_suggestion(game_json, player_faction, system_prompt)
 
             return JsonResponse({
                 'faction': player_faction,
@@ -138,6 +142,14 @@ def strategy_suggester_api(request):
             return JsonResponse({'error': f'Unexpected error: {str(e)}'}, status=500)
 
     return JsonResponse({'error': 'Method not allowed, use POST'}, status=405)
+
+@csrf_exempt
+def strategy_suggester_api(request):
+    return ai_suggest(request, 'strategy')
+
+@csrf_exempt
+def move_suggester_api(request):
+    return ai_suggest(request, 'move')
 
 
 # todo remove or rename when testing complete
