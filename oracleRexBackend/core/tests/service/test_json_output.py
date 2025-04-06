@@ -169,7 +169,7 @@ class TestUnitJsonOutput(TestCase):
         self.test_ground_forces.structures.set(self.structures)
         self.test_ground_forces.units.set(self.ground_units)
 
-        self.planet_mecatol = Planet.objects.get(name = "Mecatol Rex")
+        self.planet_mecatol = Planet.objects.get(name="Mecatol Rex")
         self.planet_mecatol.ground_forces = self.test_ground_forces
         self.planet_mecatol.save()
 
@@ -192,13 +192,9 @@ class TestUnitJsonOutput(TestCase):
                          'planets': [{'name': 'Mecatol Rex', 'resources': 1, 'influence': 6, 'trait': 'none',
                                       'tech_specialty': 'none',
                                       'ground_forces': {'owner': 'Player 1', 'structures': ['spaceDock', 'pds'],
-                                                       'units': ['mech', 'infantry', 'infantry', 'infantry']}}],
+                                                        'units': ['mech', 'infantry', 'infantry', 'infantry']}}],
                          'fleet': {'owner': 'Player 1', 'ships': ['destroyer', 'destroyer', 'dreadnought', 'fighter']}}
         self.assertEqual(system_json, expected_json)
         self.assertEqual(len(system_json["fleet"]), 2)
         self.assertEqual(system_json["fleet"]["owner"], "Player 1")
         self.assertEqual(len(system_json["fleet"]["ships"]), 4)
-
-# class TestContestedSystemJsonOutput(TestCase):
-#     def setUp(self):
-#         #todo

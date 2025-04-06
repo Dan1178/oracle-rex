@@ -36,10 +36,10 @@
                 <input type="text" id="tts-input-strategy" placeholder="Paste TTS String from Milty draft tool">
                 <button onclick="generateGame('strategy')">Generate</button>
             </div>
-            <select id="faction-select" disabled>
+            <select id="faction-select strategy" class="faction-select" disabled>
                 <option value="" selected>Enter a TTS String to load a board state</option>
             </select>
-            <button id="get-strategy-btn" onclick="suggestStrategy()" disabled>Get Strategy</button>
+            <button id="get-strategy-btn strategy" onclick="suggestStrategy()" disabled>Get Strategy</button>
             <div id="board-preview" class="board-preview">
                 <div class="grid-wrapper">
                     <div class="hex-grid strategy">
@@ -96,6 +96,7 @@
             <div class="tts-input-container">
                 <input type="text" id="tts-input-fleet" placeholder="Paste TTS String from Milty draft tool">
                 <button onclick="generateGame('fleet')">Generate</button>
+                <button id="fleet-manager-export" onclick="exportFleetManagerToMoveSuggester()" disabled>Export to Move Suggester</button>
             </div>
             <div id="board-preview fleet" class="board-preview">
                 <div class="grid-wrapper">

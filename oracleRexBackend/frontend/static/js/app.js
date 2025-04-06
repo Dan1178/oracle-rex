@@ -28,6 +28,73 @@ function askRules() {
     });
 }
 
+function setBoard(gameData, gameName) {
+    const board = gameData.board;
+    const players = gameData.players;
+
+    const hexes = document.querySelectorAll('.hex-grid.' + gameName + ' .hex');
+    hexes.forEach(hex => {
+        const pos = hex.getAttribute('data-position');
+        const tile = board.find(t => t.designation === pos);
+        let tileId = '0';
+
+        if (tile && tile.system && tile.system.tile_id !== undefined) {
+            tileId = tile.system.tile_id.toString();
+        }
+
+        // Special case: Mecatol Rex at 0-0
+        if (pos === "0-0" && !tile) {
+            tileId = "18"; // Mecatol Rex system ID
+        }
+
+        hex.style.backgroundImage = `url('/static/images/systems/ST_${tileId}.png')`;
+        hex.style.backgroundSize = 'cover';
+        hex.style.backgroundPosition = 'center';
+        hex.style.backgroundRepeat = 'no-repeat';
+    });
+
+    // Update the faction dropdown
+    if (gameName == "strategy" || gameName == "move") {
+        const factionSelect = document.getElementById('faction-select ' + gameName);
+        const getStrategyBtn = document.getElementById('get-strategy-btn ' + gameName);
+        factionSelect.innerHTML = '';
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.text = 'Select Faction';
+        defaultOption.selected = true;
+        factionSelect.appendChild(defaultOption);
+
+        // Populate dropdown with factions from game.players
+        if (players) {
+            players.forEach(player => {
+                if (player.faction) {
+                    const option = document.createElement('option');
+                    option.value = player.faction;
+                    option.text = player.faction;
+                    factionSelect.appendChild(option);
+                }
+            });
+        }
+        factionSelect.disabled = false;
+        getStrategyBtn.disabled = true;
+
+        factionSelect.addEventListener('change', () => {
+            getStrategyBtn.disabled = factionSelect.value === '';
+        });
+    } else if (gameName == "fleet") {
+        const exportButton = document.getElementById('fleet-manager-export');
+        exportButton.disabled = false;
+    }
+
+    if (gameName == "strategy") {
+        window.strategyGameData = gameData;
+    } else if (gameName == "fleet") {
+        window.fleetGameData = gameData;
+    } else if (gameName == "move") {
+        window.moveGameData = gameData;
+    }
+}
+
 
 // Strategy Suggester - Generate Game from TTS String and Set Images
 function generateGame(gameName) {
@@ -47,60 +114,7 @@ function generateGame(gameName) {
             return response.json();
         })
         .then(data => {
-            const gameData = data.game;
-            const board = gameData.board;
-            const players = gameData.players;
-
-            const hexes = document.querySelectorAll('.hex-grid.' + gameName + ' .hex');
-            hexes.forEach(hex => {
-                const pos = hex.getAttribute('data-position');
-                const tile = board.find(t => t.designation === pos);
-                let tileId = '0';
-
-                if (tile && tile.system && tile.system.tile_id !== undefined) {
-                    tileId = tile.system.tile_id.toString();
-                }
-
-                // Special case: Mecatol Rex at 0-0
-                if (pos === "0-0" && !tile) {
-                    tileId = "18"; // Mecatol Rex system ID
-                }
-
-                hex.style.backgroundImage = `url('/static/images/systems/ST_${tileId}.png')`;
-                hex.style.backgroundSize = 'cover';
-                hex.style.backgroundPosition = 'center';
-                hex.style.backgroundRepeat = 'no-repeat';
-            });
-
-            // Update the faction dropdown
-            const factionSelect = document.getElementById('faction-select');
-            const getStrategyBtn = document.getElementById('get-strategy-btn');
-            factionSelect.innerHTML = '';
-            const defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.text = 'Select Faction';
-            defaultOption.selected = true;
-            factionSelect.appendChild(defaultOption);
-
-            // Populate dropdown with factions from game.players
-            if (players) {
-                players.forEach(player => {
-                    if (player.faction) {
-                        const option = document.createElement('option');
-                        option.value = player.faction;
-                        option.text = player.faction;
-                        factionSelect.appendChild(option);
-                    }
-                });
-            }
-            factionSelect.disabled = false;
-            getStrategyBtn.disabled = true;
-
-            factionSelect.addEventListener('change', () => {
-                getStrategyBtn.disabled = factionSelect.value === '';
-            });
-
-            window.strategyGameData = gameData;
+            setBoard(data.game, gameName);
         })
         .catch(error => {
             alert('Error generating game: ' + error.message);
@@ -128,4 +142,8 @@ function suggestStrategy() {
     .catch(error => {
         document.getElementById('strategy-response').textContent = 'Error: ' + error;
     });
+}
+
+function exportFleetManagerToMoveSuggester() {
+    setBoard(window.fleetGameData, "move")
 }
