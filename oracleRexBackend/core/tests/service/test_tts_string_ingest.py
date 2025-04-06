@@ -27,10 +27,10 @@ class TestCreateBoardFromIds(TestCase):
         # Test Players starting positions and factions
         player_list = list(result_game.players.all())
         self.assertEqual(6, len(player_list))
-        self.assertEqual("Test Player 1", player_list[0].username)
+        self.assertEqual("Test player 1", player_list[0].username)
         self.assertEqual("Sol System", player_list[0].starting_position.system.name)
         self.assertEqual("sol", player_list[0].faction.name)
-        self.assertEqual("Test Player 3", player_list[2].username)
+        self.assertEqual("Test player 3", player_list[2].username)
         self.assertEqual("Titans System", player_list[2].starting_position.system.name)
         self.assertEqual("ul", player_list[2].faction.name)
 

@@ -3,6 +3,7 @@ from django.db import models
 from .constants.anomalyConstants import AnomalyType
 from .constants.wormholeConstants import WormholeType
 from .planet import Planet
+from .units import Fleet
 
 
 class System(models.Model):
@@ -19,6 +20,7 @@ class System(models.Model):
         choices=WormholeType,
         default="none"
     )
+    fleet = models.ForeignKey(Fleet, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -29,6 +31,6 @@ class System(models.Model):
             "tile_id": self.tile_id, #todo: make a different set of to_json methods for passing to LLM
             "anomaly": self.anomaly,
             "wormhole": self.wormhole,
-            "planets": [planet.to_json() for planet in self.planets.all()]
-            # todo: units
+            "planets": [planet.to_json() for planet in self.planets.all()],
+            "fleet": self.fleet.to_json() if self.fleet else None,
         }

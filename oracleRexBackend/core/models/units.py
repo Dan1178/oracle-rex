@@ -2,8 +2,6 @@ from django.db import models
 
 from .constants.unitConstants import ShipClass, StructureClass, GroundUnitClass
 from .planet import Planet
-from .player import Player
-from .system import System
 
 
 class Ship(models.Model):
@@ -11,11 +9,23 @@ class Ship(models.Model):
         max_length=20,
         choices=ShipClass.choices
     )
-    owner = models.ForeignKey(Player, on_delete=models.CASCADE)
-    position = models.ForeignKey(System, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.ship_class
+
+
+class Fleet(models.Model):
+    owner = models.CharField(max_length=100)
+    ships = models.ManyToManyField(Ship, related_name="fleets")
+
+    def __str__(self):
+        return self.ships
+
+    def to_json(self):
+        return {
+            "owner": self.owner,
+            "ships": [ship.ship_class for ship in self.ships.all()]
+        }
 
 
 class Structure(models.Model):
@@ -23,7 +33,7 @@ class Structure(models.Model):
         max_length=20,
         choices=StructureClass.choices
     )
-    owner = models.ForeignKey(Player, on_delete=models.CASCADE)
+    owner = models.CharField(max_length=100)
     planet = models.ForeignKey(Planet, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
@@ -35,8 +45,7 @@ class GroundUnit(models.Model):
         max_length=20,
         choices=GroundUnitClass.choices
     )
-    owner = models.ForeignKey(Player, on_delete=models.CASCADE)
-    planet = models.ForeignKey(Planet, on_delete=models.SET_NULL, null=True)
+    owner = models.CharField(max_length=100)
     ship = models.ForeignKey(Ship, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
