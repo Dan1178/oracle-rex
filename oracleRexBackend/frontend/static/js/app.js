@@ -9,7 +9,6 @@ document.querySelectorAll('.tab-button').forEach(button => {
     });
 });
 
-// Rules Q&A
 function askRules() {
     const question = document.getElementById('rules-question').value;
     if (!question) return;
@@ -96,7 +95,6 @@ function setBoard(gameData, gameName) {
 }
 
 
-// Strategy Suggester - Generate Game from TTS String and Set Images
 function generateGame(gameName) {
     const ttsString = document.getElementById('tts-input-'+gameName).value.trim();
     if (!ttsString) {
@@ -121,26 +119,30 @@ function generateGame(gameName) {
         });
 }
 
-// Strategy Suggester
-function suggestStrategy() {
-    const faction = document.getElementById('faction-select').value;
-    const gameData = window.strategyGameData;
+function suggestStrategy(gameName) {
+    const faction = document.getElementById('faction-select ' + gameName).value;
+    let gameData;
+    if (gameName == "strategy") {
+        gameData = window.strategyGameData;
+    } else if (gameName == "move") {
+        gameData = window.moveGameData;
+    }
     if (!faction || !gameData) {
-        document.getElementById('strategy-response').textContent = 'Please generate a game and select a faction.';
+        document.getElementById(gameName + '-response').textContent = 'Please generate a game and select a faction.';
         return;
     }
 
-    fetch('/api/strategy-suggester/', {
+    fetch('/api/' + gameName + '-suggester/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ game_json: gameData, player_faction: faction })
     })
     .then(response => response.json())
     .then(data => {
-        document.getElementById('strategy-response').textContent = data.strategy || data.error;
+        document.getElementById(gameName + '-response').textContent = data.strategy || data.error;
     })
     .catch(error => {
-        document.getElementById('strategy-response').textContent = 'Error: ' + error;
+        document.getElementById(gameName + '-response').textContent = 'Error: ' + error;
     });
 }
 
