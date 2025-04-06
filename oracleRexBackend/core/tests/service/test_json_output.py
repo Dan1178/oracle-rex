@@ -1,6 +1,7 @@
 from django.test import TestCase
 
-from ...models import Game, Player, Tile, System, Faction, Planet, Fleet, Ship, ShipClass
+from ...models import (Game, Player, Tile, System, Faction, Planet, Fleet, Ship, ShipClass,
+                       Structure, StructureClass, GroundUnit, GroundUnitClass, GroundForces)
 
 
 class TestGameJsonOutput(TestCase):
@@ -83,7 +84,8 @@ class TestGameJsonOutput(TestCase):
                             "resources": 1,
                             "influence": 6,
                             "trait": "none",
-                            "tech_specialty": "none"
+                            "tech_specialty": "none",
+                            "ground_forces": None
                         }],
                         "fleet": None
                     },
@@ -101,7 +103,8 @@ class TestGameJsonOutput(TestCase):
                             "resources": 3,
                             "influence": 2,
                             "trait": "none",
-                            "tech_specialty": "none"
+                            "tech_specialty": "none",
+                            "ground_forces": None
                         }],
                         "fleet": None
                     },
@@ -156,6 +159,20 @@ class TestUnitJsonOutput(TestCase):
             starting_position=self.tile_1
         )
 
+        self.structures = [Structure.objects.create(struct_class=StructureClass.SPACE_DOCK),
+                           Structure.objects.create(struct_class=StructureClass.PDS)]
+        self.ground_units = [GroundUnit.objects.create(unit_class=GroundUnitClass.MECH),
+                             GroundUnit.objects.create(unit_class=GroundUnitClass.INFANTRY),
+                             GroundUnit.objects.create(unit_class=GroundUnitClass.INFANTRY),
+                             GroundUnit.objects.create(unit_class=GroundUnitClass.INFANTRY)]
+        self.test_ground_forces = GroundForces.objects.create(owner=self.player1.username)
+        self.test_ground_forces.structures.set(self.structures)
+        self.test_ground_forces.units.set(self.ground_units)
+
+        self.planet_mecatol = Planet.objects.get(name = "Mecatol Rex")
+        self.planet_mecatol.ground_forces = self.test_ground_forces
+        self.planet_mecatol.save()
+
         self.ships = [Ship.objects.create(ship_class=ShipClass.DESTROYER),
                       Ship.objects.create(ship_class=ShipClass.DESTROYER),
                       Ship.objects.create(ship_class=ShipClass.DREADNOUGHT),
@@ -173,13 +190,14 @@ class TestUnitJsonOutput(TestCase):
         system_json = self.mecatol_system.to_json()
         expected_json = {'name': 'Mecatol Rex System', 'tile_id': 18, 'anomaly': 'none', 'wormhole': 'none',
                          'planets': [{'name': 'Mecatol Rex', 'resources': 1, 'influence': 6, 'trait': 'none',
-                                      'tech_specialty': 'none'}],
+                                      'tech_specialty': 'none',
+                                      'ground_forces': {'owner': 'Player 1', 'structures': ['spaceDock', 'pds'],
+                                                       'units': ['mech', 'infantry', 'infantry', 'infantry']}}],
                          'fleet': {'owner': 'Player 1', 'ships': ['destroyer', 'destroyer', 'dreadnought', 'fighter']}}
         self.assertEqual(system_json, expected_json)
         self.assertEqual(len(system_json["fleet"]), 2)
         self.assertEqual(system_json["fleet"]["owner"], "Player 1")
         self.assertEqual(len(system_json["fleet"]["ships"]), 4)
-
 
 # class TestContestedSystemJsonOutput(TestCase):
 #     def setUp(self):

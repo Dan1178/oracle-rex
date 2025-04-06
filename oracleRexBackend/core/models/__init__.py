@@ -4,4 +4,4 @@ from .player import Player
 from .system import System
 from .tile import Tile
 from .game import Game
-from .units import Ship, Fleet, ShipClass, Structure, StructureClass, GroundUnit, GroundUnitClass
+from .units import Ship, Fleet, ShipClass, Structure, StructureClass, GroundUnit, GroundUnitClass, GroundForces
