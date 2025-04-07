@@ -24,8 +24,7 @@
     width: 100%;
 }
 
-.fleet-section{
-    margin-bottom: 20px;
+.fleet-section {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
@@ -51,7 +50,7 @@
 }
 
 .unit-icon {
-    width: 40px;
+    width: 33px;
     text-align: center;
     margin-right: 0px;
 }
@@ -61,7 +60,7 @@
     height: 24px;
     line-height: 24px;
     text-align: center;
-    margin: 0 10px;
+    margin: 0px;
     border: 1px solid #333;
     border-radius: 4px;
     display: inline-block;
@@ -134,5 +133,5 @@
 .unit-row {
     display: flex;
     align-items: center;
-    margin-right: 15px;
+    margin-right: 0px;
 }
