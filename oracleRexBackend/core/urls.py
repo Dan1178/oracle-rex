@@ -6,7 +6,7 @@ from .views import (
     FactionListView, FactionDetailView,
     PlayerListCreateView, PlayerDetailView,
     SystemListView, TileListView, reset_database_api, rules_chat_api, build_game_from_tts_api,
-    strategy_suggester_api, move_suggester_api,
+    strategy_suggester_api, move_suggester_api, tactical_calculator_api,
 
     # Front end
 
@@ -27,6 +27,7 @@ urlpatterns = [
     path('build-game-from-tts/', build_game_from_tts_api, name='build_game_from_tts'),
     path('strategy-suggester/', strategy_suggester_api, name='strategy_suggester'),
     path('move-suggester/', move_suggester_api, name='move_suggester'),
+    path('tactical-calculator/', tactical_calculator_api, name='tactical_calculator'),
 
     ### FRONTEND
     path('', frontend_view, name='frontend'),

@@ -16,6 +16,7 @@
         <button class="tab-button" data-tab="strategy">Strategy Suggester</button>
         <button class="tab-button" data-tab="fleet">Fleet Manager</button>
         <button class="tab-button" data-tab="move">Move Suggester</button>
+        <button class="tab-button" data-tab="tactical">Tactical Calculator</button>
     </div>
 
     <!-- Tab Content -->
@@ -202,6 +203,166 @@
                 </div>
             </div>
             <div id="move-response" class="response-box"></div>
+        </div>
+
+        <div id="tactical" class="tab-pane">
+            <h2>Tactical Calculator</h2>
+
+            <!-- Fleet Div -->
+            <div id="fleet-section">
+                <h3>Fleets</h3>
+                <!-- Friendly Fleet -->
+                <div class="fleet-section friendly">
+                    <h4>Friendly Fleet</h4>
+                    <div class="unit-row" data-unit="fighter">
+                        <span class="unit-icon"><img src="/static/images/ships/fighter_icon.png" class="ship-icon" alt="Fighter" ><span class="tooltiptext">Fighter</span></span>
+                        <button class="arrow up" data-unit="friendly-fighter">▲</button>
+                        <span class="unit-count" id="friendly-fighter-count">0</span>
+                        <button class="arrow down" data-unit="friendly-fighter">▼</button>
+                    </div>
+                    <div class="unit-row" data-unit="destroyer">
+                        <span class="unit-icon"><img src="/static/images/ships/destroyer_icon.png" class="ship-icon" alt="Destroyer"><span class="tooltiptext">Destroyer</span></span>
+                        <button class="arrow up" data-unit="friendly-destroyer">▲</button>
+                        <span class="unit-count" id="friendly-destroyer-count">0</span>
+                        <button class="arrow down" data-unit="friendly-destroyer">▼</button>
+                    </div>
+                    <div class="unit-row" data-unit="cruiser">
+                        <span class="unit-icon"><img src="/static/images/ships/cruiser_icon.png" class="ship-icon" alt="Cruiser"><span class="tooltiptext">Cruiser</span></span>
+                        <button class="arrow up" data-unit="friendly-cruiser">▲</button>
+                        <span class="unit-count" id="friendly-cruiser-count">0</span>
+                        <button class="arrow down" data-unit="friendly-cruiser">▼</button>
+                    </div>
+                    <div class="unit-row" data-unit="carrier">
+                        <span class="unit-icon"><img src="/static/images/ships/carrier_icon.png" class="ship-icon" alt="Carrier"><span class="tooltiptext">Carrier</span></span>
+                        <button class="arrow up" data-unit="friendly-carrier">▲</button>
+                        <span class="unit-count" id="friendly-carrier-count">0</span>
+                        <button class="arrow down" data-unit="friendly-carrier">▼</button>
+                    </div>
+                    <div class="unit-row" data-unit="dreadnought">
+                        <span class="unit-icon"><img src="/static/images/ships/dread_icon.png" class="ship-icon" alt="Dreadnought"><span class="tooltiptext">Dreadnought</span></span>
+                        <button class="arrow up" data-unit="friendly-dreadnought">▲</button>
+                        <span class="unit-count" id="friendly-dreadnought-count">0</span>
+                        <button class="arrow down" data-unit="friendly-dreadnought">▼</button>
+                    </div>
+                    <div class="unit-row" data-unit="war_sun">
+                        <span class="unit-icon"><img src="/static/images/ships/war_sun_icon.png" class="ship-icon" alt="War Sun"><span class="tooltiptext">War Sun</span></span>
+                        <button class="arrow up" data-unit="friendly-war_sun">▲</button>
+                        <span class="unit-count" id="friendly-war_sun-count">0</span>
+                        <button class="arrow down" data-unit="friendly-war_sun">▼</button>
+                    </div>
+                    <div class="unit-row" data-unit="flagship">
+                        <span class="unit-icon"><img src="/static/images/ships/flagship_icon.png" class="ship-icon" alt="Flagship"><span class="tooltiptext">Flagship</span></span>
+                        <button class="arrow up" data-unit="friendly-flagship">▲</button>
+                        <span class="unit-count" id="friendly-flagship-count">0</span>
+                        <button class="arrow down" data-unit="friendly-flagship">▼</button>
+                    </div>
+                </div>
+
+                <!-- Enemy Fleet -->
+                <div class="fleet-section enemy">
+                    <h4>Enemy Fleet</h4>
+                    <div class="unit-row" data-unit="fighter">
+                        <span class="unit-icon"><img src="/static/images/ships/fighter_icon.png" class="ship-icon" alt="Fighter" ><span class="tooltiptext">Fighter</span></span>
+                        <button class="arrow up" data-unit="enemy-fighter">▲</button>
+                        <span class="unit-count" id="enemy-fighter-count">0</span>
+                        <button class="arrow down" data-unit="enemy-fighter">▼</button>
+                    </div>
+                    <div class="unit-row" data-unit="destroyer">
+                        <span class="unit-icon"><img src="/static/images/ships/destroyer_icon.png" class="ship-icon" alt="Destroyer"><span class="tooltiptext">Destroyer</span></span>
+                        <button class="arrow up" data-unit="enemy-destroyer">▲</button>
+                        <span class="unit-count" id="enemy-destroyer-count">0</span>
+                        <button class="arrow down" data-unit="enemy-destroyer">▼</button>
+                    </div>
+                    <div class="unit-row" data-unit="cruiser">
+                        <span class="unit-icon"><img src="/static/images/ships/cruiser_icon.png" class="ship-icon" alt="Cruiser"><span class="tooltiptext">Cruiser</span></span>
+                        <button class="arrow up" data-unit="enemy-cruiser">▲</button>
+                        <span class="unit-count" id="enemy-cruiser-count">0</span>
+                        <button class="arrow down" data-unit="enemy-cruiser">▼</button>
+                    </div>
+                    <div class="unit-row" data-unit="carrier">
+                        <span class="unit-icon"><img src="/static/images/ships/carrier_icon.png" class="ship-icon" alt="Carrier"><span class="tooltiptext">Carrier</span></span>
+                        <button class="arrow up" data-unit="enemy-carrier">▲</button>
+                        <span class="unit-count" id="enemy-carrier-count">0</span>
+                        <button class="arrow down" data-unit="enemy-carrier">▼</button>
+                    </div>
+                    <div class="unit-row" data-unit="dreadnought">
+                        <span class="unit-icon"><img src="/static/images/ships/dread_icon.png" class="ship-icon" alt="Dreadnought"><span class="tooltiptext">Dreadnought</span></span>
+                        <button class="arrow up" data-unit="enemy-dreadnought">▲</button>
+                        <span class="unit-count" id="enemy-dreadnought-count">0</span>
+                        <button class="arrow down" data-unit="enemy-dreadnought">▼</button>
+                    </div>
+                    <div class="unit-row" data-unit="war_sun">
+                        <span class="unit-icon"><img src="/static/images/ships/war_sun_icon.png" class="ship-icon" alt="War Sun"><span class="tooltiptext">War Sun</span></span>
+                        <button class="arrow up" data-unit="enemy-war_sun">▲</button>
+                        <span class="unit-count" id="enemy-war_sun-count">0</span>
+                        <button class="arrow down" data-unit="enemy-war_sun">▼</button>
+                    </div>
+                    <div class="unit-row" data-unit="flagship">
+                        <span class="unit-icon"><img src="/static/images/ships/flagship_icon.png" class="ship-icon" alt="Flagship"><span class="tooltiptext">Flagship</span></span>
+                        <button class="arrow up" data-unit="enemy-flagship">▲</button>
+                        <span class="unit-count" id="enemy-flagship-count">0</span>
+                        <button class="arrow down" data-unit="enemy-flagship">▼</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ground Forces Div -->
+            <div id="ground-forces-section">
+                <h3>Ground Forces</h3>
+                <!-- Friendly Ground Forces -->
+                <div class="ground-section friendly">
+                    <h4>Friendly Ground Forces</h4>
+                    <div class="unit-row" data-unit="infantry">
+                        <span class="unit-icon"><img src="/static/images/ground/infantry_icon.png" class="ship-icon" alt="Infantry" ><span class="tooltiptext">Infantry</span></span>
+                        <button class="arrow up" data-unit="friendly-infantry">▲</button>
+                        <span class="unit-count" id="friendly-infantry-count">0</span>
+                        <button class="arrow down" data-unit="friendly-infantry">▼</button>
+                    </div>
+                    <div class="unit-row" data-unit="mech">
+                        <span class="unit-icon"><img src="/static/images/ground/mech_icon.png" class="ship-icon" alt="Mech" ><span class="tooltiptext">Mech</span></span>
+                        <button class="arrow up" data-unit="friendly-mech">▲</button>
+                        <span class="unit-count" id="friendly-mech-count">0</span>
+                        <button class="arrow down" data-unit="friendly-mech">▼</button>
+                    </div>
+                </div>
+
+                <!-- Enemy Ground Forces and Structures -->
+                <div class="ground-section enemy">
+                    <h4>Enemy Ground Forces and Structures</h4>
+                    <div class="unit-row" data-unit="infantry">
+                        <span class="unit-icon"><img src="/static/images/ground/infantry_icon.png" class="ship-icon" alt="Infantry" ><span class="tooltiptext">Infantry</span></span>
+                        <button class="arrow up" data-unit="enemy-infantry">▲</button>
+                        <span class="unit-count" id="enemy-infantry-count">0</span>
+                        <button class="arrow down" data-unit="enemy-infantry">▼</button>
+                    </div>
+                    <div class="unit-row" data-unit="mech">
+                        <span class="unit-icon"><img src="/static/images/ground/mech_icon.png" class="ship-icon" alt="Mech" ><span class="tooltiptext">Mech</span></span>
+                        <button class="arrow up" data-unit="enemy-mech">▲</button>
+                        <span class="unit-count" id="enemy-mech-count">0</span>
+                        <button class="arrow down" data-unit="enemy-mech">▼</button>
+                    </div>
+                    <div class="unit-row" data-unit="pds">
+                        <span class="unit-icon"><img src="/static/images/structures/pds_icon.png" class="ship-icon" alt="PDS" ><span class="tooltiptext">PDS</span></span>
+                        <button class="arrow up" data-unit="enemy-pds">▲</button>
+                        <span class="unit-count" id="enemy-pds-count">0</span>
+                        <button class="arrow down" data-unit="enemy-pds">▼</button>
+                    </div>
+                    <div class="unit-row" data-unit="space_dock">
+                        <span class="unit-icon"><img src="/static/images/structures/space_dock_icon.png" class="ship-icon" alt="Space Dock" ><span class="tooltiptext">Space Dock</span></span>
+                        <button class="arrow up" data-unit="enemy-space_dock">▲</button>
+                        <span class="unit-count" id="enemy-space_dock-count">0</span>
+                        <button class="arrow down" data-unit="enemy-space_dock">▼</button>
+                    </div>
+                </div>
+            </div>
+
+            <button id="tactical-calculate" onclick="tacticalCalculator()">Calculate</button>
+
+            <div id="tactical-calculation-results">
+                <p>Odds of Victory: [To be calculated]</p>
+            </div>
+            <link rel="stylesheet" href="static/css/tactical_calculator.css">
+            <script src="static/js/tactical_calculator.js"></script>
         </div>
     </div>
 </div>

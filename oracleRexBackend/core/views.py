@@ -9,10 +9,9 @@ from rest_framework import generics
 from .models import Faction, Player, System, Tile
 from .serializers import FactionSerializer, PlayerSerializer, SystemSerializer, TileSerializer
 from .service.ai.rules_chatbot import get_rule_answer
-from .service.ai.rules_test import test_rule_chatbot
 from .service.ai.strategy_suggester import get_strategy_suggestion
 from .service.ai.move_suggester import get_move_suggestion
-from .service.json_output import output_game_as_json
+from .service.ai.tactical_calculator import tactical_calculator
 from .service.tts_string_ingest import build_game_from_string
 from .util.utils import reset_database
 
@@ -151,33 +150,26 @@ def strategy_suggester_api(request):
 def move_suggester_api(request):
     return ai_suggest(request, 'move')
 
+@csrf_exempt
+def tactical_calculator_api(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            force_data = data.get('force_data', {})
+            system_prompt = data.get('system_prompt', None)
 
-# todo remove or rename when testing complete
-@require_GET
-def test_api(request):
-    try:
-        build_game_from_string(
-            "78 40 42 67 28 38 76 43 21 44 77 63 50 64 74 48 49 39 1 71 35 16 27 36 55 31 20 58 69 45 4 23 22 57 34 25",
-            "Test")
-        return JsonResponse({"message": "Test board created successfully."}, status=200)
-    except Exception as e:
-        return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
+            if not force_data:
+                return JsonResponse({'error': 'Missing force data'}, status=400)
 
+            calc_results = tactical_calculator(force_data, system_prompt)
 
-@require_GET
-def test_json_api(request):
-    try:
-        json = output_game_as_json("Test")
-        return JsonResponse(json, status=200)
-    except Exception as e:
-        return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
+            return JsonResponse({
+                'calc_results': calc_results
+            })
 
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': f'Unexpected error: {str(e)}'}, status=500)
 
-@require_GET
-def test_rule_chatbot_api(request):
-    try:
-        rule_answer = test_rule_chatbot()
-        return JsonResponse(rule_answer, status=200)
-    except Exception as e:
-        return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
-
+    return JsonResponse({'error': 'Method not allowed, use POST'}, status=405)

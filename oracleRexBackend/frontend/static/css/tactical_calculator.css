@@ -1,0 +1,93 @@
+#battle-calculator-tab {
+    padding: 20px;
+}
+
+#fleet-section, #ground-forces-section {
+    margin-bottom: 30px;
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.fleet-section, .ground-section {
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.fleet-section h4, .ground-section h4 {
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.unit-row {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.unit-icon {
+    width: 40px;
+    text-align: center;
+    margin-right: 0px;
+}
+
+.unit-count {
+    width: 30px;
+    text-align: center;
+    margin: 0 0px;
+}
+
+.arrow {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    cursor: pointer;
+    padding: 2px 6px;
+    font-size: 12px;
+}
+
+.arrow:hover {
+    background-color: #e0e0e0;
+}
+
+#battle-results {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Tooltip text */
+.unit-icon .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+}
+
+.unit-icon:hover .tooltiptext {
+  visibility: visible;
+}
+
+.unit-icon img {
+    width: 30px;
+    height: 30px;
+    display: block;
+}
+
+/* Tint Friendly icons blue */
+.friendly .unit-icon .ship-icon {
+    filter: invert(16%) sepia(26%) saturate(7375%) hue-rotate(232deg) brightness(81%) contrast(145%);
+}
+
+/* Tint Enemy icons red */
+.enemy .unit-icon .ship-icon {
+    filter: invert(22%) sepia(98%) saturate(6867%) hue-rotate(357deg) brightness(97%) contrast(118%);
+}
