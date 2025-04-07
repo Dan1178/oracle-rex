@@ -1,0 +1,56 @@
+{% load static %}
+<div id="move" class="tab-pane">
+    <h2>Move Suggester</h2>
+    <select id="faction-select move" disabled>
+        <option value="" selected>Create a board state in the Fleet Manager</option>
+    </select>
+    <button id="get-strategy-btn move" onclick="suggestStrategy('move')" disabled>Suggest Move</button>
+    <div id="board-preview move" class="board-preview">
+        <div class="grid-wrapper">
+            <div class="hex-grid move">
+                <!-- 37 empty hexes -->
+                <div class="hex mecatol" data-position="0-0"></div>
+                <!-- Inner Ring (6 tiles) -->
+                <div class="hex inner" data-position="1-4"></div>
+                <div class="hex inner" data-position="2-4"></div>
+                <div class="hex inner" data-position="3-4"></div>
+                <div class="hex inner" data-position="4-4"></div>
+                <div class="hex inner" data-position="5-4"></div>
+                <div class="hex inner" data-position="6-4"></div>
+                <!-- Middle Ring (12 tiles) -->
+                <div class="hex middle" data-position="1-1"></div>
+                <div class="hex middle" data-position="1-3"></div>
+                <div class="hex middle" data-position="2-1"></div>
+                <div class="hex middle" data-position="2-3"></div>
+                <div class="hex middle" data-position="3-1"></div>
+                <div class="hex middle" data-position="3-3"></div>
+                <div class="hex middle" data-position="4-1"></div>
+                <div class="hex middle" data-position="4-3"></div>
+                <div class="hex middle" data-position="5-1"></div>
+                <div class="hex middle" data-position="5-3"></div>
+                <div class="hex middle" data-position="6-1"></div>
+                <div class="hex middle" data-position="6-3"></div>
+                <!-- Outer Ring (18 tiles) -->
+                <div class="hex" data-position="1"></div>
+                <div class="hex" data-position="1-0"></div>
+                <div class="hex" data-position="2-2"></div>
+                <div class="hex" data-position="2"></div>
+                <div class="hex" data-position="2-0"></div>
+                <div class="hex" data-position="3-2"></div>
+                <div class="hex" data-position="3"></div>
+                <div class="hex" data-position="3-0"></div>
+                <div class="hex" data-position="4-2"></div>
+                <div class="hex" data-position="4"></div>
+                <div class="hex" data-position="4-0"></div>
+                <div class="hex" data-position="5-2"></div>
+                <div class="hex" data-position="5"></div>
+                <div class="hex" data-position="5-0"></div>
+                <div class="hex" data-position="6-2"></div>
+                <div class="hex" data-position="6"></div>
+                <div class="hex" data-position="6-0"></div>
+                <div class="hex" data-position="1-2"></div>
+            </div>
+        </div>
+    </div>
+    <div id="move-response" class="response-box"></div>
+</div>

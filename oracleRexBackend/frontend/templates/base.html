@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oracle Rex</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>Oracle Rex - Twilight Imperium Companion</h1>
+
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+        <button class="tab-button active" data-tab="rules">Rules Q&A</button>
+        <button class="tab-button" data-tab="strategy">Strategy Suggester</button>
+        <button class="tab-button" data-tab="fleet">Fleet Manager</button>
+        <button class="tab-button" data-tab="move">Move Suggester</button>
+        <button class="tab-button" data-tab="tactical">Tactical Calculator</button>
+    </div>
+
+    {% block tab_content %}
+    {% endblock %}
+
+</div>
+<script src="/static/js/app.js"></script>
+</body>
+</html>
