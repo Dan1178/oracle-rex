@@ -2,18 +2,41 @@
     padding: 20px;
 }
 
-#fleet-section, #ground-forces-section {
+#fleet-section {
     margin-bottom: 30px;
     border: 1px solid #ccc;
     padding: 15px;
     border-radius: 5px;
 }
 
-.fleet-section, .ground-section {
+#ground-forces-section {
+    margin-bottom: 30px;
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+#ground-forces-section h3 {
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.fleet-section{
     margin-bottom: 20px;
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
+}
+
+.ground-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    flex: 1;
+    min-width: 300px;
 }
 
 .fleet-section h4, .ground-section h4 {
