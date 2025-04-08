@@ -19,16 +19,14 @@ function updateUnitCount(unit, isUp, activeSystem) {
         activeSystem.fleet = fleetData;
     }
 
-    let ships = fleetData.ships || [];
-    let shipEntry = ships.find(ship => ship.type === unit);
-    if (!shipEntry) {
-        shipEntry = { type: unit, count: 0 };
-        ships.push(shipEntry);
-    }
+    let ships = fleetData.ships
+    let currentCount = ships[unit] || 0;
+    let newCount = isUp ? currentCount + 1 : Math.max(0, currentCount - 1);
 
-    shipEntry.count = isUp ? (shipEntry.count || 0) + 1 : Math.max(0, (shipEntry.count || 0) - 1);
-    if (shipEntry.count === 0) {
-        ships = ships.filter(ship => ship.type !== unit);
+    if (newCount === 0) {
+        delete ships[unit];
+    } else {
+        ships[unit] = newCount;
     }
 
     fleetData.ships = ships;
@@ -43,13 +41,13 @@ function loadFleetData(activeSystem) {
     });
     if (!fleetData) return;
 
-    const ships = fleetData.ships || [];
-    ships.forEach(ship => {
-        const countElement = document.getElementById(`fleet-${ship.type}-count`);
+    const ships = fleetData.ships || {};
+    for (const [shipType, count] of Object.entries(ships)) {
+        const countElement = document.getElementById(`fleet-${shipType}-count`);
         if (countElement) {
-            countElement.textContent = ship.count || 0;
+            countElement.textContent = count || 0;
         }
-    });
+    }
 }
 
 function initializeFleetManager() {
