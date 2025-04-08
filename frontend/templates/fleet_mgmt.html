@@ -1,0 +1,74 @@
+<div id="fleet-management-window" class="fleet-management-window" style="display: none;">
+    <span class="fleet-mgmt-header">Fleet Management</span>
+
+    <div id="fleet-section">
+        <h3>Fleet</h3>
+        <div class="fleet-section">
+            <div class="unit-row" data-unit="fighter">
+                <span class="unit-icon"><img src="/static/images/ships/fighter_icon.png" class="ship-icon"
+                                             alt="Fighter"><span class="tooltiptext">Fighter</span></span>
+                <div class="arrow-container">
+                    <button class="arrow up" data-unit="fighter">▲</button>
+                    <button class="arrow down" data-unit="fighter">▼</button>
+                </div>
+                <span class="unit-count" id="fighter-count">0</span>
+            </div>
+            <div class="unit-row" data-unit="destroyer">
+                <span class="unit-icon"><img src="/static/images/ships/destroyer_icon.png" class="ship-icon"
+                                             alt="Destroyer"><span class="tooltiptext">Destroyer</span></span>
+                <div class="arrow-container">
+                    <button class="arrow up" data-unit="destroyer">▲</button>
+                    <button class="arrow down" data-unit="destroyer">▼</button>
+                </div>
+                <span class="unit-count" id="destroyer-count">0</span>
+            </div>
+            <div class="unit-row" data-unit="cruiser">
+                <span class="unit-icon"><img src="/static/images/ships/cruiser_icon.png" class="ship-icon"
+                                             alt="Cruiser"><span class="tooltiptext">Cruiser</span></span>
+                <div class="arrow-container">
+                    <button class="arrow up" data-unit="cruiser">▲</button>
+                    <button class="arrow down" data-unit="cruiser">▼</button>
+                </div>
+                <span class="unit-count" id="cruiser-count">0</span>
+            </div>
+            <div class="unit-row" data-unit="carrier">
+                <span class="unit-icon"><img src="/static/images/ships/carrier_icon.png" class="ship-icon"
+                                             alt="Carrier"><span class="tooltiptext">Carrier</span></span>
+                <div class="arrow-container">
+                    <button class="arrow up" data-unit="carrier">▲</button>
+                    <button class="arrow down" data-unit="carrier">▼</button>
+                </div>
+                <span class="unit-count" id="carrier-count">0</span>
+            </div>
+            <div class="unit-row" data-unit="dreadnought">
+                <span class="unit-icon"><img src="/static/images/ships/dread_icon.png" class="ship-icon"
+                                             alt="Dreadnought"><span class="tooltiptext">Dreadnought</span></span>
+                <div class="arrow-container">
+                    <button class="arrow up" data-unit="dreadnought">▲</button>
+                    <button class="arrow down" data-unit="dreadnought">▼</button>
+                </div>
+                <span class="unit-count" id="dreadnought-count">0</span>
+            </div>
+            <div class="unit-row" data-unit="war_sun">
+                <span class="unit-icon"><img src="/static/images/ships/war_sun_icon.png" class="ship-icon"
+                                             alt="War Sun"><span class="tooltiptext">War Sun</span></span>
+                <div class="arrow-container">
+                    <button class="arrow up" data-unit="war_sun">▲</button>
+                    <button class="arrow down" data-unit="war_sun">▼</button>
+                </div>
+                <span class="unit-count" id="war_sun-count">0</span>
+            </div>
+            <div class="unit-row" data-unit="flagship">
+                <span class="unit-icon"><img src="/static/images/ships/flagship_icon.png" class="ship-icon"
+                                             alt="Flagship"><span class="tooltiptext">Flagship</span></span>
+                <div class="arrow-container">
+                    <button class="arrow up" data-unit="flagship">▲</button>
+                    <button class="arrow down" data-unit="flagship">▼</button>
+                </div>
+                <span class="unit-count" id="flagship-count">0</span>
+            </div>
+        </div>
+    </div>
+
+    <button id="fleet-management-window-close" onclick="closeFleetManagerWindow()">Close</button>
+</div>
