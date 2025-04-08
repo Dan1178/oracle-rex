@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import JSONField
 
 from .constants.unitConstants import ShipClass, StructureClass, GroundUnitClass
 
@@ -15,15 +16,19 @@ class Ship(models.Model):
 
 class Fleet(models.Model):
     owner = models.CharField(max_length=100)
-    ships = models.ManyToManyField(Ship, related_name="fleets")
+    ships = JSONField(
+        default=dict,
+        help_text="Stores ship counts as a dictionary, e.g., {'fighter': 0, 'destroyer': 3, ...}"
+    )
 
     def __str__(self):
         return self.ships
 
     def to_json(self):
+
         return {
             "owner": self.owner,
-            "ships": [ship.ship_class for ship in self.ships.all()]
+            "ships": self.ships
         }
 
 

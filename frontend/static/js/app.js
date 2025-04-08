@@ -129,5 +129,7 @@ function suggestStrategy(gameName) {
 }
 
 function exportFleetManagerToMoveSuggester() {
-    setBoard(window.fleetGameData, "move")
+    let moveGameData = window.fleetGameData;
+    moveGameData.name = 'move'
+    setBoard(moveGameData, "move")
 }

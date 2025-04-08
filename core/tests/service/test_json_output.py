@@ -173,13 +173,10 @@ class TestUnitJsonOutput(TestCase):
         self.planet_mecatol.ground_forces = self.test_ground_forces
         self.planet_mecatol.save()
 
-        self.ships = [Ship.objects.create(ship_class=ShipClass.DESTROYER),
-                      Ship.objects.create(ship_class=ShipClass.DESTROYER),
-                      Ship.objects.create(ship_class=ShipClass.DREADNOUGHT),
-                      Ship.objects.create(ship_class=ShipClass.FIGHTER)]
+        self.ships = {'destroyer': 3, 'dreadnought': 1, 'fighter': 1}
 
         self.test_fleet = Fleet.objects.create(owner=self.player1.username)
-        self.test_fleet.ships.set(self.ships)
+        self.test_fleet.ships = self.ships
         self.mecatol_system.fleet = self.test_fleet
 
         self.game = Game.objects.create(name="Test Game")
@@ -193,8 +190,8 @@ class TestUnitJsonOutput(TestCase):
                                       'tech_specialty': 'none',
                                       'ground_forces': {'owner': 'Player 1', 'structures': ['spaceDock', 'pds'],
                                                         'units': ['mech', 'infantry', 'infantry', 'infantry']}}],
-                         'fleet': {'owner': 'Player 1', 'ships': ['destroyer', 'destroyer', 'dreadnought', 'fighter']}}
+                         'fleet': {'owner': 'Player 1', 'ships': {'destroyer': 3, 'dreadnought': 1, 'fighter': 1}}}
         self.assertEqual(system_json, expected_json)
         self.assertEqual(len(system_json["fleet"]), 2)
         self.assertEqual(system_json["fleet"]["owner"], "Player 1")
-        self.assertEqual(len(system_json["fleet"]["ships"]), 4)
+        self.assertEqual(len(system_json["fleet"]["ships"]), 3)
