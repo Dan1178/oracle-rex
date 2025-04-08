@@ -15,7 +15,7 @@ function updateUnitCount(unit, isUp, activeSystem) {
     if (!fleetData) {
         const ownerSelect = document.getElementById('fleet-management-fleet-owner');
         fleetData = {
-            ships: [],
+            ships: {},
             owner: ownerSelect.value
         };
         activeSystem.fleet = fleetData;
@@ -106,7 +106,7 @@ function initializeFleetManager() {
         let fleetData = activeSystem.fleet;
         if (!fleetData) {
             fleetData = {
-                ships: [],
+                ships: {},
                 owner: ''
             };
             activeSystem.fleet = fleetData;
