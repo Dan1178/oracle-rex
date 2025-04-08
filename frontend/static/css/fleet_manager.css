@@ -31,3 +31,27 @@
   bottom: 10px;
   position: absolute;
 }
+
+.fleet-management-window .player-select {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.fleet-management-window .player-select label {
+    font-weight: bold;
+}
+
+.fleet-management-window .player-select select {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.fleet-management-window .player-select select:focus {
+    outline: none;
+    border-color: #666;
+}

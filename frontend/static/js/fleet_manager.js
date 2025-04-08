@@ -13,8 +13,10 @@ function updateUnitCount(unit, isUp, activeSystem) {
 
     let fleetData = activeSystem.fleet;
     if (!fleetData) {
+        const ownerSelect = document.getElementById('fleet-management-fleet-owner');
         fleetData = {
-            ships: []
+            ships: [],
+            owner: ownerSelect.value
         };
         activeSystem.fleet = fleetData;
     }
@@ -36,6 +38,8 @@ function updateUnitCount(unit, isUp, activeSystem) {
 function loadFleetData(activeSystem) {
     const fleetData = activeSystem.fleet;
     const shipTypes = ['fighter', 'destroyer', 'cruiser', 'carrier', 'dreadnought', 'war_sun', 'flagship'];
+    const ownerSelect = document.getElementById('fleet-management-fleet-owner');
+    ownerSelect.value = "Player 1";
     shipTypes.forEach(unit => {
         document.getElementById(`fleet-${unit}-count`).textContent = '0';
     });
@@ -48,11 +52,15 @@ function loadFleetData(activeSystem) {
             countElement.textContent = count || 0;
         }
     }
+
+
+    ownerSelect.value = fleetData.owner || "Player 1";
 }
 
 function initializeFleetManager() {
     const fleetBoard = document.getElementById('board-preview fleet');
     const fleetManagementWindow = document.getElementById('fleet-management-window');
+    const fleetOwnerSelect = document.getElementById('fleet-management-fleet-owner');
 
     fleetBoard.addEventListener('click', (event) => {
         const hexTile = event.target.closest('.hex');
@@ -88,6 +96,23 @@ function initializeFleetManager() {
             const newCount = isUp ? currentCount + 1 : Math.max(0, currentCount - 1);
             countElement.textContent = newCount;
         });
+    });
+
+    fleetOwnerSelect.addEventListener('change', () => {
+        if (!activeDesignation) return;
+
+        const activeHex = fleetBoard.querySelector('.hex.active').getAttribute('data-position');
+        const activeSystem = window.fleetGameData.board.find(system => system['designation'] === activeHex).system
+        let fleetData = activeSystem.fleet;
+        if (!fleetData) {
+            fleetData = {
+                ships: [],
+                owner: ''
+            };
+            activeSystem.fleet = fleetData;
+        }
+        fleetData.owner = fleetOwnerSelect.value;
+        activeSystem.fleet = fleetData;
     });
 }
 
