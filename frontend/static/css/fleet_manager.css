@@ -15,7 +15,19 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     padding: 15px;
     width: 500px;
-    height: 300px;
+    min-height: 300px;
+    max-height: 500px; /*determine necessary value once testing complete*/
     z-index: 3000;
     font-size: 14px;
+}
+
+.fleet-management-window .fleet-mgmt-header {
+    text-align: center;
+    font-size: 24px;
+    display: block;
+}
+
+.fleet-management-window #fleet-management-window-close {
+  bottom: 10px;
+  position: absolute;
 }
