@@ -1,0 +1,21 @@
+.hex-grid .hex.active {
+    transform:scale(1.5);
+    z-index: 2000;
+}
+
+.hex-grid .hex:not(.active):hover {
+    transform:scale(1.5);
+    z-index: 1000;
+}
+
+.hex-grid .fleet-management-window {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    width: 500px;
+    height: 300px;
+    z-index: 3000;
+    font-size: 14px;
+}

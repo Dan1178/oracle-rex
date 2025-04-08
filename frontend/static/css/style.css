@@ -155,7 +155,7 @@ button:disabled {
 
 .hex:hover {
     transform:scale(1.5);
-    z-index: 9999 !important;
+    z-index: 1000 !important;
  }
 
 .hex.mecatol {
