@@ -21,7 +21,8 @@ const unitCounts = {
     "enemy-space_dock": 0
 };
 
-document.querySelectorAll('.arrow').forEach(button => {
+const tacticalCalculatorTab = document.getElementById('tactical');
+tacticalCalculatorTab.querySelectorAll('.arrow').forEach(button => {
     button.addEventListener('click', () => {
         const unit = button.getAttribute('data-unit');
         const isUp = button.classList.contains('up');
