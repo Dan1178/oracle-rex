@@ -4,16 +4,16 @@
     <div id="fleet-section">
         <h3>Fleet</h3>
         <div class="player-select">
-                <label for="fleet-management-fleet-owner">Owner:</label>
-                <select id="fleet-management-fleet-owner">
-                    <option value="Player 1" selected>Player 1</option>
-                    <option value="Player 2">Player 2</option>
-                    <option value="Player 3">Player 3</option>
-                    <option value="Player 4">Player 4</option>
-                    <option value="Player 5">Player 5</option>
-                    <option value="Player 6">Player 6</option>
-                </select>
-            </div>
+            <label for="fleet-management-fleet-owner">Owner:</label>
+            <select id="fleet-management-fleet-owner">
+                <option value="Player 1" selected>Player 1</option>
+                <option value="Player 2">Player 2</option>
+                <option value="Player 3">Player 3</option>
+                <option value="Player 4">Player 4</option>
+                <option value="Player 5">Player 5</option>
+                <option value="Player 6">Player 6</option>
+            </select>
+        </div>
         <div class="fleet-section">
             <div class="unit-row" data-unit="fighter">
                 <span class="unit-icon"><img src="/static/images/ships/fighter_icon.png" class="ship-icon"
@@ -84,48 +84,171 @@
     <div id="planets-section">
         <h3>Planets</h3>
         <div id="fleet-mgmt-planet-one" class="planet-row active">
-            <h2>PlanetOne</h2>
-            <div class="player-select">
-                <label for="fleet-mgmt-planet-one-owner">Owner:</label>
-                <select id="fleet-mgmt-planet-one-owner" class="planet-owner-selector" data-planet-index="0">
-                    <option value="None" selected>None</option>
-                    <option value="Player 1">Player 1</option>
-                    <option value="Player 2">Player 2</option>
-                    <option value="Player 3">Player 3</option>
-                    <option value="Player 4">Player 4</option>
-                    <option value="Player 5">Player 5</option>
-                    <option value="Player 6">Player 6</option>
-                </select>
+            <div class="planet-name-owner">
+                <h2>PlanetOne</h2>
+                <div class="player-select">
+                    <label for="fleet-mgmt-planet-one-owner">Owner:</label>
+                    <select id="fleet-mgmt-planet-one-owner" class="planet-owner-selector" data-planet-index="0">
+                        <option value="None" selected>None</option>
+                        <option value="Player 1">Player 1</option>
+                        <option value="Player 2">Player 2</option>
+                        <option value="Player 3">Player 3</option>
+                        <option value="Player 4">Player 4</option>
+                        <option value="Player 5">Player 5</option>
+                        <option value="Player 6">Player 6</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="ground-section">
+                <div class="unit-row" data-unit="infantry">
+                <span class="unit-icon"><img src="/static/images/ground/infantry_icon.png" class="ship-icon"
+                                             alt="Infantry"><span class="tooltiptext">Infantry</span></span>
+                    <div class="arrow-container" data-planet-index="0">
+                        <button class="arrow up" data-unit="infantry">▲</button>
+                        <button class="arrow down" data-unit="infantry">▼</button>
+                    </div>
+                    <span class="unit-count" id="fleet-mgmt-planet-one-infantry-count">0</span>
+                </div>
+                <div class="unit-row" data-unit="mech">
+                <span class="unit-icon"><img src="/static/images/ground/mech_icon.png" class="ship-icon"
+                                             alt="Mech"><span class="tooltiptext">Mech</span></span>
+                    <div class="arrow-container" data-planet-index="0">
+                        <button class="arrow up" data-unit="mech">▲</button>
+                        <button class="arrow down" data-unit="mech">▼</button>
+                    </div>
+                    <span class="unit-count" id="fleet-mgmt-planet-one-mech-count">0</span>
+                </div>
+                <div class="unit-row" data-unit="pds">
+                <span class="unit-icon"><img src="/static/images/structures/pds_icon.png" class="ship-icon"
+                                             alt="PDS"><span class="tooltiptext">PDS</span></span>
+                    <div class="arrow-container" data-planet-index="0">
+                        <button class="arrow up" data-unit="pds">▲</button>
+                        <button class="arrow down" data-unit="pds">▼</button>
+                    </div>
+                    <span class="unit-count" id="fleet-mgmt-planet-one-pds-count">0</span>
+                </div>
+                <div class="unit-row" data-unit="space_dock">
+                <span class="unit-icon"><img src="/static/images/structures/space_dock_icon.png" class="ship-icon"
+                                             alt="Space Dock"><span class="tooltiptext">Space Dock</span></span>
+                    <div class="arrow-container" data-planet-index="0">
+                        <button class="arrow up" data-unit="space_dock">▲</button>
+                        <button class="arrow down" data-unit="space_dock">▼</button>
+                    </div>
+                    <span class="unit-count" id="fleet-mgmt-planet-one-space_dock-count">0</span>
+                </div>
             </div>
         </div>
         <div id="fleet-mgmt-planet-two" class="planet-row">
-            <h2>PlanetTwo</h2>
-            <div class="player-select">
-                <label for="fleet-mgmt-planet-two-owner">Owner:</label>
-                <select id="fleet-mgmt-planet-two-owner" class="planet-owner-selector" data-planet-index="1">
-                    <option value="None" selected>None</option>
-                    <option value="Player 1">Player 1</option>
-                    <option value="Player 2">Player 2</option>
-                    <option value="Player 3">Player 3</option>
-                    <option value="Player 4">Player 4</option>
-                    <option value="Player 5">Player 5</option>
-                    <option value="Player 6">Player 6</option>
-                </select>
+            <div class="planet-name-owner">
+                <h2>PlanetTwo</h2>
+                <div class="player-select">
+                    <label for="fleet-mgmt-planet-two-owner">Owner:</label>
+                    <select id="fleet-mgmt-planet-two-owner" class="planet-owner-selector" data-planet-index="1">
+                        <option value="None" selected>None</option>
+                        <option value="Player 1">Player 1</option>
+                        <option value="Player 2">Player 2</option>
+                        <option value="Player 3">Player 3</option>
+                        <option value="Player 4">Player 4</option>
+                        <option value="Player 5">Player 5</option>
+                        <option value="Player 6">Player 6</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="ground-section">
+                <div class="unit-row" data-unit="infantry">
+                <span class="unit-icon"><img src="/static/images/ground/infantry_icon.png" class="ship-icon"
+                                             alt="Infantry"><span class="tooltiptext">Infantry</span></span>
+                    <div class="arrow-container" data-planet-index="1">
+                        <button class="arrow up" data-unit="infantry">▲</button>
+                        <button class="arrow down" data-unit="infantry">▼</button>
+                    </div>
+                    <span class="unit-count" id="fleet-mgmt-planet-two-infantry-count">0</span>
+                </div>
+                <div class="unit-row" data-unit="mech">
+                <span class="unit-icon"><img src="/static/images/ground/mech_icon.png" class="ship-icon"
+                                             alt="Mech"><span class="tooltiptext">Mech</span></span>
+                    <div class="arrow-container" data-planet-index="1">
+                        <button class="arrow up" data-unit="mech">▲</button>
+                        <button class="arrow down" data-unit="mech">▼</button>
+                    </div>
+                    <span class="unit-count" id="fleet-mgmt-planet-two-mech-count">0</span>
+                </div>
+                <div class="unit-row" data-unit="pds">
+                <span class="unit-icon"><img src="/static/images/structures/pds_icon.png" class="ship-icon"
+                                             alt="PDS"><span class="tooltiptext">PDS</span></span>
+                    <div class="arrow-container" data-planet-index="1">
+                        <button class="arrow up" data-unit="pds">▲</button>
+                        <button class="arrow down" data-unit="pds">▼</button>
+                    </div>
+                    <span class="unit-count" id="fleet-mgmt-planet-two-pds-count">0</span>
+                </div>
+                <div class="unit-row" data-unit="space_dock">
+                <span class="unit-icon"><img src="/static/images/structures/space_dock_icon.png" class="ship-icon"
+                                             alt="Space Dock"><span class="tooltiptext">Space Dock</span></span>
+                    <div class="arrow-container" data-planet-index="1">
+                        <button class="arrow up" data-unit="space_dock">▲</button>
+                        <button class="arrow down" data-unit="space_dock">▼</button>
+                    </div>
+                    <span class="unit-count" id="fleet-mgmt-planet-two-space_dock-count">0</span>
+                </div>
             </div>
         </div>
         <div id="fleet-mgmt-planet-three" class="planet-row">
-            <h2>PlanetThree</h2>
-            <div class="player-select">
-                <label for="fleet-mgmt-planet-three-owner">Owner:</label>
-                <select id="fleet-mgmt-planet-three-owner" class="planet-owner-selector" data-planet-index="2">
-                    <option value="None" selected>None</option>
-                    <option value="Player 1">Player 1</option>
-                    <option value="Player 2">Player 2</option>
-                    <option value="Player 3">Player 3</option>
-                    <option value="Player 4">Player 4</option>
-                    <option value="Player 5">Player 5</option>
-                    <option value="Player 6">Player 6</option>
-                </select>
+            <div class="planet-name-owner">
+                <h2>PlanetThree</h2>
+                <div class="player-select">
+                    <label for="fleet-mgmt-planet-three-owner">Owner:</label>
+                    <select id="fleet-mgmt-planet-three-owner" class="planet-owner-selector" data-planet-index="2">
+                        <option value="None" selected>None</option>
+                        <option value="Player 1">Player 1</option>
+                        <option value="Player 2">Player 2</option>
+                        <option value="Player 3">Player 3</option>
+                        <option value="Player 4">Player 4</option>
+                        <option value="Player 5">Player 5</option>
+                        <option value="Player 6">Player 6</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="ground-section">
+                <div class="unit-row" data-unit="infantry">
+                <span class="unit-icon"><img src="/static/images/ground/infantry_icon.png" class="ship-icon"
+                                             alt="Infantry"><span class="tooltiptext">Infantry</span></span>
+                    <div class="arrow-container" data-planet-index="2">
+                        <button class="arrow up" data-unit="infantry">▲</button>
+                        <button class="arrow down" data-unit="infantry">▼</button>
+                    </div>
+                    <span class="unit-count" id="fleet-mgmt-planet-three-infantry-count">0</span>
+                </div>
+                <div class="unit-row" data-unit="mech">
+                <span class="unit-icon"><img src="/static/images/ground/mech_icon.png" class="ship-icon"
+                                             alt="Mech"><span class="tooltiptext">Mech</span></span>
+                    <div class="arrow-container" data-planet-index="2">
+                        <button class="arrow up" data-unit="mech">▲</button>
+                        <button class="arrow down" data-unit="mech">▼</button>
+                    </div>
+                    <span class="unit-count" id="fleet-mgmt-planet-three-mech-count">0</span>
+                </div>
+                <div class="unit-row" data-unit="pds">
+                <span class="unit-icon"><img src="/static/images/structures/pds_icon.png" class="ship-icon"
+                                             alt="PDS"><span class="tooltiptext">PDS</span></span>
+                    <div class="arrow-container" data-planet-index="2">
+                        <button class="arrow up" data-unit="pds">▲</button>
+                        <button class="arrow down" data-unit="pds">▼</button>
+                    </div>
+                    <span class="unit-count" id="fleet-mgmt-planet-three-pds-count">0</span>
+                </div>
+                <div class="unit-row" data-unit="space_dock">
+                <span class="unit-icon"><img src="/static/images/structures/space_dock_icon.png" class="ship-icon"
+                                             alt="Space Dock"><span class="tooltiptext">Space Dock</span></span>
+                    <div class="arrow-container" data-planet-index="2">
+                        <button class="arrow up" data-unit="space_dock">▲</button>
+                        <button class="arrow down" data-unit="space_dock">▼</button>
+                    </div>
+                    <span class="unit-count" id="fleet-mgmt-planet-three-space_dock-count">0</span>
+                </div>
             </div>
         </div>
 

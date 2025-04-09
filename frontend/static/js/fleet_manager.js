@@ -64,11 +64,32 @@ function loadPlanetData(activePlanet, planetSection) {
     const ownerSelect = document.getElementById(planetSection.id + '-owner');
     ownerSelect.value = "None";
 
-    //todo: set all unit and structure counts to zero
+    const unitTypes = ['infantry', 'mech'];
+    const structureTypes = ['pds', 'space_dock'];
+    unitTypes.forEach(unit => {
+        planetSection.querySelector(`#` + planetSection.id + `-${unit}-count`).textContent = '0';
+    });
+
+    structureTypes.forEach(unit => {
+        planetSection.querySelector(`#` + planetSection.id + `-${unit}-count`).textContent = '0';
+    });
 
     if (!groundForcesData) return;
 
-    //todo: update count of all units and structures
+    const units = groundForcesData.units || {};
+    for (const [unitType, count] of Object.entries(units)) {
+        const countElement = planetSection.querySelector(`#` + planetSection.id + `-${unitType}-count`);
+        if (countElement) {
+            countElement.textContent = count || 0;
+        }
+    }
+    const structures = groundForcesData.structures || {};
+    for (const [structureType, count] of Object.entries(structures)) {
+        const countElement = planetSection.querySelector(`#` + planetSection.id + `-${structureType}-count`);
+        if (countElement) {
+            countElement.textContent = count || 0;
+        }
+    }
 
     ownerSelect.value = groundForcesData.owner || "None";
 }
@@ -102,6 +123,7 @@ function loadSystemPlanetsData(activeSystem) {
 function initializeFleetManager() {
     const fleetBoard = document.getElementById('board-preview fleet');
     const fleetManagementWindow = document.getElementById('fleet-management-window');
+    const fleetManagementSection = document.getElementById('fleet-section');
     const fleetOwnerSelect = document.getElementById('fleet-management-fleet-owner');
     const planetSection = document.getElementById('planets-section');
 
@@ -126,7 +148,7 @@ function initializeFleetManager() {
         positionFleetManagementWindow(hexTile, fleetManagementWindow, event);
     });
 
-    fleetManagementWindow.querySelectorAll('.arrow').forEach(button => {
+    fleetManagementSection.querySelectorAll('.arrow').forEach(button => {
         button.addEventListener('click', () => {
             const activeHex = fleetBoard.querySelector('.hex.active').getAttribute('data-position');
             const activeSystem = window.fleetGameData.board.find(system => system['designation'] === activeHex).system
@@ -136,6 +158,23 @@ function initializeFleetManager() {
             updateUnitCount(unit, isUp, activeSystem);
 
             const countElement = document.getElementById(`fleet-${unit}-count`);
+            const currentCount = parseInt(countElement.textContent, 10);
+            const newCount = isUp ? currentCount + 1 : Math.max(0, currentCount - 1);
+            countElement.textContent = newCount;
+        });
+    });
+
+    planetSection.querySelectorAll('.arrow').forEach(button => {
+        button.addEventListener('click', () => {
+            const activeHex = fleetBoard.querySelector('.hex.active').getAttribute('data-position');
+            const planetIndex = button.parentElement.getAttribute('data-planet-index');
+            const activePlanet = window.fleetGameData.board.find(system => system['designation'] === activeHex).system.planets[planetIndex]
+            const unit = button.getAttribute('data-unit');
+            const isUp = button.classList.contains('up');
+
+            //updateUnitCount(unit, isUp, activeSystem);
+
+            const countElement = button.parentElement.parentElement.querySelector(`.unit-count`);
             const currentCount = parseInt(countElement.textContent, 10);
             const newCount = isUp ? currentCount + 1 : Math.max(0, currentCount - 1);
             countElement.textContent = newCount;
