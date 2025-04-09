@@ -1,3 +1,9 @@
+const planetElements = [
+        document.getElementById('fleet-mgmt-planet-one'),
+        document.getElementById('fleet-mgmt-planet-two'),
+        document.getElementById('fleet-mgmt-planet-three')
+];
+
 function positionFleetManagementWindow(hexTile, fleetManagementWindow, event) {
     const mouseX = event.pageX - 250;
     const mouseY = event.pageY - 300;
@@ -8,7 +14,7 @@ function positionFleetManagementWindow(hexTile, fleetManagementWindow, event) {
     fleetManagementWindow.style.top = `${mouseY}px`;
 }
 
-function updateUnitCount(unit, isUp, activeSystem) {
+function updateShipCount(unit, isUp, activeSystem) {
     if (!activeSystem) return;
 
     let fleetData = activeSystem.fleet;
@@ -33,6 +39,50 @@ function updateUnitCount(unit, isUp, activeSystem) {
 
     fleetData.ships = ships;
     activeSystem.fleet = fleetData;
+}
+
+function updateUnitCount(unit, isUp, activePlanet, planetIndex) {
+    if (!activePlanet) return;
+
+    let isUnit = (unit == 'infantry' || unit == 'mech');
+    let groundForcesData = activePlanet.ground_forces;
+    if (!groundForcesData) {
+        const ownerSelect = document.getElementById(planetElements[planetIndex].id + '-owner');
+        groundForcesData = {
+            structures: {},
+            units: {},
+            owner: ownerSelect.value
+        };
+        activePlanet.ground_forces = groundForcesData;
+    }
+
+    let units = groundForcesData.units
+    let structures = groundForcesData.structures
+    let currentCount = 0;
+    if (isUnit) {
+        currentCount = units[unit] || 0;
+    } else {
+        currentCount = structures[unit] || 0;
+    }
+    let newCount = isUp ? currentCount + 1 : Math.max(0, currentCount - 1);
+
+    if (newCount === 0) {
+        if (isUnit) {
+            delete units[unit];
+        } else {
+            delete structures[unit];
+        }
+    } else {
+        if (isUnit) {
+            units[unit] = newCount;
+        } else {
+            structures[unit] = newCount;
+        }
+    }
+
+    groundForcesData.structures = structures;
+    groundForcesData.units = units;
+    activePlanet.ground_forces = groundForcesData;
 }
 
 function loadFleetData(activeSystem) {
@@ -101,12 +151,6 @@ function loadSystemPlanetsData(activeSystem) {
     planetsDisplaySection.classList.toggle('active', planets.length > 0);
     if (planets.length === 0) return;
 
-    const planetElements = [
-        document.getElementById('fleet-mgmt-planet-one'),
-        document.getElementById('fleet-mgmt-planet-two'),
-        document.getElementById('fleet-mgmt-planet-three')
-    ];
-
     for (let i = 0; i < planetElements.length; i++) {
         const planetEl = planetElements[i];
         const planet = planets[i];
@@ -155,7 +199,7 @@ function initializeFleetManager() {
             const unit = button.getAttribute('data-unit');
             const isUp = button.classList.contains('up');
 
-            updateUnitCount(unit, isUp, activeSystem);
+            updateShipCount(unit, isUp, activeSystem);
 
             const countElement = document.getElementById(`fleet-${unit}-count`);
             const currentCount = parseInt(countElement.textContent, 10);
@@ -172,7 +216,7 @@ function initializeFleetManager() {
             const unit = button.getAttribute('data-unit');
             const isUp = button.classList.contains('up');
 
-            //updateUnitCount(unit, isUp, activeSystem);
+            updateUnitCount(unit, isUp, activePlanet, planetIndex);
 
             const countElement = button.parentElement.parentElement.querySelector(`.unit-count`);
             const currentCount = parseInt(countElement.textContent, 10);
