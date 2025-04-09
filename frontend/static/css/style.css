@@ -168,6 +168,12 @@ button:disabled {
     background: #ccc;
 }
 
+.hex .designation-text {
+    font-size: 25px;
+    margin-left: 61px;
+    color: white;
+}
+
 
 
 /* Center adjustment: Offset all positions to center Mecatol Rex */
