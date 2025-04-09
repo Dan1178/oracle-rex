@@ -16,7 +16,7 @@
     padding: 15px;
     width: 500px;
     min-height: 300px;
-    max-height: 500px; /*determine necessary value once testing complete*/
+    max-height: 600px; /*determine necessary value once testing complete*/
     z-index: 3000;
     font-size: 14px;
 }
@@ -25,6 +25,7 @@
     text-align: center;
     font-size: 24px;
     display: block;
+    font-weight: bold;
 }
 
 .fleet-management-window #fleet-management-window-close {
@@ -54,4 +55,56 @@
 .fleet-management-window .player-select select:focus {
     outline: none;
     border-color: #666;
+}
+
+#planets-section {
+    margin-bottom: 30px;
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+#planets-section:not(.active) {
+    display: none
+}
+
+#planets-section h3 {
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+#planets-section .planet-row h2 {
+    font-size: 20px;
+    margin-right: 55px;
+}
+
+#planets-section .planet-row {
+    display: flex;
+    width: 100%;
+}
+
+#planets-section .planet-row:not(.active) {
+    display: none
+}
+
+#planets-section .planet-row .player-select {
+    margin-bottom: 0px;
+    align-items: center;
+    gap: 10px;
+}
+
+#planets-section .planet-row .player-select label {
+    font-weight: bold;
+    color: green;
+}
+
+#planets-section .planet-row .player-select select {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    background-color: #f9f9f9;
+    cursor: pointer;
 }

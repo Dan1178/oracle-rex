@@ -57,10 +57,53 @@ function loadFleetData(activeSystem) {
     ownerSelect.value = fleetData.owner || "Player 1";
 }
 
+function loadPlanetData(activePlanet, planetSection) {
+    const groundForcesData = activePlanet.ground_forces;
+    const planetHeader = planetSection.querySelector("h2");
+    planetHeader.textContent = activePlanet.name;
+    const ownerSelect = document.getElementById(planetSection.id + '-owner');
+    ownerSelect.value = "None";
+
+    //todo: set all unit and structure counts to zero
+
+    if (!groundForcesData) return;
+
+    //todo: update count of all units and structures
+
+    ownerSelect.value = groundForcesData.owner || "None";
+}
+
+function loadSystemPlanetsData(activeSystem) {
+    const planets = activeSystem.planets;
+    const planetsDisplaySection = document.getElementById('planets-section');
+
+    planetsDisplaySection.classList.toggle('active', planets.length > 0);
+    if (planets.length === 0) return;
+
+    const planetElements = [
+        document.getElementById('fleet-mgmt-planet-one'),
+        document.getElementById('fleet-mgmt-planet-two'),
+        document.getElementById('fleet-mgmt-planet-three')
+    ];
+
+    for (let i = 0; i < planetElements.length; i++) {
+        const planetEl = planetElements[i];
+        const planet = planets[i];
+
+        const shouldBeActive = planet !== undefined;
+        planetEl.classList.toggle('active', shouldBeActive);
+
+        if (shouldBeActive) {
+            loadPlanetData(planet, planetEl);
+        }
+    }
+}
+
 function initializeFleetManager() {
     const fleetBoard = document.getElementById('board-preview fleet');
     const fleetManagementWindow = document.getElementById('fleet-management-window');
     const fleetOwnerSelect = document.getElementById('fleet-management-fleet-owner');
+    const planetSection = document.getElementById('planets-section');
 
     fleetBoard.addEventListener('click', (event) => {
         const hexTile = event.target.closest('.hex');
@@ -79,6 +122,7 @@ function initializeFleetManager() {
         activeDesignation = hexTile.getAttribute('data-position');
         const activeSystem = window.fleetGameData.board.find(system => system['designation'] === activeDesignation).system
         loadFleetData(activeSystem);
+        loadSystemPlanetsData(activeSystem);
         positionFleetManagementWindow(hexTile, fleetManagementWindow, event);
     });
 
@@ -113,6 +157,27 @@ function initializeFleetManager() {
         }
         fleetData.owner = fleetOwnerSelect.value;
         activeSystem.fleet = fleetData;
+    });
+
+    planetSection.querySelectorAll('.planet-owner-selector').forEach(planetOwnerSelect => {
+        planetOwnerSelect.addEventListener('change', () => {
+            if (!activeDesignation) return;
+
+            const activeHex = fleetBoard.querySelector('.hex.active').getAttribute('data-position');
+            const planetIndex = planetOwnerSelect.getAttribute('data-planet-index');
+            const activePlanet = window.fleetGameData.board.find(system => system['designation'] === activeHex).system.planets[planetIndex]
+            let groundForcesData = activePlanet.ground_forces;
+            if (!groundForcesData) {
+                groundForcesData = {
+                    structures: {},
+                    units: {},
+                    owner: ''
+                };
+                activePlanet.ground_forces = groundForcesData;
+            }
+            groundForcesData.owner = planetOwnerSelect.value;
+            activePlanet.ground_forces = groundForcesData;
+        });
     });
 }
 
