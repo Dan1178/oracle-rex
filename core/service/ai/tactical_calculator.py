@@ -1,16 +1,13 @@
 import json
 from typing import Dict, Any
-from langchain_xai import ChatXAI
+
 from langchain_core.messages import SystemMessage, HumanMessage
-
-from ...config.tokens import xai_api_key
-
-api_key = xai_api_key
+from langchain_xai import ChatXAI
 
 
-def tactical_calculator(force_data: Dict[str, Any], system_prompt: str = None) -> str:
+def tactical_calculator(force_data: Dict[str, Any], system_prompt: str = None, api_key: str = None) -> str:
     chat = ChatXAI(
-        model="grok-3-latest", #grok-3-mini-latest todo test this lighter, cheaper model to see if output is comparable
+        model="grok-3-latest", # grok-3-mini-latest todo test this lighter, cheaper model to see if output is comparable
         api_key=api_key,
         temperature=0,
         max_tokens=500

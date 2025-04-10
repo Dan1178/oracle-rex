@@ -120,15 +120,16 @@ def ai_suggest(request, type):
             game_json = data.get('game_json', {})
             player_faction = data.get('player_faction', '')
             system_prompt = data.get('system_prompt', None)
+            api_key = data.get('api_key', '')
 
             if not game_json or not player_faction:
                 return JsonResponse({'error': 'Missing game_json or player_faction'}, status=400)
 
             strategy = "replaceme"
             if type == 'strategy':
-                strategy = get_strategy_suggestion(game_json, player_faction, system_prompt)
+                strategy = get_strategy_suggestion(game_json, player_faction, system_prompt, api_key)
             elif type == 'move':
-                strategy = get_move_suggestion(game_json, player_faction, system_prompt)
+                strategy = get_move_suggestion(game_json, player_faction, system_prompt, api_key)
 
             return JsonResponse({
                 'faction': player_faction,
@@ -157,11 +158,12 @@ def tactical_calculator_api(request):
             data = json.loads(request.body)
             force_data = data.get('force_data', {})
             system_prompt = data.get('system_prompt', None)
+            api_key = data.get('api_key', '')
 
             if not force_data:
                 return JsonResponse({'error': 'Missing force data'}, status=400)
 
-            calc_results = tactical_calculator(force_data, system_prompt)
+            calc_results = tactical_calculator(force_data, system_prompt, api_key)
 
             return JsonResponse({
                 'calc_results': calc_results

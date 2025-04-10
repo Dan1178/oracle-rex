@@ -103,6 +103,7 @@ function generateGame(gameName) {
 
 function suggestStrategy(gameName) {
     const faction = document.getElementById('faction-select ' + gameName).value;
+    const answerBox = document.getElementById(gameName + '-response');
     let gameData;
     if (gameName == "strategy") {
         gameData = window.strategyGameData;
@@ -110,21 +111,30 @@ function suggestStrategy(gameName) {
         gameData = window.moveGameData;
     }
     if (!faction || !gameData) {
-        document.getElementById(gameName + '-response').textContent = 'Please generate a game and select a faction.';
+        answerBox.textContent = 'Please generate a game and select a faction.';
         return;
     }
 
+    api_key = document.getElementById('xai-api-key').value;
+    if (!api_key) {
+        answerBox.textContent = 'Error: No valid api key provided.';
+        return;
+    }
+
+    answerBox.classList.add('loading');
     fetch('/api/' + gameName + '-suggester/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_json: gameData, player_faction: faction })
+        body: JSON.stringify({ game_json: gameData, player_faction: faction, api_key: api_key })
     })
     .then(response => response.json())
     .then(data => {
-        document.getElementById(gameName + '-response').textContent = data.strategy || data.error;
+        answerBox.textContent = data.strategy || data.error;
+        answerBox.classList.remove('loading');
     })
     .catch(error => {
-        document.getElementById(gameName + '-response').textContent = 'Error: ' + error;
+        answerBox.textContent = 'Error: ' + error;
+        answerBox.classList.remove('loading');
     });
 }
 

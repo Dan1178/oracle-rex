@@ -103,17 +103,27 @@ function getForceCounts() {
 
 function tacticalCalculator() {
     let forceData = getForceCounts();
+    const answerBox = document.getElementById('tactical-calculation-results');
 
+    api_key = document.getElementById('xai-api-key').value;
+    if (!api_key) {
+        answerBox.textContent = 'Error: No valid api key provided.';
+        return;
+    }
+
+    answerBox.classList.add('loading');
     fetch('/api/tactical-calculator/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ force_data: forceData })
+        body: JSON.stringify({ force_data: forceData, api_key: api_key })
     })
     .then(response => response.json())
     .then(data => {
-        document.getElementById('tactical-calculation-results').textContent = data.calc_results || data.error;
+        answerBox.textContent = data.calc_results || data.error;
+        answerBox.classList.remove('loading');
     })
     .catch(error => {
-        document.getElementById('tactical-calculation-results').textContent = 'Error: ' + error;
+        answerBox.textContent = 'Error: ' + error;
+        answerBox.classList.remove('loading');
     });
 }

@@ -280,3 +280,17 @@ button:disabled {
 .hex[data-position="6"] { top: calc(50% - (var(--hex-grid-height) / 2) + calc(var(--hex-grid-vert-angle-up)*3)); left: calc(50% - (var(--hex-grid-width) / 2) + calc(var(--hex-grid-horz-left)*3)); }
 .hex[data-position="6-0"] { top: calc(50% - (var(--hex-grid-height) / 2) + calc(var(--hex-grid-vert-up)*2)); left: calc(50% - (var(--hex-grid-width) / 2) + calc(var(--hex-grid-horz-left)*2)); }
 .hex[data-position="1-2"] { top: calc(50% - (var(--hex-grid-height) / 2) + calc(var(--hex-grid-vert-angle-up)*5)); left: calc(50% - (var(--hex-grid-width) / 2) + var(--hex-grid-horz-left)); }
+
+.response-box.loading::after {
+  content: "Loading";
+  display: inline-block;
+  animation: dots 1.5s infinite;
+  margin-left: 5px;
+}
+
+@keyframes dots {
+  0% { content: "Loading"; }
+  33% { content: "Loading."; }
+  66% { content: "Loading.."; }
+  100% { content: "Loading..."; }
+}

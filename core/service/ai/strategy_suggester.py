@@ -1,14 +1,12 @@
 import json
 from typing import Dict, Any
-from langchain_xai import ChatXAI
+
 from langchain_core.messages import SystemMessage, HumanMessage
-
-from ...config.tokens import xai_api_key
-
-api_key = xai_api_key
+from langchain_xai import ChatXAI
 
 
-def get_strategy_suggestion(game_json: Dict[str, Any], player_faction: str, system_prompt: str = None) -> str:
+def get_strategy_suggestion(game_json: Dict[str, Any], player_faction: str, system_prompt: str = None,
+                            api_key: str = None) -> str:
     chat = ChatXAI(
         model="grok-3-latest",
         api_key=api_key,
