@@ -47,11 +47,13 @@ function setBoard(gameData, gameName) {
 
         // Populate dropdown with factions from game.players
         if (players) {
+            let i = 1;
             players.forEach(player => {
                 if (player.faction) {
                     const option = document.createElement('option');
                     option.value = player.faction;
-                    option.text = player.faction;
+                    option.text = player.faction + ' (Player ' + i + ')';
+                    i += 1;
                     factionSelect.appendChild(option);
                 }
             });
