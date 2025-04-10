@@ -278,3 +278,73 @@ function closeFleetManagerWindow() {
     const previousActive = fleetBoard.querySelector('.hex.active');
     previousActive.classList.remove('active');
 }
+
+function saveGameData() {
+  try {
+    const gameData = window.fleetGameData;
+    const gameDataString = JSON.stringify(gameData, null, 2);
+    const blob = new Blob([gameDataString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "oracle-rex-game-data.json";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    document.getElementById("game-data-message").textContent = "Game state downloaded!";
+  } catch (error) {
+    console.error("Error saving game data:", error);
+    document.getElementById("game-data-message").textContent = "Error downloading game state.";
+    document.getElementById("game-data-message").style.color = "red";
+  }
+}
+
+function loadGameData(event) {
+  const file = event.target.files[0];
+  if (!file) {
+    document.getElementById("game-data-message").textContent = "No file selected.";
+    document.getElementById("game-data-message").style.color = "orange";
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const loadedData = JSON.parse(e.target.result);
+      window.fleetGameData = loadedData;
+      setBoard(loadedData, "fleet")
+      document.getElementById("game-data-message").textContent = "Game state loaded!";
+    } catch (error) {
+      console.error("Error loading game data:", error);
+      document.getElementById("game-data-message").textContent = "Error loading game state: Invalid JSON.";
+      document.getElementById("game-data-message").style.color = "red";
+    }
+  };
+  reader.onerror = function() {
+    console.error("Error reading file:", reader.error);
+    document.getElementById("game-data-message").textContent = "Error reading file.";
+    document.getElementById("game-data-message").style.color = "red";
+  };
+  reader.readAsText(file);
+}
+
+function copyGameData() {
+  try {
+    const gameData = window.fleetGameData;
+    const gameDataString = JSON.stringify(gameData, null, 2);
+    navigator.clipboard.writeText(gameDataString).then(() => {
+      document.getElementById("game-data-message").textContent = "Game state copied to clipboard!";
+    }).catch((error) => {
+      console.error("Error copying to clipboard:", error);
+      document.getElementById("game-data-message").textContent = "Error copying to clipboard.";
+      document.getElementById("game-data-message").style.color = "red";
+    });
+  } catch (error) {
+    console.error("Error preparing game data for copy:", error);
+    document.getElementById("game-data-message").textContent = "Error copying game state.";
+    document.getElementById("game-data-message").style.color = "red";
+  }
+}

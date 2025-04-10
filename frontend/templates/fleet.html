@@ -4,10 +4,16 @@
     <div class="tts-input-container">
         <input type="text" id="tts-input-fleet" placeholder="Paste TTS String from Milty draft tool">
         <button onclick="generateGame('fleet')">Generate</button>
-        <button id="fleet-manager-export" onclick="exportFleetManagerToMoveSuggester()" disabled>Export to Move
-            Suggester
+        <button id="fleet-manager-export" onclick="exportFleetManagerToMoveSuggester()" disabled>
+            Export to Move Suggester
         </button>
     </div>
+    <div>
+        <button onclick="saveGameData()">Save Game State</button>
+        <input type="file" id="load-game-data" accept=".json" onchange="loadGameData(event)" style="display: inline-block;" />
+        <button onclick="copyGameData()">Copy to Clipboard</button>
+    </div>
+    <p id="game-data-message" style="color: green;"></p>
     <div id="board-preview fleet" class="board-preview">
         <div class="grid-wrapper">
             <div class="hex-grid fleet">
