@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-s6+_jwtlw!br7qrh^lv@o*pxju=ey7!arv6srw0#xs)($8hx(8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["oracle-rex.onrender.com"]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', "oracle-rex.onrender.com"]
 
 
 # Application definition
@@ -128,6 +128,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "frontend/static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
