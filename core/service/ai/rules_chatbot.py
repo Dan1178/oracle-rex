@@ -1,12 +1,8 @@
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_openai.chat_models import ChatOpenAI
 
-from ...config.tokens import openai_api_key
 
-api_key = openai_api_key
-
-
-def get_rule_answer(h_input_question):  # todo: modernize
+def get_rule_answer(h_input_question, api_key):  # todo: modernize
     chat = ChatOpenAI(model_name='gpt-4', temperature=0, api_key=api_key, max_tokens=1500)
     message_s = SystemMessage(content=''' You are Oracle Rex, a chatbot that answers rule questions about the board game Twilight Imperium. ",
     The answers should be based on the 4th edition of the game with the Prophecy of Kings expansion unless otherwise stated. ''')

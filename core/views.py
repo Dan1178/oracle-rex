@@ -70,13 +70,13 @@ def rules_chat_api(request):
             # Parse JSON body from POST request
             data = json.loads(request.body)
             question = data.get('question', '')
+            api_key = data.get('api_key', '')
 
             if not question:
                 return JsonResponse({'error': 'No question provided'}, status=400)
 
             # Get the answer from your rules chatbot
-            answer = get_rule_answer(question)
-            print(answer)  # todo: remove when satisfied with testing
+            answer = get_rule_answer(question, api_key)
 
             # Return the response as JSON
             return JsonResponse({
