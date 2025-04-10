@@ -5,3 +5,4 @@ langchain_openai==0.3.12
 langchain_xai==0.2.2
 numpy==2.2.4
 django-cors-headers
+gunicorn
