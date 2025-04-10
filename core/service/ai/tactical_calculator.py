@@ -10,7 +10,7 @@ api_key = xai_api_key
 
 def tactical_calculator(force_data: Dict[str, Any], system_prompt: str = None) -> str:
     chat = ChatXAI(
-        model="grok-2-1212",
+        model="grok-3-beta",
         api_key=api_key,
         temperature=0,
         max_tokens=2000

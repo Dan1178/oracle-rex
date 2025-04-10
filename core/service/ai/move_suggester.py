@@ -10,7 +10,7 @@ api_key = xai_api_key
 
 def get_move_suggestion(game_json: Dict[str, Any], player_faction: str, system_prompt: str = None) -> str:
     chat = ChatXAI(
-        model="grok-2-1212",
+        model="grok-3-beta",
         api_key=api_key,
         temperature=0,
         max_tokens=2000
