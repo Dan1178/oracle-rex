@@ -2,15 +2,15 @@ import json
 
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 from rest_framework import generics
+from rest_framework.decorators import api_view
 
 from .models import Faction, Player, System, Tile
 from .serializers import FactionSerializer, PlayerSerializer, SystemSerializer, TileSerializer
+from .service.ai.move_suggester import get_move_suggestion
 from .service.ai.rules_chatbot import get_rule_answer
 from .service.ai.strategy_suggester import get_strategy_suggestion
-from .service.ai.move_suggester import get_move_suggestion
 from .service.ai.tactical_calculator import tactical_calculator
 from .service.tts_string_ingest import build_game_from_string
 from .util.utils import reset_database
@@ -62,8 +62,7 @@ class TileListView(generics.ListAPIView):
     serializer_class = TileSerializer
 
 
-# todo: replace with actual csrf settings
-@csrf_exempt
+@api_view(['POST'])
 def rules_chat_api(request):
     if request.method == 'POST':
         try:
@@ -91,7 +90,8 @@ def rules_chat_api(request):
 
     return JsonResponse({'error': 'Method not allowed, use POST'}, status=405)
 
-@csrf_exempt
+
+@api_view(['POST'])
 def build_game_from_tts_api(request):
     if request.method == 'POST':
         try:
@@ -112,6 +112,7 @@ def build_game_from_tts_api(request):
         except Exception as e:
             return JsonResponse({'error': f'Unexpected error: {str(e)}'}, status=500)
     return JsonResponse({'error': 'Method not allowed, use POST'}, status=405)
+
 
 def ai_suggest(request, type):
     if request.method == 'POST':
@@ -143,15 +144,18 @@ def ai_suggest(request, type):
 
     return JsonResponse({'error': 'Method not allowed, use POST'}, status=405)
 
-@csrf_exempt
+
+@api_view(['POST'])
 def strategy_suggester_api(request):
     return ai_suggest(request, 'strategy')
 
-@csrf_exempt
+
+@api_view(['POST'])
 def move_suggester_api(request):
     return ai_suggest(request, 'move')
 
-@csrf_exempt
+
+@api_view(['POST'])
 def tactical_calculator_api(request):
     if request.method == 'POST':
         try:
