@@ -6,3 +6,4 @@ langchain_xai==0.2.2
 numpy==2.2.4
 django-cors-headers
 gunicorn
+whitenoise
