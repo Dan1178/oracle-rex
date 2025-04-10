@@ -57,7 +57,7 @@ ROOT_URLCONF = 'oracle-rex.urls'
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
-    # "https://todo.render.com",
+    "https://oracle-rex.onrender.com",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
