@@ -1,0 +1,19 @@
+{% load static %}
+<div id="settings" class="tab-pane active">
+    <h3>Settings</h3>
+    <form id="settings-form">
+        <p id="settings-info" style="color: green;">
+            Currently, an API key for XAI and OpenAI is required to run all features of Oracle Rex.
+            Models in use are grok-3-latest and gpt-4 respectively.
+        </p>
+        <label for="xai-api-key">xAI API Key:</label>
+        <input type="text" id="xai-api-key" placeholder="Enter your xAI API key" style="width: 650px;"/><br><br>
+
+        <label for="openai-api-key">OpenAI API Key:</label>
+        <input type="text" id="openai-api-key" placeholder="Enter your OpenAI API key" style="width: 1250px;"/><br><br>
+    </form>
+    <p id="settings-warning" style="color: red;">
+        Warning: API keys entered here are stored in your browser's local storage and may be visible to others if your
+        device is compromised.
+    </p>
+</div>
