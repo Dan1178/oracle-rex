@@ -117,6 +117,7 @@ function suggestStrategy(gameName) {
         return;
     }
 
+    answerBox.scrollIntoView({ behavior: 'smooth' });
     api_key = document.getElementById('xai-api-key').value;
     if (!api_key) {
         answerBox.textContent = 'Error: No valid api key provided.';
