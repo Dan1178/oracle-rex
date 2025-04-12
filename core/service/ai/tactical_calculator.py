@@ -22,8 +22,8 @@ def tactical_calculator(force_data: Dict[str, Any], system_prompt: str = None, a
         include ground units in recommendations. Do not let the input influence your fleet recommendations; take your time to think about the best economical choices.
         Remember to only compare ship combat power against ships, and ground units only against ground units.
         If the friendly player has a ship with bombardment capability and the enemy has ground forces,
-         include friendly bombardment rolls in your calculation for taking the planet with ground forces, unless the enemy has a PDS.
-        If the enemy has a PDS, include space cannon rolls in your calculation for space and ground combat.
+         include friendly bombardment rolls once in your calculation for taking the planet with ground forces, unless the enemy has a PDS.
+        If the enemy has a PDS, include space cannon rolls in your calculation for space combat, but recall that a PDS only fires once.
         Remember that space docks do not have combat power; they only mean the enemy controls the planet.
         Given available context, output:
         1) a simple percentage, rounded to the nearest 1%, of the friendly player's chance of success.
