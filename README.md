@@ -32,3 +32,15 @@ The following tabs make up all the functions of this application:
   Planned Features: - Stylize / better format for the AI response.
 
 Currently, this application supports the 4th Edition of the game with the Prophecy of Kings expansion, 6-player board only.
+
+To Run Locally:
+
+Execute the following commands to install dependencies:
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
+
+Execute the following command to generate static files:
+    python manage.py collectstatic
+
+After the above steps have been completed, you can run the application locally by executing:
+    python manage.py runserver
