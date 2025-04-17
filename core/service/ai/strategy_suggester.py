@@ -1,19 +1,36 @@
 import json
-from typing import Dict, Any
 
-from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnableMap, RunnableLambda
 
-def build_strategy_prompt(game_json: Dict[str, Any], player_faction: str, system_prompt: str = None):
-    if not system_prompt:  # todo: enhance
-        system_prompt = f'''I have a JSON representation of a Twilight Imperium board with 6 players. Given this board, I want you to output the following for the {player_faction} player:
-    1) Suggest an overall game strategy for the player based on the board layout, neighbors, etc.
-    2) Suggest an early game strategy for the player. For example, what planets should be taken first, what to watch out for, etc.
-    Here's the JSON:'''
 
-    # Construct messages
-    messages = [
-        SystemMessage(content=system_prompt),
-        HumanMessage(content=f'''{json.dumps(game_json, indent=2)}
-    ''')
-    ]
-    return messages
+def build_strategy_prompt_template() -> ChatPromptTemplate:
+    return ChatPromptTemplate.from_messages([
+        ("system", "{system_prompt}"),
+        ("human", "{game_json}")
+    ])
+
+
+def build_default_system_prompt(player_faction: str) -> str:
+    return f"""You are an expert Twilight Imperium strategist. You are given a full board state in JSON and should give advice for the {player_faction} faction.
+
+1. Suggest a high-level game strategy for the player, considering board layout, position, and neighbors.
+2. Provide early game advice — such as which planets to prioritize and key threats to watch for.
+Be concise and tactical.
+"""
+
+
+def make_strategy_chain(chat) -> RunnableMap:
+    prompt = build_strategy_prompt_template()
+
+    chain = (
+            {
+                "system_prompt": lambda x: build_default_system_prompt(x["player_faction"]),
+                "game_json": lambda x: json.dumps(x["game_json"], indent=2)
+            }
+            | prompt
+            | chat
+            | RunnableLambda(lambda response: response.content)
+    )
+
+    return chain

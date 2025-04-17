@@ -118,7 +118,6 @@ def ai_suggest(request, type):
             data = json.loads(request.body)
             game_json = data.get('game_json', {})
             player_faction = data.get('player_faction', '')
-            system_prompt = data.get('system_prompt', None)
             api_key = data.get('api_key', '')
             model = data.get('model', 'gpt-4')
 
@@ -127,9 +126,9 @@ def ai_suggest(request, type):
 
             strategy = "replaceme"
             if type == 'strategy':
-                strategy = get_strategy_response(game_json, player_faction, system_prompt, api_key, model)
+                strategy = get_strategy_response(game_json, player_faction, api_key, model)
             elif type == 'move':
-                strategy = get_move_response(game_json, player_faction, system_prompt, api_key, model)
+                strategy = get_move_response(game_json, player_faction, api_key, model)
 
             return JsonResponse({
                 'faction': player_faction,
@@ -160,14 +159,13 @@ def tactical_calculator_api(request):
         try:
             data = json.loads(request.body)
             force_data = data.get('force_data', {})
-            system_prompt = data.get('system_prompt', None)
             api_key = data.get('api_key', '')
             model = data.get('model', 'gpt-4')
 
             if not force_data:
                 return JsonResponse({'error': 'Missing force data'}, status=400)
 
-            calc_results = get_tac_calc_response(force_data, system_prompt, api_key, model)
+            calc_results = get_tac_calc_response(force_data, api_key, model)
 
             return JsonResponse({
                 'calc_results': calc_results

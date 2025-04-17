@@ -1,12 +1,18 @@
 import json
-from typing import Dict, Any
 
-from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnableMap, RunnableLambda
 
 
-def build_tac_calc_prompt(force_data: Dict[str, Any], system_prompt: str = None):
-    if not system_prompt:
-        system_prompt = f'''I have a JSON representation of a friendly and enemy fleet fighting in a system in the board game Twilight Imperium.
+def build_tac_calc_prompt_template() -> ChatPromptTemplate:
+    return ChatPromptTemplate.from_messages([
+        ("system", "{system_prompt}"),
+        ("human", "{force_data}")
+    ])
+
+
+def build_default_system_prompt() -> str:
+    return f'''I have a JSON representation of a friendly and enemy fleet fighting in a system in the board game Twilight Imperium.
         Assume this system is controlled by the enemy and has up to one planet.
         Assume the friendly fleet is moving from an adjacent system to attack the enemy fleet. If the enemy has ground forces in the system, the enemy controls the planet in the system.
         If enemy ground units are included in data, assume victory condition is seizing both the system and the planet. If player does not have any ground forces and enemy does, chance
@@ -27,11 +33,18 @@ def build_tac_calc_prompt(force_data: Dict[str, Any], system_prompt: str = None)
         \nRecommended Fleet Composition for at least 80% Chance of Victory: [List of units]
     Here's the JSON:'''
 
-    # Construct messages
-    messages = [
-        SystemMessage(content=system_prompt),
-        HumanMessage(content=f'''{json.dumps(force_data, indent=2)}
-    ''')
-    ]
 
-    return messages
+def make_tac_calc_chain(chat) -> RunnableMap:
+    prompt = build_tac_calc_prompt_template()
+
+    chain = (
+            {
+                "system_prompt": lambda x: build_default_system_prompt(),
+                "force_data": lambda x: json.dumps(x["force_data"], indent=2)
+            }
+            | prompt
+            | chat
+            | RunnableLambda(lambda response: response.content)
+    )
+
+    return chain
