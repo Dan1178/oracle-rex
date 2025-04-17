@@ -9,6 +9,7 @@ TTS Strings required for many functions of this application can be retrieved fro
 The following tabs make up all the functions of this application:
   
   - **Settings**: This tab allows the user to enter an api key for X AI and OpenAI. These keys are not stored in the backend.
+    This tab also allows the user to select an AI model to use for each tab.
   
     **Planned Features**: 
     - Add additional LLM integrations
@@ -54,6 +55,13 @@ The following tabs make up all the functions of this application:
 
 Currently, this application supports the 4th Edition of the game with the Prophecy of Kings expansion, 6-player board only.
 
+**Planned Improvements to Game Data**
+- Revealed public objectives
+- Technologies
+- Current score
+- Secret objectives
+
+
 ## To Run Locally:
 
 Execute the following commands to install dependencies:
@@ -76,4 +84,5 @@ See CI.yml for details.
 
 ## LLMs in Use:
     - grok-3-latest
-    - gpt-4
+    - gpt-4.1
+    - gpt-4.1-nano
