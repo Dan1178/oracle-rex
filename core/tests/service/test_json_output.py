@@ -159,15 +159,12 @@ class TestUnitJsonOutput(TestCase):
             starting_position=self.tile_1
         )
 
-        self.structures = [Structure.objects.create(struct_class=StructureClass.SPACE_DOCK),
-                           Structure.objects.create(struct_class=StructureClass.PDS)]
-        self.ground_units = [GroundUnit.objects.create(unit_class=GroundUnitClass.MECH),
-                             GroundUnit.objects.create(unit_class=GroundUnitClass.INFANTRY),
-                             GroundUnit.objects.create(unit_class=GroundUnitClass.INFANTRY),
-                             GroundUnit.objects.create(unit_class=GroundUnitClass.INFANTRY)]
+        self.structures = {'pds': 1, 'space_dock': 1}
+        self.ground_units = {'infantry': 3, 'mech': 1}
         self.test_ground_forces = GroundForces.objects.create(owner=self.player1.username)
-        self.test_ground_forces.structures.set(self.structures)
-        self.test_ground_forces.units.set(self.ground_units)
+        self.test_ground_forces.structures = self.structures
+        self.test_ground_forces.units = self.ground_units
+        self.test_ground_forces.save()
 
         self.planet_mecatol = Planet.objects.get(name="Mecatol Rex")
         self.planet_mecatol.ground_forces = self.test_ground_forces
@@ -188,8 +185,8 @@ class TestUnitJsonOutput(TestCase):
         expected_json = {'name': 'Mecatol Rex System', 'tile_id': 18, 'anomaly': 'none', 'wormhole': 'none',
                          'planets': [{'name': 'Mecatol Rex', 'resources': 1, 'influence': 6, 'trait': 'none',
                                       'tech_specialty': 'none',
-                                      'ground_forces': {'owner': 'Player 1', 'structures': ['spaceDock', 'pds'],
-                                                        'units': ['mech', 'infantry', 'infantry', 'infantry']}}],
+                                      'ground_forces': {'owner': 'Player 1', 'structures': {'pds': 1, 'space_dock': 1},
+                                                        'units': {'infantry': 3, 'mech': 1}}}],
                          'fleet': {'owner': 'Player 1', 'ships': {'destroyer': 3, 'dreadnought': 1, 'fighter': 1}}}
         self.assertEqual(system_json, expected_json)
         self.assertEqual(len(system_json["fleet"]), 2)

@@ -52,8 +52,14 @@ class GroundUnit(models.Model):
 
 class GroundForces(models.Model):
     owner = models.CharField(max_length=100)
-    structures = models.ManyToManyField(Structure, related_name="groundForces")
-    units = models.ManyToManyField(GroundUnit, related_name="groundForces")
+    structures = JSONField(
+        default=dict,
+        help_text="Stores structure counts as a dictionary, e.g., {'pds': 1, 'space_dock': 0}"
+    )
+    units = JSONField(
+        default=dict,
+        help_text="Stores unit counts as a dictionary, e.g., {'infantry': 3, 'mech': 1}"
+    )
 
     def __str__(self):
         return self.structures + self.units
@@ -61,6 +67,6 @@ class GroundForces(models.Model):
     def to_json(self):
         return {
             "owner": self.owner,
-            "structures": [structure.struct_class for structure in self.structures.all()],
-            "units": [unit.unit_class for unit in self.units.all()]
+            "structures": self.structures,
+            "units": self.units
         }
