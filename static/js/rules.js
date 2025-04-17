@@ -4,7 +4,7 @@ function askRules() {
     if (!question) return;
     const answerBox = document.getElementById('rules-answer');
 
-    api_key = document.getElementById('openai-api-key').value;
+    api_key = getSelectedApiKey('rules', model);
     if (!api_key) {
         answerBox.textContent = 'Error: No valid api key provided.';
         return;

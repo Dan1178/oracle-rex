@@ -2,17 +2,9 @@ import json
 from typing import Dict, Any
 
 from langchain_core.messages import SystemMessage, HumanMessage
-from langchain_xai import ChatXAI
 
 
-def get_move_suggestion(game_json: Dict[str, Any], player_faction: str, system_prompt: str = None, api_key: str = None) -> str:
-    chat = ChatXAI(
-        model="grok-3-latest",
-        api_key=api_key,
-        temperature=0,
-        max_tokens=5000
-    )
-
+def build_move_prompt(game_json: Dict[str, Any], player_faction: str, system_prompt: str = None):
     if not system_prompt:  # todo: enhance
         system_prompt = f'''I have a JSON representation of a Twilight Imperium board with 6 players. Given this board, suggest the best next move to make for the {player_faction} player:
     Here's the JSON:'''
@@ -24,5 +16,4 @@ def get_move_suggestion(game_json: Dict[str, Any], player_faction: str, system_p
     ''')
     ]
 
-    response = chat.invoke(messages)
-    return response.content
+    return messages

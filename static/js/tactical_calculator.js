@@ -106,7 +106,7 @@ function tacticalCalculator() {
     const model = getSelectedModel('tactical');
     const answerBox = document.getElementById('tactical-calculation-results');
 
-    api_key = document.getElementById('xai-api-key').value;
+    api_key = getSelectedApiKey('tactical', model);
     if (!api_key) {
         answerBox.textContent = 'Error: No valid api key provided.';
         return;

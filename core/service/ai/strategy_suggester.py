@@ -2,18 +2,8 @@ import json
 from typing import Dict, Any
 
 from langchain_core.messages import SystemMessage, HumanMessage
-from langchain_xai import ChatXAI
 
-
-def get_strategy_suggestion(game_json: Dict[str, Any], player_faction: str, system_prompt: str = None,
-                            api_key: str = None) -> str:
-    chat = ChatXAI(
-        model="grok-3-latest",
-        api_key=api_key,
-        temperature=0,
-        max_tokens=5000
-    )
-
+def build_strategy_prompt(game_json: Dict[str, Any], player_faction: str, system_prompt: str = None):
     if not system_prompt:  # todo: enhance
         system_prompt = f'''I have a JSON representation of a Twilight Imperium board with 6 players. Given this board, I want you to output the following for the {player_faction} player:
     1) Suggest an overall game strategy for the player based on the board layout, neighbors, etc.
@@ -26,6 +16,4 @@ def get_strategy_suggestion(game_json: Dict[str, Any], player_faction: str, syst
         HumanMessage(content=f'''{json.dumps(game_json, indent=2)}
     ''')
     ]
-
-    response = chat.invoke(messages)
-    return response.content
+    return messages

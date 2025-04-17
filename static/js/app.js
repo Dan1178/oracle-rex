@@ -119,7 +119,7 @@ function suggestStrategy(gameName) {
     }
 
     answerBox.scrollIntoView({ behavior: 'smooth' });
-    api_key = document.getElementById('xai-api-key').value;
+    api_key = getSelectedApiKey(gameName, model);
     if (!api_key) {
         answerBox.textContent = 'Error: No valid api key provided.';
         return;
@@ -149,6 +149,13 @@ function exportFleetManagerToMoveSuggester() {
 }
 
 function getSelectedModel(tabPrefix) {
-  const radio = document.querySelector(`input[name="${tabPrefix}-ai-model"]:checked`);
-  return radio ? radio.value : 'gpt-4';
+    const radio = document.querySelector(`input[name="${tabPrefix}-ai-model"]:checked`);
+    return radio ? radio.value : 'gpt-4';
+}
+
+function getSelectedApiKey(tabPrefix, model) {
+    const radio = document.querySelector(`input[name="${tabPrefix}-ai-model"]:checked`);
+    const apiMake = radio ? radio.getAttribute('data-api-make') : 'openai';
+    api_key = document.getElementById(`${apiMake}-api-key`).value;
+    return api_key;
 }

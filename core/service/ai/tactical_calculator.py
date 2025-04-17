@@ -2,17 +2,9 @@ import json
 from typing import Dict, Any
 
 from langchain_core.messages import SystemMessage, HumanMessage
-from langchain_xai import ChatXAI
 
 
-def tactical_calculator(force_data: Dict[str, Any], system_prompt: str = None, api_key: str = None) -> str:
-    chat = ChatXAI(
-        model="grok-3-latest", # grok-3-mini-beta todo when available, switch model
-        api_key=api_key,
-        temperature=0,
-        max_tokens=500
-    )
-
+def build_tac_calc_prompt(force_data: Dict[str, Any], system_prompt: str = None):
     if not system_prompt:
         system_prompt = f'''I have a JSON representation of a friendly and enemy fleet fighting in a system in the board game Twilight Imperium.
         Assume this system is controlled by the enemy and has up to one planet.
@@ -42,5 +34,4 @@ def tactical_calculator(force_data: Dict[str, Any], system_prompt: str = None, a
     ''')
     ]
 
-    response = chat.invoke(messages)
-    return response.content
+    return messages

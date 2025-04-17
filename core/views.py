@@ -8,10 +8,7 @@ from rest_framework.decorators import api_view
 
 from .models import Faction, Player, System, Tile
 from .serializers import FactionSerializer, PlayerSerializer, SystemSerializer, TileSerializer
-from .service.ai.move_suggester import get_move_suggestion
-from .service.ai.rules_chatbot import get_rule_answer
-from .service.ai.strategy_suggester import get_strategy_suggestion
-from .service.ai.tactical_calculator import tactical_calculator
+from .service.ai_service import get_rules_response, get_strategy_response, get_move_response, get_tac_calc_response
 from .service.tts_string_ingest import build_game_from_string
 from .util.utils import reset_database
 
@@ -70,12 +67,13 @@ def rules_chat_api(request):
             data = json.loads(request.body)
             question = data.get('question', '')
             api_key = data.get('api_key', '')
+            model = data.get('model', 'gpt-4')
 
             if not question:
                 return JsonResponse({'error': 'No question provided'}, status=400)
 
             # Get the answer from your rules chatbot
-            answer = get_rule_answer(question, api_key)
+            answer = get_rules_response(question, api_key, model)
 
             # Return the response as JSON
             return JsonResponse({
@@ -122,15 +120,16 @@ def ai_suggest(request, type):
             player_faction = data.get('player_faction', '')
             system_prompt = data.get('system_prompt', None)
             api_key = data.get('api_key', '')
+            model = data.get('model', 'gpt-4')
 
             if not game_json or not player_faction:
                 return JsonResponse({'error': 'Missing game_json or player_faction'}, status=400)
 
             strategy = "replaceme"
             if type == 'strategy':
-                strategy = get_strategy_suggestion(game_json, player_faction, system_prompt, api_key)
+                strategy = get_strategy_response(game_json, player_faction, system_prompt, api_key, model)
             elif type == 'move':
-                strategy = get_move_suggestion(game_json, player_faction, system_prompt, api_key)
+                strategy = get_move_response(game_json, player_faction, system_prompt, api_key, model)
 
             return JsonResponse({
                 'faction': player_faction,
@@ -163,11 +162,12 @@ def tactical_calculator_api(request):
             force_data = data.get('force_data', {})
             system_prompt = data.get('system_prompt', None)
             api_key = data.get('api_key', '')
+            model = data.get('model', 'gpt-4')
 
             if not force_data:
                 return JsonResponse({'error': 'Missing force data'}, status=400)
 
-            calc_results = tactical_calculator(force_data, system_prompt, api_key)
+            calc_results = get_tac_calc_response(force_data, system_prompt, api_key, model)
 
             return JsonResponse({
                 'calc_results': calc_results
