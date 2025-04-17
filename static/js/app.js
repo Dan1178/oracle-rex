@@ -104,6 +104,7 @@ function generateGame(gameName) {
 }
 
 function suggestStrategy(gameName) {
+    const model = getSelectedModel(gameName);
     const faction = document.getElementById('faction-select ' + gameName).value;
     const answerBox = document.getElementById(gameName + '-response');
     let gameData;
@@ -128,7 +129,7 @@ function suggestStrategy(gameName) {
     fetch('/api/' + gameName + '-suggester/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_json: gameData, player_faction: faction, api_key: api_key })
+        body: JSON.stringify({ game_json: gameData, player_faction: faction, api_key: api_key, model: model })
     })
     .then(response => response.json())
     .then(data => {
@@ -145,4 +146,9 @@ function exportFleetManagerToMoveSuggester() {
     let moveGameData = window.fleetGameData;
     moveGameData.name = 'move'
     setBoard(moveGameData, "move")
+}
+
+function getSelectedModel(tabPrefix) {
+  const radio = document.querySelector(`input[name="${tabPrefix}-ai-model"]:checked`);
+  return radio ? radio.value : 'gpt-4';
 }

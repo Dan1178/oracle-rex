@@ -3,8 +3,7 @@
     <h3>Settings</h3>
     <form id="settings-form">
         <p id="settings-info" style="color: green;">
-            Currently, an API key for XAI and OpenAI is required to run all features of Oracle Rex.
-            Models in use are grok-3-latest and gpt-4 respectively.
+            You will need at least one API key to use all the features of Oracle Rex.
         </p>
         <label for="xai-api-key">xAI API Key:</label>
         <input type="text" id="xai-api-key" placeholder="Enter your xAI API key" style="width: 650px;"/><br><br>
@@ -16,4 +15,51 @@
         Warning: API keys entered here are stored in your browser's local storage and may be visible to others if your
         device is compromised.
     </p>
+
+    <div id="model-selection-header">
+        <h3>Model Selection</h3>
+        <p id="model-selection-info" style="color: green;">
+            Recommended models are selected. Be sure you have a corresponding API key for every AI type selected.
+        </p>
+    </div>
+
+    <div id="rules-ai-select-div">
+      <h4>Rules Q&A</h4>
+      <div>
+        <input type="radio" id="rules-gpt-4" name="rules-ai-model" value="gpt-4" checked>
+        <label for="rules-gpt-4">GPT-4</label>
+        <input type="radio" id="rules-grok-3-latest" name="rules-ai-model" value="grok-3-latest">
+        <label for="rules-grok-3-latest">Grok 3 Latest</label>
+      </div>
+    </div>
+
+    <div id="strategy-suggester-ai-select-div">
+      <h4>Strategy Suggester</h4>
+      <div>
+        <input type="radio" id="strategy-gpt-4" name="strategy-ai-model" value="gpt-4">
+        <label for="strategy-gpt-4">GPT-4</label>
+        <input type="radio" id="strategy-grok-3-latest" name="strategy-ai-model" value="grok-3-latest" checked>
+        <label for="strategy-grok-3-latest">Grok 3 Latest</label>
+      </div>
+    </div>
+
+    <div id="move-suggester-ai-select-div">
+      <h4>Move Suggester</h4>
+      <div>
+        <input type="radio" id="move-gpt-4" name="move-ai-model" value="gpt-4">
+        <label for="move-gpt-4">GPT-4</label>
+        <input type="radio" id="move-grok-3-latest" name="move-ai-model" value="grok-3-latest" checked>
+        <label for="move-grok-3-latest">Grok 3 Latest</label>
+      </div>
+    </div>
+
+    <div id="tactical-calculator-ai-select-div">
+      <h4>Tactical Calculator</h4>
+      <div>
+        <input type="radio" id="tactical-gpt-4" name="tactical-ai-model" value="gpt-4" checked>
+        <label for="tactical-gpt-4">GPT-4</label>
+        <input type="radio" id="tactical-grok-3-latest" name="tactical-ai-model" value="grok-3-latest">
+        <label for="tactical-grok-3-latest">Grok 3 Latest</label>
+      </div>
+    </div>
 </div>

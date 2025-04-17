@@ -1,4 +1,5 @@
 function askRules() {
+    const model = getSelectedModel('rules');
     const question = document.getElementById('rules-question').value;
     if (!question) return;
     const answerBox = document.getElementById('rules-answer');
@@ -13,7 +14,7 @@ function askRules() {
     fetch('/api/rules-chat/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question, api_key })
+        body: JSON.stringify({ question: question, api_key: api_key, model: model })
     })
     .then(response => response.json())
     .then(data => {

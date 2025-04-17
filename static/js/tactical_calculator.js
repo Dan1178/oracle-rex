@@ -103,6 +103,7 @@ function getForceCounts() {
 
 function tacticalCalculator() {
     let forceData = getForceCounts();
+    const model = getSelectedModel('tactical');
     const answerBox = document.getElementById('tactical-calculation-results');
 
     api_key = document.getElementById('xai-api-key').value;
@@ -115,7 +116,7 @@ function tacticalCalculator() {
     fetch('/api/tactical-calculator/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ force_data: forceData, api_key: api_key })
+        body: JSON.stringify({ force_data: forceData, api_key: api_key, model: model })
     })
     .then(response => response.json())
     .then(data => {
