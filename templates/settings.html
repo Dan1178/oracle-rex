@@ -21,6 +21,10 @@
         <p id="model-selection-info" style="color: green;">
             Recommended models are selected. Be sure you have a corresponding API key for every AI type selected.
         </p>
+        <p id="model-selection-warn" style="color: red;">
+            Recent changes to AI models have lead to significant timeout issues with all models heavier than 4.1-nano.
+            Their use is not advised.
+        </p>
     </div>
 
     <div id="rules-ai-select-div">
@@ -40,9 +44,9 @@
       <div>
         <input type="radio" id="strategy-gpt-4.1" name="strategy-ai-model" value="gpt-4.1" data-api-make="openai">
         <label for="rules-gpt-4.1">GPT-4.1</label>
-        <input type="radio" id="strategy-gpt-4.1-nano" name="strategy-ai-model" value="gpt-4.1-nano" data-api-make="openai">
+        <input type="radio" id="strategy-gpt-4.1-nano" name="strategy-ai-model" value="gpt-4.1-nano" data-api-make="openai" checked>
         <label for="rules-gpt-4.1-nano">GPT-4.1-nano</label>
-        <input type="radio" id="strategy-grok-4-latest" name="strategy-ai-model" value="grok-4-latest" data-api-make="xai" checked>
+        <input type="radio" id="strategy-grok-4-latest" name="strategy-ai-model" value="grok-4-latest" data-api-make="xai">
         <label for="strategy-grok-4-latest">Grok 4 Latest</label>
         <input type="radio" id="strategy-grok-3-latest" name="strategy-ai-model" value="grok-3-latest" data-api-make="xai">
         <label for="strategy-grok-3-latest">Grok 3 Latest</label>
@@ -52,9 +56,9 @@
     <div id="move-suggester-ai-select-div">
       <h4>Move Suggester</h4>
       <div>
-        <input type="radio" id="move-gpt-4.1" name="move-ai-model" value="gpt-4.1" data-api-make="openai" checked>
+        <input type="radio" id="move-gpt-4.1" name="move-ai-model" value="gpt-4.1" data-api-make="openai">
         <label for="rules-gpt-4.1">GPT-4.1</label>
-        <input type="radio" id="move-gpt-4.1-nano" name="move-ai-model" value="gpt-4.1-nano" data-api-make="openai">
+        <input type="radio" id="move-gpt-4.1-nano" name="move-ai-model" value="gpt-4.1-nano" data-api-make="openai" checked>
         <label for="rules-gpt-4.1-nano">GPT-4.1-nano</label>
         <input type="radio" id="move-grok-3-latest" name="move-ai-model" value="grok-3-latest" data-api-make="xai">
         <label for="move-grok-3-latest">Grok 3 Latest</label>
