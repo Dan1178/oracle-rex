@@ -53,22 +53,22 @@ class TestCreateBoardFromIds(TestCase):
         self.assertIn("Invalid input: Duplicate tile IDs found.", str(cm.exception))
 
     def test_invalid_ids_too_high(self):
-        id_string = "78 40 42 67 28 38 76 43 21 44 77 999 50 64 74 48 49 39 1 71 35 16 27 36 55 31 20 58 69 45 4 23 22 57 34 25"
+        id_string = "78 40 42 67 28 38 76 43 21 44 77 5000 50 64 74 48 49 39 1 71 35 16 27 36 55 31 20 58 69 45 4 23 22 57 34 25"
         with self.assertRaises(ValidationError) as cm:
             build_game_from_string(id_string, "Test")
-        self.assertIn("Invalid IDs: [999] found in TTS String. All IDs should be between 1 and 82.", str(cm.exception))
+        self.assertIn("Invalid IDs: [5000] found in TTS String. All IDs should be between 1 and 4276.", str(cm.exception))
 
     def test_invalid_ids_too_low(self):
         id_string = "78 40 42 67 28 38 76 43 21 44 77 0 50 64 74 48 49 39 1 71 35 16 27 36 55 31 20 58 69 45 4 23 22 57 34 25"
         with self.assertRaises(ValidationError) as cm:
             build_game_from_string(id_string, "Test")
-        self.assertIn("Invalid IDs: [0] found in TTS String. All IDs should be between 1 and 82.", str(cm.exception))
+        self.assertIn("Invalid IDs: [0] found in TTS String. All IDs should be between 1 and 4276.", str(cm.exception))
 
     def test_invalid_ids_negative_num(self):
         id_string = "78 40 42 67 28 38 76 43 21 44 77 -4 50 64 74 48 49 39 1 71 35 16 27 36 55 31 20 58 69 45 4 23 22 57 34 25"
         with self.assertRaises(ValidationError) as cm:
             build_game_from_string(id_string, "Test")
-        self.assertIn("Invalid IDs: [-4] found in TTS String. All IDs should be between 1 and 82.", str(cm.exception))
+        self.assertIn("Invalid IDs: [-4] found in TTS String. All IDs should be between 1 and 4276.", str(cm.exception))
 
     def test_invalid_home_system_id(self):
         # Invalid ID (e.g., 0 not in mapping)
