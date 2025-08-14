@@ -5,9 +5,9 @@ from ..models import Tile, System, Faction, Player, Game
 from ..util.utils import reset_to_default_for_game
 
 EXPECTED_STR_LEN = 36  # Expected id count for TTS String (string does not include Mechatol's ID)
-MAX_ID_NUM = 82  # Highest ID in standard TI + PoK tileset
+MAX_ID_NUM = 4276  # Highest ID in standard TI + PoK + discordant tileset
 MIN_ID_NUM = 1
-HOME_SYSTEM_IDS = np.concatenate([np.arange(1, 18), np.arange(52, 59)])
+HOME_SYSTEM_IDS = np.concatenate([np.arange(1, 18), np.arange(52, 59), np.arange(4200, 4236)])
 
 
 def split_array(arr, indices):
@@ -22,6 +22,7 @@ def split_array(arr, indices):
 
 def validate_string(tts_string):
     id_list = tts_string.strip().split()
+    id_list = fix_discordant(id_list)
     id_list = [int(id_) for id_ in id_list]
     if len(id_list) != EXPECTED_STR_LEN:
         raise ValidationError(f"Wrong number of input ids. Please ensure id count is equal to {EXPECTED_STR_LEN}") #todo: this should be returned in alert on frontend
@@ -40,14 +41,25 @@ def validate_string(tts_string):
     id_list.insert(0, 18)  # insert ID for Mechatol Rex at beginning
     return id_list
 
+def fix_discordant(id_list):
+    # milty draft tool is returning ds_[faction short name] for some or all discordant stars factions, simple fix
+    for i, identifier in enumerate(id_list):
+        if "DS" in identifier:
+            id_list[i] = get_discordant_id(identifier.split("_")[1])
+    return id_list
+
+def get_discordant_id(faction_name):
+    system_name = faction_name.capitalize() + " System"
+    disc_system = System.objects.get(name=system_name)
+    return disc_system.tile_id
+
 def map_systems_to_tiles(id_list, game):
     tiles = game.board.all()
-    systems = sorted(System.objects.all(), key=lambda sys: int(sys.tile_id))
     starting_positions = []
 
     for i, tile in enumerate(tiles):
         if i < len(id_list):
-            tile.system = systems[id_list[i] - 1]  # need to offset to match values
+            tile.system = System.objects.get(tile_id=id_list[i])
             if len(tile.designation) == 1:
                 starting_positions.append(tile)
 
