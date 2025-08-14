@@ -11,7 +11,7 @@ class System(models.Model):
     tile_id = models.CharField(max_length=4)
     planets = models.ManyToManyField(Planet, related_name="systems")
     anomaly = models.CharField(
-        max_length=20,
+        max_length=21,
         choices=AnomalyType,
         default="none"
     )
