@@ -12,7 +12,9 @@ def build_move_prompt_template() -> ChatPromptTemplate:
 
 
 def build_default_system_prompt(player_faction: str) -> str:
-    return f"""I have a JSON representation of a Twilight Imperium board with 6 players. Given this board, suggest the best next move to make for the {player_faction} player:
+    return f"""I have a JSON representation of a Twilight Imperium board with 6 players.
+    This is the 4th edition of the game, Prophecy of Kings and Discordant Stars expansions are included.
+    Given this board, suggest the best next move to make for the {player_faction} player:
     Here's the JSON:
 """
 

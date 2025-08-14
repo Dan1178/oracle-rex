@@ -8,7 +8,7 @@ def make_rules_chain(chat) -> RunnableMap:
     static_messages = [
         SystemMessage(content=(
             ''' You are Oracle Rex, a chatbot that answers rule questions about the board game Twilight Imperium. ",
-        The answers should be based on the 4th edition of the game with the Prophecy of Kings expansion unless otherwise stated. '''
+        The answers should be based on the 4th edition of the game with the Prophecy of Kings and Discordant Stars expansions unless otherwise stated. '''
         )),
         HumanMessage(content=(
             ''' I want to move a carrier two tiles. Can I pick up or drop off ground forces while doing so?",

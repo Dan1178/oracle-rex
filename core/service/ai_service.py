@@ -8,14 +8,14 @@ from langchain_xai import ChatXAI
 
 
 openAiModels = ['gpt-4.1', 'gpt-4.1-nano']
-xAiModels = ['grok-3-latest']
+xAiModels = ['grok-4-latest', 'grok-3-latest']
 
 def build_openai_chat(model_name, api_key, max_tokens):
-    chat = ChatOpenAI(model=model_name, temperature=0, api_key=api_key, max_tokens=max_tokens)
+    chat = ChatOpenAI(model=model_name, api_key=api_key, max_tokens=max_tokens)
     return chat
 
 def build_xai_chat(model_name, api_key, max_tokens):
-    chat = ChatXAI(model=model_name, temperature=0, api_key=api_key, max_tokens=max_tokens)
+    chat = ChatXAI(model=model_name, api_key=api_key, max_tokens=max_tokens)
     return chat
 
 def get_chat(model, api_key, max_tokens):
