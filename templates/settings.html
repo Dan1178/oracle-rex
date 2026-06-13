@@ -10,6 +10,9 @@
 
         <label for="openai-api-key">OpenAI API Key:</label>
         <input type="text" id="openai-api-key" placeholder="Enter your OpenAI API key" style="width: 1250px;"/><br><br>
+
+        <label for="anthropic-api-key">Anthropic API Key:</label>
+        <input type="text" id="anthropic-api-key" placeholder="Enter your Anthropic (Claude) API key" style="width: 1250px;"/><br><br>
     </form>
     <p id="settings-warning" style="color: red;">
         Warning: API keys entered here are stored in your browser's local storage and may be visible to others if your
@@ -21,59 +24,74 @@
         <p id="model-selection-info" style="color: green;">
             Recommended models are selected. Be sure you have a corresponding API key for every AI type selected.
         </p>
-        <p id="model-selection-warn" style="color: red;">
-            Recent changes to AI models have lead to significant timeout issues with all models heavier than 4.1-nano.
-            Their use is not advised.
+        <p id="model-selection-warn" style="color: #b8860b;">
+            These are reasoning ("thinking") models &mdash; they deliberate before answering, which improves quality but
+            adds latency. The heaviest models (GPT-5.5, Grok 4.20) give the strongest answers but may occasionally time
+            out on the hosted demo; the lighter models (GPT-5.4 mini/nano, Grok 4.3) respond faster.
         </p>
     </div>
 
     <div id="rules-ai-select-div">
       <h4>Rules Q&A</h4>
       <div>
-        <input type="radio" id="rules-gpt-4.1" name="rules-ai-model" value="gpt-4.1" data-api-make="openai">
-        <label for="rules-gpt-4.1">GPT-4.1</label>
-        <input type="radio" id="rules-gpt-4.1-nano" name="rules-ai-model" value="gpt-4.1-nano" data-api-make="openai" checked>
-        <label for="rules-gpt-4.1-nano">GPT-4.1-nano</label>
-        <input type="radio" id="rules-grok-3-latest" name="rules-ai-model" value="grok-3-latest" data-api-make="xai">
-        <label for="rules-grok-3-latest">Grok 3 Latest</label>
+        <input type="radio" id="rules-gpt-5.4-nano" name="rules-ai-model" value="gpt-5.4-nano" data-api-make="openai" checked>
+        <label for="rules-gpt-5.4-nano">GPT-5.4 nano (fast)</label>
+        <input type="radio" id="rules-gpt-5.4-mini" name="rules-ai-model" value="gpt-5.4-mini" data-api-make="openai">
+        <label for="rules-gpt-5.4-mini">GPT-5.4 mini</label>
+        <input type="radio" id="rules-grok-4.3" name="rules-ai-model" value="grok-4.3" data-api-make="xai">
+        <label for="rules-grok-4.3">Grok 4.3</label>
+        <input type="radio" id="rules-claude-haiku-4-5" name="rules-ai-model" value="claude-haiku-4-5" data-api-make="anthropic">
+        <label for="rules-claude-haiku-4-5">Claude Haiku 4.5</label>
       </div>
     </div>
 
     <div id="strategy-suggester-ai-select-div">
       <h4>Strategy Suggester</h4>
       <div>
-        <input type="radio" id="strategy-gpt-4.1" name="strategy-ai-model" value="gpt-4.1" data-api-make="openai">
-        <label for="rules-gpt-4.1">GPT-4.1</label>
-        <input type="radio" id="strategy-gpt-4.1-nano" name="strategy-ai-model" value="gpt-4.1-nano" data-api-make="openai" checked>
-        <label for="rules-gpt-4.1-nano">GPT-4.1-nano</label>
-        <input type="radio" id="strategy-grok-4-latest" name="strategy-ai-model" value="grok-4-latest" data-api-make="xai">
-        <label for="strategy-grok-4-latest">Grok 4 Latest</label>
-        <input type="radio" id="strategy-grok-3-latest" name="strategy-ai-model" value="grok-3-latest" data-api-make="xai">
-        <label for="strategy-grok-3-latest">Grok 3 Latest</label>
+        <input type="radio" id="strategy-gpt-5.4" name="strategy-ai-model" value="gpt-5.4" data-api-make="openai" checked>
+        <label for="strategy-gpt-5.4">GPT-5.4</label>
+        <input type="radio" id="strategy-gpt-5.5" name="strategy-ai-model" value="gpt-5.5" data-api-make="openai">
+        <label for="strategy-gpt-5.5">GPT-5.5 (most capable)</label>
+        <input type="radio" id="strategy-grok-4.3" name="strategy-ai-model" value="grok-4.3" data-api-make="xai">
+        <label for="strategy-grok-4.3">Grok 4.3</label>
+        <input type="radio" id="strategy-grok-4.20" name="strategy-ai-model" value="grok-4.20" data-api-make="xai">
+        <label for="strategy-grok-4.20">Grok 4.20</label>
+        <input type="radio" id="strategy-claude-sonnet-4-6" name="strategy-ai-model" value="claude-sonnet-4-6" data-api-make="anthropic">
+        <label for="strategy-claude-sonnet-4-6">Claude Sonnet 4.6</label>
+        <input type="radio" id="strategy-claude-haiku-4-5" name="strategy-ai-model" value="claude-haiku-4-5" data-api-make="anthropic">
+        <label for="strategy-claude-haiku-4-5">Claude Haiku 4.5</label>
       </div>
     </div>
 
     <div id="move-suggester-ai-select-div">
       <h4>Move Suggester</h4>
       <div>
-        <input type="radio" id="move-gpt-4.1" name="move-ai-model" value="gpt-4.1" data-api-make="openai">
-        <label for="rules-gpt-4.1">GPT-4.1</label>
-        <input type="radio" id="move-gpt-4.1-nano" name="move-ai-model" value="gpt-4.1-nano" data-api-make="openai" checked>
-        <label for="rules-gpt-4.1-nano">GPT-4.1-nano</label>
-        <input type="radio" id="move-grok-3-latest" name="move-ai-model" value="grok-3-latest" data-api-make="xai">
-        <label for="move-grok-3-latest">Grok 3 Latest</label>
+        <input type="radio" id="move-gpt-5.4" name="move-ai-model" value="gpt-5.4" data-api-make="openai" checked>
+        <label for="move-gpt-5.4">GPT-5.4</label>
+        <input type="radio" id="move-gpt-5.5" name="move-ai-model" value="gpt-5.5" data-api-make="openai">
+        <label for="move-gpt-5.5">GPT-5.5 (most capable)</label>
+        <input type="radio" id="move-grok-4.3" name="move-ai-model" value="grok-4.3" data-api-make="xai">
+        <label for="move-grok-4.3">Grok 4.3</label>
+        <input type="radio" id="move-grok-4.20" name="move-ai-model" value="grok-4.20" data-api-make="xai">
+        <label for="move-grok-4.20">Grok 4.20</label>
+        <input type="radio" id="move-claude-sonnet-4-6" name="move-ai-model" value="claude-sonnet-4-6" data-api-make="anthropic">
+        <label for="move-claude-sonnet-4-6">Claude Sonnet 4.6</label>
+        <input type="radio" id="move-claude-haiku-4-5" name="move-ai-model" value="claude-haiku-4-5" data-api-make="anthropic">
+        <label for="move-claude-haiku-4-5">Claude Haiku 4.5</label>
       </div>
     </div>
 
     <div id="tactical-calculator-ai-select-div">
       <h4>Tactical Calculator</h4>
       <div>
-        <input type="radio" id="tactical-gpt-4.1" name="tactical-ai-model" value="gpt-4.1" data-api-make="openai">
-        <label for="rules-gpt-4.1">GPT-4.1</label>
-        <input type="radio" id="tactical-gpt-4.1-nano" name="tactical-ai-model" value="gpt-4.1-nano" data-api-make="openai" checked>
-        <label for="rules-gpt-4.1-nano">GPT-4.1-nano</label>
-        <input type="radio" id="tactical-grok-3-latest" name="tactical-ai-model" value="grok-3-latest" data-api-make="xai">
-        <label for="tactical-grok-3-latest">Grok 3 Latest</label>
+        <input type="radio" id="tactical-gpt-5.4-mini" name="tactical-ai-model" value="gpt-5.4-mini" data-api-make="openai" checked>
+        <label for="tactical-gpt-5.4-mini">GPT-5.4 mini</label>
+        <input type="radio" id="tactical-grok-4.20" name="tactical-ai-model" value="grok-4.20" data-api-make="xai">
+        <label for="tactical-grok-4.20">Grok 4.20 (math/logic)</label>
+        <input type="radio" id="tactical-gpt-5.5" name="tactical-ai-model" value="gpt-5.5" data-api-make="openai">
+        <label for="tactical-gpt-5.5">GPT-5.5 (most capable)</label>
+        <input type="radio" id="tactical-claude-haiku-4-5" name="tactical-ai-model" value="claude-haiku-4-5" data-api-make="anthropic">
+        <label for="tactical-claude-haiku-4-5">Claude Haiku 4.5</label>
       </div>
     </div>
 </div>

@@ -8,9 +8,20 @@ from rest_framework.decorators import api_view
 
 from .models import Faction, Player, System, Tile
 from .serializers import FactionSerializer, PlayerSerializer, SystemSerializer, TileSerializer
-from .service.ai_service import get_rules_response, get_strategy_response, get_move_response, get_tac_calc_response
+from .service.ai_service import (
+    AIServiceError,
+    get_rules_response,
+    get_strategy_response,
+    get_move_response,
+    get_tac_calc_response,
+)
 from .service.tts_string_ingest import build_game_from_string
 from .util.utils import reset_database
+
+
+def _ai_error_response(exc: AIServiceError) -> JsonResponse:
+    """Turn an AIServiceError into a clean, user-facing JSON response."""
+    return JsonResponse({'error': exc.user_message}, status=exc.http_status)
 
 
 ###########         FRONTEND        ################################
@@ -72,17 +83,22 @@ def rules_chat_api(request):
             if not question:
                 return JsonResponse({'error': 'No question provided'}, status=400)
 
-            # Get the answer from your rules chatbot
+            # Get the answer from the rules chatbot (validated structured result)
             answer = get_rules_response(question, api_key, model)
 
-            # Return the response as JSON
+            # Return the response as JSON. 'answer' stays a string for the
+            # current frontend; 'structured' is the validated object for the
+            # upcoming React UI.
             return JsonResponse({
                 'question': question,
-                'answer': answer
+                'answer': answer.to_display_text(),
+                'structured': answer.model_dump(),
             })
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        except AIServiceError as e:
+            return _ai_error_response(e)
         except Exception as e:
             return JsonResponse({'error': f'Unexpected error: {str(e)}'}, status=500)
 
@@ -124,19 +140,23 @@ def ai_suggest(request, type):
             if not game_json or not player_faction:
                 return JsonResponse({'error': 'Missing game_json or player_faction'}, status=400)
 
-            strategy = "replaceme"
             if type == 'strategy':
-                strategy = get_strategy_response(game_json, player_faction, api_key, model)
+                result = get_strategy_response(game_json, player_faction, api_key, model)
             elif type == 'move':
-                strategy = get_move_response(game_json, player_faction, api_key, model)
+                result = get_move_response(game_json, player_faction, api_key, model)
+            else:
+                return JsonResponse({'error': f'Unknown suggestion type: {type}'}, status=400)
 
             return JsonResponse({
                 'faction': player_faction,
-                'strategy': strategy
+                'strategy': result.to_display_text(),
+                'structured': result.model_dump(),
             })
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        except AIServiceError as e:
+            return _ai_error_response(e)
         except Exception as e:
             return JsonResponse({'error': f'Unexpected error: {str(e)}'}, status=500)
 
@@ -173,6 +193,8 @@ def tactical_calculator_api(request):
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        except AIServiceError as e:
+            return _ai_error_response(e)
         except Exception as e:
             return JsonResponse({'error': f'Unexpected error: {str(e)}'}, status=500)
 
