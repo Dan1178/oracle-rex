@@ -1,54 +1,26 @@
-from typing import Dict, Any
-from .ai.rules_chatbot import make_rules_chain
-from .ai.strategy_suggester import make_strategy_chain
-from .ai.move_suggester import make_move_chain
-from .ai.tactical_calculator import make_tac_calc_chain
-from langchain_openai.chat_models import ChatOpenAI
-from langchain_xai import ChatXAI
+"""Backward-compatible entry point for the AI service.
 
+The implementation now lives in the ``core.service.ai`` package (see
+``ai/service.py``). This module re-exports the public functions so older import
+paths keep working.
 
-openAiModels = ['gpt-4.1', 'gpt-4.1-nano']
-xAiModels = ['grok-4-latest', 'grok-3-latest']
+Note: the structured features now return validated Pydantic objects
+(``RulesAnswer``, ``StrategicPlan``, ``TacticalMove``) rather than raw strings.
+Call ``.to_display_text()`` for a human-readable string.
+"""
 
-def build_openai_chat(model_name, api_key, max_tokens):
-    chat = ChatOpenAI(model=model_name, api_key=api_key, max_tokens=max_tokens)
-    return chat
+from .ai.errors import AIServiceError
+from .ai.service import (
+    get_move_response,
+    get_rules_response,
+    get_strategy_response,
+    get_tac_calc_response,
+)
 
-def build_xai_chat(model_name, api_key, max_tokens):
-    chat = ChatXAI(model=model_name, api_key=api_key, max_tokens=max_tokens)
-    return chat
-
-def get_chat(model, api_key, max_tokens):
-    if model in openAiModels:
-        return build_openai_chat(model, api_key, max_tokens)
-    elif model in xAiModels:
-        return build_xai_chat(model, api_key, max_tokens)
-    else:
-        return build_openai_chat('gpt-4.1-nano', api_key, max_tokens)
-
-def get_rules_response(question, api_key, model):
-    chain = make_rules_chain(get_chat(model, api_key, 500))
-    return chain.invoke({
-        "question": question
-    })
-
-def get_strategy_response(game_json: Dict[str, Any], player_faction: str,
-                            api_key: str = None, model: str = None) -> str:
-    chain = make_strategy_chain(get_chat(model, api_key, 5000))
-    return chain.invoke({
-        "game_json": game_json,
-        "player_faction": player_faction
-    })
-
-def get_move_response(game_json: Dict[str, Any], player_faction: str, api_key: str = None, model: str = None) -> str:
-    chain = make_move_chain(get_chat(model, api_key, 5000))
-    return chain.invoke({
-        "game_json": game_json,
-        "player_faction": player_faction
-    })
-
-def get_tac_calc_response(force_data: Dict[str, Any], api_key: str = None, model: str = None) -> str:
-    chain = make_tac_calc_chain(get_chat(model, api_key, 250))
-    return chain.invoke({
-        "force_data": force_data
-    })
+__all__ = [
+    "AIServiceError",
+    "get_rules_response",
+    "get_strategy_response",
+    "get_move_response",
+    "get_tac_calc_response",
+]

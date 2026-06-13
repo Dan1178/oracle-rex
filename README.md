@@ -83,6 +83,9 @@ This application automatically deploys on Render when a successful build runs on
 See CI.yml for details.
 
 ## LLMs in Use:
-    - grok-3-latest
-    - gpt-4.1
-    - gpt-4.1-nano
+    - grok-4.3
+    - grok-4.20
+    - gpt-5.5
+    - gpt-5.4
+    - gpt-5.4-mini
+    - gpt-5.4-nano
