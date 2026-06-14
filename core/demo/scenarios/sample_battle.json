@@ -1,0 +1,17 @@
+{
+  "key": "sample_battle",
+  "feature": "tac_calc",
+  "title": "Load Example Battle",
+  "description": "A mid-game space battle: your strike fleet jumps an enemy holding a defended planet. Preloads both fleets and the enemy ground forces so the calculator reads at a glance.",
+  "unit_counts": {
+    "friendly-dreadnought": 1,
+    "friendly-cruiser": 2,
+    "friendly-carrier": 1,
+    "friendly-fighter": 3,
+    "enemy-cruiser": 2,
+    "enemy-destroyer": 1,
+    "enemy-fighter": 4,
+    "enemy-pds": 1
+  },
+  "response_key": "sample_battle_result"
+}

@@ -1,12 +1,16 @@
 import json
 import logging
 
+from django.conf import settings
+from django.core.cache import cache
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils import timezone
 from django.views.decorators.http import require_GET
 from rest_framework import generics
 from rest_framework.decorators import api_view
 
+from . import demo
 from .jobs import enqueue_ai_job, reap_if_stale
 from .models import AIJob, Faction, Player, System, Tile
 from .serializers import FactionSerializer, PlayerSerializer, SystemSerializer, TileSerializer
@@ -93,13 +97,86 @@ def build_game_from_tts_api(request):
 # call; the frontend polls the status endpoint until the job is terminal. This
 # keeps the long provider call off the request path so Render doesn't time it out.
 
-def _create_ai_job(feature_type, input_payload, api_key, model):
+class _CredentialError(Exception):
+    """Raised when AI credentials can't be resolved (bad/locked live-demo code)."""
+
+    def __init__(self, message, status=400):
+        super().__init__(message)
+        self.message = message
+        self.status = status
+
+
+def _live_demo_allow_request() -> bool:
+    """Soft daily cap on shared live-demo requests, counted in the cache.
+
+    Resets each UTC day (and on process restart), which is an acceptable cost
+    ceiling for a portfolio demo — the goal is to stop runaway owner spend, not
+    to be an exact quota.
+    """
+    limit = settings.DEMO_LIVE_DAILY_LIMIT
+    if limit <= 0:
+        return True
+    key = "live_demo_count:" + timezone.now().strftime("%Y%m%d")
+    cache.add(key, 0, 60 * 60 * 24)
+    if (cache.get(key) or 0) >= limit:
+        return False
+    try:
+        cache.incr(key)
+    except ValueError:  # key expired between add and incr
+        cache.set(key, 1, 60 * 60 * 24)
+    return True
+
+
+def _resolve_ai_credentials(data):
+    """Resolve (api_key, model, live_demo) for a live AI job.
+
+    A ``access_code`` in the request unlocks the owner-paid private live demo
+    (cheap model + per-feature output cap + daily limit) and returns
+    ``live_demo=True``. Otherwise the user's own BYOK key and chosen model are
+    used with no output cap. Raises ``_CredentialError`` when a supplied access
+    code is rejected or the shared limit is reached.
+    """
+    access_code = (data.get("access_code") or "").strip()
+    if access_code:
+        if not settings.DEMO_LIVE_ENABLED:
+            raise _CredentialError(
+                "Live demo access is not enabled on this server. "
+                "Use your own API key (BYOK), or try Demo mode."
+            )
+        if access_code != settings.DEMO_LIVE_ACCESS_CODE:
+            raise _CredentialError("That live demo access code is not valid.", status=403)
+        if not _live_demo_allow_request():
+            raise _CredentialError(
+                "The shared live-demo request limit for today has been reached. "
+                "Try Demo mode, or use your own API key.",
+                status=429,
+            )
+        logger.info("Live-demo request authorized (model=%s)", settings.DEMO_LIVE_MODEL)
+        return settings.DEMO_LIVE_API_KEY, settings.DEMO_LIVE_MODEL, True
+    return data.get("api_key", ""), data.get("model", "gpt-4"), False
+
+
+def _live_demo_token_cap(feature_type) -> int:
+    """Output-token cap for a live-demo request, per feature.
+
+    Defaults to the reasoning-safe per-feature cap; an explicit positive
+    ``DEMO_LIVE_MAX_OUTPUT_TOKENS`` env value overrides it as a hard ceiling.
+    """
+    return settings.DEMO_LIVE_MAX_OUTPUT_TOKENS or config.live_demo_max_tokens(feature_type)
+
+
+def _create_ai_job(feature_type, input_payload, api_key, model, live_demo=False):
     """Create an AIJob row and enqueue it for the background worker.
 
     The BYOK key is encrypted into the task argument and is never written to the
-    AIJob row (see core.service.ai.crypto).
+    AIJob row (see core.service.ai.crypto). For a live-demo request the output is
+    capped per feature, carried as an internal ``_max_tokens`` directive on the
+    input payload.
     """
     resolved = config.resolve_model(model)
+    if live_demo:
+        cap = _live_demo_token_cap(feature_type)
+        input_payload = {**input_payload, "_max_tokens": int(cap)}
     job = AIJob.objects.create(
         feature_type=feature_type,
         input_payload_json=input_payload,
@@ -144,11 +221,15 @@ def rules_job_create(request):
     if not question:
         return JsonResponse({'error': 'No question provided'}, status=400)
 
+    try:
+        api_key, model, live_demo = _resolve_ai_credentials(data)
+    except _CredentialError as exc:
+        return JsonResponse({'error': exc.message}, status=exc.status)
+
     job = _create_ai_job(
         AIJob.FeatureType.RULES,
         {'question': question},
-        data.get('api_key', ''),
-        data.get('model', 'gpt-4'),
+        api_key, model, live_demo,
     )
     return _job_created_response(job)
 
@@ -172,11 +253,15 @@ def suggest_job_create(request, type):
     if not game_json or not player_faction:
         return JsonResponse({'error': 'Missing game_json or player_faction'}, status=400)
 
+    try:
+        api_key, model, live_demo = _resolve_ai_credentials(data)
+    except _CredentialError as exc:
+        return JsonResponse({'error': exc.message}, status=exc.status)
+
     job = _create_ai_job(
         feature_type,
         {'game_json': game_json, 'player_faction': player_faction},
-        data.get('api_key', ''),
-        data.get('model', 'gpt-4'),
+        api_key, model, live_demo,
     )
     return _job_created_response(job)
 
@@ -202,12 +287,67 @@ def tactical_job_create(request):
     if not force_data:
         return JsonResponse({'error': 'Missing force data'}, status=400)
 
+    try:
+        api_key, model, live_demo = _resolve_ai_credentials(data)
+    except _CredentialError as exc:
+        return JsonResponse({'error': exc.message}, status=exc.status)
+
     job = _create_ai_job(
         AIJob.FeatureType.TAC_CALC,
         {'force_data': force_data},
-        data.get('api_key', ''),
-        data.get('model', 'gpt-4'),
+        api_key, model, live_demo,
     )
+    return _job_created_response(job)
+
+
+###########         DEMO MODE (Milestone 3)         ################
+# The public, no-API-key experience. The catalog drives the one-click sample
+# entries in each tab; demo_job_create serves a pregenerated response as a
+# pre-completed AIJob so the existing polling frontend renders it unchanged and
+# no provider call is ever made (so demo mode can't run up owner AI cost).
+
+@require_GET
+def demo_catalog(request):
+    return JsonResponse(demo.get_catalog())
+
+
+@require_GET
+def demo_status(request):
+    """Tell the frontend which live-AI paths are available."""
+    return JsonResponse({'live_demo_enabled': settings.DEMO_LIVE_ENABLED})
+
+
+@api_view(['POST'])
+def demo_job_create(request):
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+
+    scenario_key = data.get('scenario_key', '')
+    result = demo.get_demo_result(scenario_key)
+    if result is None:
+        return JsonResponse(
+            {'error': f'Unknown demo scenario: {scenario_key}'}, status=404
+        )
+
+    feature = demo.feature_for(scenario_key)
+    now = timezone.now()
+    # Pre-completed job: the cached result is already on the row, so the poll
+    # endpoint returns it immediately. Tagged provider/model 'demo' so it's
+    # obvious in the admin debug panel that no live call ran.
+    job = AIJob.objects.create(
+        feature_type=feature,
+        input_payload_json={'scenario_key': scenario_key},
+        result_payload_json=result,
+        status=AIJob.Status.COMPLETED,
+        model_provider='demo',
+        model_name='demo',
+        prompt_version=config.prompt_version_for(feature),
+        started_at=now,
+        completed_at=now,
+    )
+    logger.info("Served demo AIJob %s (%s) for scenario %s", job.id, feature, scenario_key)
     return _job_created_response(job)
 
 

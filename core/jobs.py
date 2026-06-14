@@ -47,8 +47,16 @@ STALE_RUNNING_SECONDS = getattr(settings, "AI_JOB_STALE_SECONDS", 300)
 # Each returns the dict the frontend renders, mirroring the legacy sync
 # endpoints so the polling UI can read the same fields.
 
+# ``_max_tokens`` is an optional internal directive on the input payload (set by
+# the private live-demo path to cap owner-paid output); it is not feature input.
+def _max_tokens(payload):
+    return payload.get("_max_tokens")
+
+
 def _run_rules(payload, api_key, model):
-    answer = service.get_rules_response(payload.get("question", ""), api_key, model)
+    answer = service.get_rules_response(
+        payload.get("question", ""), api_key, model, _max_tokens(payload)
+    )
     return {
         "question": payload.get("question", ""),
         "answer": answer.to_display_text(),
@@ -58,7 +66,8 @@ def _run_rules(payload, api_key, model):
 
 def _run_strategy(payload, api_key, model):
     result = service.get_strategy_response(
-        payload.get("game_json", {}), payload.get("player_faction", ""), api_key, model
+        payload.get("game_json", {}), payload.get("player_faction", ""),
+        api_key, model, _max_tokens(payload),
     )
     return {
         "faction": payload.get("player_faction", ""),
@@ -69,7 +78,8 @@ def _run_strategy(payload, api_key, model):
 
 def _run_move(payload, api_key, model):
     result = service.get_move_response(
-        payload.get("game_json", {}), payload.get("player_faction", ""), api_key, model
+        payload.get("game_json", {}), payload.get("player_faction", ""),
+        api_key, model, _max_tokens(payload),
     )
     return {
         "faction": payload.get("player_faction", ""),
@@ -79,7 +89,9 @@ def _run_move(payload, api_key, model):
 
 
 def _run_tac_calc(payload, api_key, model):
-    text = service.get_tac_calc_response(payload.get("force_data", {}), api_key, model)
+    text = service.get_tac_calc_response(
+        payload.get("force_data", {}), api_key, model, _max_tokens(payload)
+    )
     return {"calc_results": text}
 
 

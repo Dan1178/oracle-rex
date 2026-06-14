@@ -1,0 +1,32 @@
+{
+  "faction": "sol",
+  "strategy": "Federation of Sol — Opening Strategy\n\nSummary:\nSol is the strongest infantry faction in the game and your whole opening should lean on that. You want to expand wide and fast, flip planets aggressively, and use your superior ground game to make every contested planet a bad trade for your neighbors. Prioritize tempo over tall economy in the first two rounds.\n\nFaction read:\nYour commodity-to-trade-good flexibility (Orbital Drop, free infantry from the Spec Ops II tech and the Sol flagship) means you can throw ground forces at planets your opponents cannot cheaply defend. Lean into Politics/Leadership early to bank command tokens and keep your tactic pool deep so you can out-activate the table.\n\nOpening priorities:\n- Grab both your home-adjacent resource planets on Round 1 — do not leave influence on the table.\n- Contest the nearest shared system before your neighbor commits to it; your infantry win the ground fight.\n- Take an early Strategy card that fills your tactic pool (Leadership or Politics) so you can expand to 3-4 systems by end of Round 2.\n\nRound one plan:\n1. Strategic action first to bank command tokens if you take Leadership.\n2. Tactical action into your richest adjacent system, drop infantry, build a Space Dock if the system has 2+ planets.\n3. Second tactical action into the shared/contested system to plant a flag before your neighbor can.\n4. End the round with units positioned to threaten Mecatol Rex on Round 2 rather than committing to it now.\n\nTech path:\n- Neural Motivator (more action cards / card draw tempo)\n- Spec Ops II (free infantry — your bread and butter)\n- Carrier II or Antimass Deflectors depending on wormhole pressure\n\nExpansion targets:\n- Your two home-adjacent planets\n- The nearest 2-planet shared system toward the center\n- A wormhole-adjacent system if it lets you flank a neighbor\n\nRisks:\n- Over-committing to Mecatol Rex on Round 1 and getting counter-attacked while tapped out.\n- Spreading ground forces so thin that a single PDS-backed counter retakes a planet.\n\nMistakes to avoid:\n- Hoarding command tokens you should be spending to expand.\n- Building War Suns or other expensive units before you have the economy to sustain them.",
+  "structured": {
+    "summary": "Sol is the strongest infantry faction in the game; expand wide and fast, flip planets aggressively, and make every contested planet a bad trade for your neighbors. Prioritize tempo over tall economy in the first two rounds.",
+    "faction_read": "Commodity-to-trade-good flexibility and cheap/free infantry let you throw ground forces at planets opponents cannot cheaply defend. Lean into Leadership/Politics early to keep a deep tactic pool and out-activate the table.",
+    "opening_priorities": [
+      "Grab both home-adjacent resource planets on Round 1 — leave no influence on the table.",
+      "Contest the nearest shared system before your neighbor commits; your infantry win the ground fight.",
+      "Take a Strategy card that fills your tactic pool (Leadership or Politics) to reach 3-4 systems by end of Round 2."
+    ],
+    "round_one_plan": "Strategic action first to bank command tokens (if Leadership). Then tactical into your richest adjacent system, drop infantry, build a Space Dock if it has 2+ planets. Second tactical into the contested system to plant a flag early. End positioned to threaten Mecatol on Round 2 rather than committing now.",
+    "tech_path": [
+      "Neural Motivator (card-draw tempo)",
+      "Spec Ops II (free infantry)",
+      "Carrier II or Antimass Deflectors depending on wormhole pressure"
+    ],
+    "expansion_targets": [
+      "Your two home-adjacent planets",
+      "The nearest 2-planet shared system toward the center",
+      "A wormhole-adjacent system that lets you flank a neighbor"
+    ],
+    "risks": [
+      "Over-committing to Mecatol Rex on Round 1 and getting counter-attacked while tapped out.",
+      "Spreading ground forces so thin a single PDS-backed counter retakes a planet."
+    ],
+    "mistakes_to_avoid": [
+      "Hoarding command tokens you should be spending to expand.",
+      "Building War Suns or other expensive units before the economy can sustain them."
+    ]
+  }
+}

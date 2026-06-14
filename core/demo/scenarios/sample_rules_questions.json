@@ -1,0 +1,27 @@
+{
+  "feature": "rules",
+  "title": "Sample Rules Questions",
+  "description": "One-click rules questions answered from saved responses. No API key needed.",
+  "chips": [
+    {
+      "key": "rules_timing_window",
+      "question": "What happens if two players have abilities that trigger at the same timing window?",
+      "response_key": "sample_rules_timing_window"
+    },
+    {
+      "key": "rules_retreat",
+      "question": "Can I retreat from space combat if I have no ships left?",
+      "response_key": "sample_rules_retreat"
+    },
+    {
+      "key": "rules_production",
+      "question": "How does production capacity work?",
+      "response_key": "sample_rules_production"
+    },
+    {
+      "key": "rules_explain_new",
+      "question": "Explain how tactical actions work like I'm new to TI.",
+      "response_key": "sample_rules_explain_new"
+    }
+  ]
+}

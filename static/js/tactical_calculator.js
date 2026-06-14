@@ -106,17 +106,28 @@ function tacticalCalculator() {
     const model = getSelectedModel('tactical');
     const answerBox = document.getElementById('tactical-calculation-results');
 
-    api_key = getSelectedApiKey('tactical', model);
-    if (!api_key) {
-        answerBox.textContent = 'Error: No valid api key provided.';
+    const { creds, error } = buildLiveCredentials('tactical', model);
+    if (error) {
+        answerBox.textContent = 'Error: ' + error;
         return;
     }
 
     runAiJob(
         '/api/jobs/tactical/',
-        { force_data: forceData, api_key: api_key, model: model },
+        Object.assign({ force_data: forceData }, creds),
         answerBox,
         'Calculating combat odds...',
-        (result, box) => { box.textContent = result.calc_results || 'No result was returned.'; }
+        (result, box) => renderAiText(box, result.calc_results || 'No result was returned.', result)
     );
+}
+
+// --- Demo battle (Milestone 3) ----------------------------------------------
+// Apply a saved set of unit counts (e.g. the "Load Example Battle" scenario)
+// to the calculator's internal counts and the on-screen totals.
+function applyDemoBattleCounts(counts) {
+    Object.keys(unitCounts).forEach(unit => {
+        unitCounts[unit] = counts[unit] || 0;
+        const countEl = document.getElementById(unit + '-count');
+        if (countEl) countEl.textContent = unitCounts[unit];
+    });
 }

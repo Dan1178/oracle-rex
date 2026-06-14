@@ -17,6 +17,20 @@ a `/api/jobs/<feature>/` create endpoint:
 | Move suggester     | `move_job_create`                 | `get_move_response`          | `tactical_move.py`         | `TacticalMove`         |
 | Battle calculator  | `tactical_job_create`             | `get_tac_calc_response`      | `tactical_calculator.py`   | — (rigid text format)  |
 
+Each create endpoint resolves credentials via `_resolve_ai_credentials`: an
+`access_code` in the request body unlocks the private live demo (owner key +
+cheap `DEMO_LIVE_MODEL` + a `max_tokens` output cap + a daily request limit);
+otherwise the user's BYOK key and chosen model are used. The cap is threaded into
+the job as an internal `_max_tokens` payload directive and applied in `service.py`
+via `_token_budget` (it only ever caps *below* the per-feature default).
+
+**Demo mode (Milestone 3).** The public, no-key experience lives in `core/demo/`
+(sample scenarios + pregenerated responses). `/api/demo/run/` serves a cached
+response as a *pre-completed* `AIJob`, so the same polling frontend renders it
+with no provider call — demo mode can't run up owner cost. `/api/demo/catalog/`
+drives the one-click sample entries; `/api/demo/status/` reports whether the
+private live demo is configured.
+
 ### Before this milestone
 
 - Each feature had its own `make_*_chain` module that mixed prompt text, model

@@ -1,7 +1,22 @@
 {% load static %}
 <div id="strategy" class="tab-pane">
     <h2>Strategy Suggester</h2>
-    <p>Don't have a TTS String? Generate a game (6 player only):
+    <p class="tab-intro">
+        Get a faction-specific opening strategy from a parsed board state. New here?
+        Click <strong>Load Sample Milty Draft Board</strong> to see it work with no setup.
+    </p>
+
+    <div class="demo-box">
+        <h4>Demo &mdash; no API key needed</h4>
+        <p class="demo-desc" data-demo-description="strategy">
+            Loads a balanced sample board, auto-selects a faction, and shows a saved strategy.
+        </p>
+        <button type="button" class="demo-button" onclick="loadDemoScenario('strategy')">
+            Load Sample Milty Draft Board
+        </button>
+    </div>
+
+    <p>Have your own TTS String? Generate a game (6 player only):
         <a href="https://milty.shenanigans.be/" target="_blank">https://milty.shenanigans.be/</a>
     </p>
     <div class="tts-input-container">

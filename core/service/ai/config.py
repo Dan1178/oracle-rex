@@ -65,6 +65,28 @@ STRATEGY_MAX_TOKENS = 12000
 MOVE_MAX_TOKENS = 12000
 TAC_CALC_MAX_TOKENS = 4000
 
+# --- Live-demo output caps (per feature) ----------------------------------
+
+# Owner-paid private-live-demo requests cap output below the per-feature default
+# to bound cost. The cap is PER FEATURE on purpose: these are reasoning models
+# whose hidden thinking is billed against max_tokens, so a single low number
+# (e.g. 2000) that's fine for the lightweight rules/calc features would starve
+# the strategy/move features and make them return empty output. These values sit
+# below each feature's normal budget (so they genuinely cap cost) but well above
+# the point where a medium-effort reasoning model produces nothing.
+LIVE_DEMO_MAX_TOKENS = {
+    "rules": 3000,
+    "strategy": 7000,
+    "move": 7000,
+    "tac_calc": 3000,
+}
+LIVE_DEMO_DEFAULT_MAX_TOKENS = 4000  # fallback for an unrecognized feature
+
+
+def live_demo_max_tokens(feature_type: str) -> int:
+    """Reasoning-safe output cap for a private-live-demo request, per feature."""
+    return LIVE_DEMO_MAX_TOKENS.get(feature_type, LIVE_DEMO_DEFAULT_MAX_TOKENS)
+
 # --- Reasoning effort (OpenAI GPT-5.x only) -------------------------------
 
 # Controls how much these models deliberate before answering. Lower = faster

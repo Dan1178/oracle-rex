@@ -11,6 +11,9 @@ from .views import (
     rules_job_create, strategy_job_create, move_job_create, tactical_job_create,
     ai_job_status,
 
+    # Demo mode (Milestone 3)
+    demo_catalog, demo_status, demo_job_create,
+
     # Front end
 
     frontend_view,
@@ -34,6 +37,11 @@ urlpatterns = [
     path('jobs/move/', move_job_create, name='move_job_create'),
     path('jobs/tactical/', tactical_job_create, name='tactical_job_create'),
     path('jobs/<uuid:job_id>/', ai_job_status, name='ai_job_status'),
+
+    ### DEMO MODE (Milestone 3)
+    path('demo/catalog/', demo_catalog, name='demo_catalog'),
+    path('demo/status/', demo_status, name='demo_status'),
+    path('demo/run/', demo_job_create, name='demo_job_create'),
 
     ### FRONTEND
     path('', frontend_view, name='frontend'),

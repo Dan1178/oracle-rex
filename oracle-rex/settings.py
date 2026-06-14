@@ -225,6 +225,33 @@ AI_REQUEST_TIMEOUT = float(os.environ.get('AI_REQUEST_TIMEOUT', '180'))
 # provider timeout so a normally-slow call isn't reaped mid-flight.
 AI_JOB_STALE_SECONDS = int(AI_REQUEST_TIMEOUT) + 120
 
+# --- Demo mode & private live access (Milestone 3) ------------------------
+#
+# Three modes the hosted app supports:
+#   * Demo      — default public experience; one-click sample scenarios served
+#                 from pregenerated responses (core/demo). No key, no provider
+#                 call, so it can never run up the owner's AI bill.
+#   * BYOK      — the user pastes their own provider API key (existing flow).
+#   * Live demo — owner-controlled access for interviews: a shared access code
+#                 unlocks the owner's backend key, but only behind a cheap model,
+#                 an output-token cap, and a daily request limit.
+#
+# Live demo is OFF unless BOTH an access code and a backend key are configured.
+DEMO_LIVE_ACCESS_CODE = os.environ.get('DEMO_LIVE_ACCESS_CODE', '')
+DEMO_LIVE_API_KEY = os.environ.get('DEMO_LIVE_API_KEY', '')
+# Cheap, fast default model for owner-paid live demo requests.
+DEMO_LIVE_MODEL = os.environ.get('DEMO_LIVE_MODEL', 'gpt-5.4-nano')
+# Optional hard cap on output tokens per live-demo call. Default 0 means "use the
+# reasoning-safe per-feature caps" (core/service/ai/config.py live_demo_max_tokens),
+# which is recommended. Set a positive value only to force a single hard ceiling
+# across all features — note that a low value (e.g. <4000) can starve the
+# strategy/move reasoning calls and make them return empty output.
+DEMO_LIVE_MAX_OUTPUT_TOKENS = int(os.environ.get('DEMO_LIVE_MAX_OUTPUT_TOKENS', '0'))
+# Max shared live-demo requests per UTC day (0 disables the limit). Counted in
+# the cache; resets daily and on process restart (a soft cost ceiling).
+DEMO_LIVE_DAILY_LIMIT = int(os.environ.get('DEMO_LIVE_DAILY_LIMIT', '50'))
+DEMO_LIVE_ENABLED = bool(DEMO_LIVE_ACCESS_CODE and DEMO_LIVE_API_KEY)
+
 # Django-Q2 config — only used when AI_JOB_BACKEND == 'django_q'.
 #
 # Uses the ORM broker ('orm': 'default'), so the shared state between the web

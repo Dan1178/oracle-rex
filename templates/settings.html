@@ -1,10 +1,34 @@
 {% load static %}
 <div id="settings" class="tab-pane active">
     <h3>Settings</h3>
+
+    <div class="demo-box">
+        <h4>Three ways to use Oracle Rex</h4>
+        <ul class="modes-list">
+            <li><strong>Demo mode</strong> &mdash; the fastest way to explore. Every feature has a
+                one-click sample (look for the <em>Demo</em> boxes in each tab) backed by saved
+                AI responses. No API key required.</li>
+            <li><strong>Live AI (BYOK)</strong> &mdash; paste your own provider API key below to
+                generate fresh responses. Keys stay in your browser and are used only for your
+                requests.</li>
+            <li><strong>Private live demo</strong> &mdash; if you were given an access code, enter it
+                below to run live AI on a controlled, owner-provided key.</li>
+        </ul>
+    </div>
+
     <form id="settings-form">
         <p id="settings-info" style="color: green;">
-            You will need at least one API key to use all the features of Oracle Rex.
+            Demo mode needs no key. To use Live AI, add at least one API key below, or enter a
+            private live-demo access code.
         </p>
+
+        <label for="live-demo-access-code">Live Demo Access Code (optional):</label>
+        <input type="text" id="live-demo-access-code"
+               placeholder="Enter an access code to use the controlled live demo" style="width: 650px;"/><br>
+        <small style="color: #555;">
+            When set, live AI requests use the owner's controlled key (cheap model, capped usage)
+            instead of your own. Leave blank to use your own keys below.
+        </small><br><br>
         <label for="xai-api-key">xAI API Key:</label>
         <input type="text" id="xai-api-key" placeholder="Enter your xAI API key" style="width: 650px;"/><br><br>
 
