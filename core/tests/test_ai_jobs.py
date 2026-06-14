@@ -166,7 +166,7 @@ class TestCompletionHook(TestCase):
 
 class TestJobEndpoints(TestCase):
     def test_create_rules_job_returns_job_id_and_enqueues(self):
-        with patch("core.views.async_task") as mock_enqueue:
+        with patch("core.views.enqueue_ai_job") as mock_enqueue:
             resp = self.client.post(
                 reverse("rules_job_create"),
                 data=json.dumps({"question": "Can I retreat?", "api_key": "sk-x", "model": "gpt-5.4"}),
@@ -182,16 +182,16 @@ class TestJobEndpoints(TestCase):
         self.assertEqual(job.model_name, "gpt-5.4")
         self.assertEqual(job.prompt_version, "rules_chat_v1")
 
-        # Key is encrypted into the task arg, and never stored on the row.
+        # Key is encrypted into the enqueue arg, and never stored on the row.
         mock_enqueue.assert_called_once()
-        args, kwargs = mock_enqueue.call_args
-        encrypted_arg = args[2]
+        args, _ = mock_enqueue.call_args
+        job_id_arg, encrypted_arg = args[0], args[1]
+        self.assertEqual(job_id_arg, str(job.id))
         self.assertNotIn("sk-x", json.dumps(job.input_payload_json))
         self.assertEqual(decrypt_key(encrypted_arg), "sk-x")
-        self.assertEqual(kwargs["hook"], "core.jobs.ai_job_complete")
 
     def test_create_rules_job_requires_question(self):
-        with patch("core.views.async_task"):
+        with patch("core.views.enqueue_ai_job"):
             resp = self.client.post(
                 reverse("rules_job_create"),
                 data=json.dumps({"question": ""}),
@@ -200,7 +200,7 @@ class TestJobEndpoints(TestCase):
         self.assertEqual(resp.status_code, 400)
 
     def test_create_strategy_job_requires_faction(self):
-        with patch("core.views.async_task"):
+        with patch("core.views.enqueue_ai_job"):
             resp = self.client.post(
                 reverse("strategy_job_create"),
                 data=json.dumps({"game_json": {"a": 1}}),
@@ -226,3 +226,70 @@ class TestJobEndpoints(TestCase):
         import uuid
         resp = self.client.get(reverse("ai_job_status", args=[uuid.uuid4()]))
         self.assertEqual(resp.status_code, 404)
+
+
+class TestEnqueueDispatch(TestCase):
+    @override_settings(AI_JOB_BACKEND="thread")
+    def test_thread_backend_submits_to_pool(self):
+        from unittest.mock import MagicMock
+
+        fake_pool = MagicMock()
+        with patch.object(jobs, "_thread_pool", return_value=fake_pool):
+            jobs.enqueue_ai_job("job-123", "token")
+        fake_pool.submit.assert_called_once_with(
+            jobs._run_in_thread, "job-123", "token"
+        )
+
+    @override_settings(AI_JOB_BACKEND="django_q")
+    def test_django_q_backend_enqueues_with_hook(self):
+        with patch("django_q.tasks.async_task") as mock_async:
+            jobs.enqueue_ai_job("job-123", "token")
+        mock_async.assert_called_once()
+        args, kwargs = mock_async.call_args
+        self.assertEqual(args[0], "core.jobs.run_ai_job")
+        self.assertEqual(args[1], "job-123")
+        self.assertEqual(kwargs["hook"], "core.jobs.ai_job_complete")
+
+
+class TestStaleReaper(TestCase):
+    def test_stale_running_job_is_reaped_to_timeout(self):
+        from datetime import timedelta
+        from django.utils import timezone
+
+        job = AIJob.objects.create(
+            feature_type=AIJob.FeatureType.RULES,
+            input_payload_json={"question": "x"},
+            status=AIJob.Status.RUNNING,
+            started_at=timezone.now() - timedelta(seconds=jobs.STALE_RUNNING_SECONDS + 60),
+        )
+        jobs.reap_if_stale(job)
+        job.refresh_from_db()
+        self.assertEqual(job.status, AIJob.Status.TIMEOUT)
+        self.assertTrue(job.error_message)
+
+    def test_fresh_running_job_is_left_alone(self):
+        from django.utils import timezone
+
+        job = AIJob.objects.create(
+            feature_type=AIJob.FeatureType.RULES,
+            input_payload_json={"question": "x"},
+            status=AIJob.Status.RUNNING,
+            started_at=timezone.now(),
+        )
+        jobs.reap_if_stale(job)
+        job.refresh_from_db()
+        self.assertEqual(job.status, AIJob.Status.RUNNING)
+
+    def test_status_endpoint_reaps_stale_job(self):
+        from datetime import timedelta
+        from django.utils import timezone
+
+        job = AIJob.objects.create(
+            feature_type=AIJob.FeatureType.RULES,
+            input_payload_json={"question": "x"},
+            status=AIJob.Status.RUNNING,
+            started_at=timezone.now() - timedelta(seconds=jobs.STALE_RUNNING_SECONDS + 60),
+        )
+        resp = self.client.get(reverse("ai_job_status", args=[job.id]))
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["status"], AIJob.Status.TIMEOUT)

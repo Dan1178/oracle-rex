@@ -218,7 +218,39 @@ Frontend polls job status
 Frontend renders result when complete
 ```
 
-## Decision (locked 2026-06-14)
+## Decision (revised 2026-06-14 — cost-driven pivot)
+
+**Final approach: DB-backed AI job model + polling, with a _pluggable_ execution
+backend selected by `AI_JOB_BACKEND`. Default `thread` runs jobs in an in-process
+thread pool on the web service (zero extra infrastructure, single free host).
+Optional `django_q` enqueues to a separate durable Django-Q worker for the
+restart-surviving setup.**
+
+Why the change: the original locked decision (below) required an always-on Render
+Background Worker, which has no free tier (~$7/mo floor, ~$13–15/mo with a
+non-expiring Postgres). For this load (low-volume BYOK + controlled demo) the
+problem is the HTTP timeout, not throughput, so holding the long provider call in
+an in-process background thread off the request path solves it for $0. The
+durable Django-Q path is kept behind the env flag for when a worker/Postgres is
+available (local dev, or a future paid deploy), preserving the async-jobs story.
+
+What this changed vs. the locked plan:
+- Execution is pluggable (`core/jobs.py` `enqueue_ai_job`): `ThreadPoolExecutor`
+  by default, `async_task` → Django-Q when `AI_JOB_BACKEND=django_q`.
+- Postgres is **no longer required** — SQLite (WAL mode, busy timeout) is the
+  default again; `DATABASE_URL`/`dj-database-url` still supported for Postgres.
+- A read-time **stale-`running`→`timeout` reaper** replaces the worker-only
+  completion hook as the safety net for the thread backend (the hook is retained
+  for the Django-Q path).
+- `render.yaml` defaults to a **single free web service**; the worker + Postgres
+  are commented-in for the optional durable upgrade. Local dev is back to one
+  process (`runserver`); `qcluster` only when `AI_JOB_BACKEND=django_q`.
+- The `AIJob` model, `/api/jobs/` endpoints, frontend polling, BYOK encryption,
+  and `run_ai_job` are unchanged — the backends share them.
+
+---
+
+### Original decision (locked 2026-06-14, superseded by the pivot above)
 
 **Approach: DB-backed AI job queue with Django-Q2 (ORM broker) + a dedicated Render
 background worker, backed by Postgres. Frontend polls job status.**

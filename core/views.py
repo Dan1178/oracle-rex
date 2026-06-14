@@ -4,10 +4,10 @@ import logging
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_GET
-from django_q.tasks import async_task
 from rest_framework import generics
 from rest_framework.decorators import api_view
 
+from .jobs import enqueue_ai_job, reap_if_stale
 from .models import AIJob, Faction, Player, System, Tile
 from .serializers import FactionSerializer, PlayerSerializer, SystemSerializer, TileSerializer
 from .service.ai import config
@@ -107,12 +107,9 @@ def _create_ai_job(feature_type, input_payload, api_key, model):
         model_provider=config.provider_for_model(resolved),
         prompt_version=config.prompt_version_for(feature_type),
     )
-    async_task(
-        "core.jobs.run_ai_job",
-        str(job.id),
-        encrypt_key(api_key),
-        hook="core.jobs.ai_job_complete",
-    )
+    # The BYOK key is encrypted into the task argument and never stored on the
+    # row. enqueue_ai_job routes to the configured backend (thread or Django-Q).
+    enqueue_ai_job(str(job.id), encrypt_key(api_key))
     logger.info("Enqueued AIJob %s (%s) on %s", job.id, feature_type, resolved)
     return job
 
@@ -220,4 +217,6 @@ def ai_job_status(request, job_id):
         job = AIJob.objects.get(pk=job_id)
     except AIJob.DoesNotExist:
         return JsonResponse({'error': 'Job not found'}, status=404)
+    # Resolve orphaned 'running' jobs (web process died mid-run) on read.
+    job = reap_if_stale(job)
     return JsonResponse(_job_to_dict(job))

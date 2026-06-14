@@ -17,7 +17,10 @@ never got to save a terminal state and the row would otherwise be stuck at
 
 import logging
 import time
+from concurrent.futures import ThreadPoolExecutor
 
+from django.conf import settings
+from django.db import connection
 from django.utils import timezone
 
 from .models import AIJob
@@ -30,6 +33,13 @@ from .service.ai.errors import (
 )
 
 logger = logging.getLogger("core.jobs")
+
+# A job is considered orphaned (its process died mid-run) if it sits in
+# ``running`` longer than this. The status endpoint reaps such rows on read so
+# they don't hang forever — the safety net for the in-process thread backend,
+# which (unlike a durable worker) loses in-flight jobs when the web dyno
+# restarts or spins down.
+STALE_RUNNING_SECONDS = 300
 
 
 # --- result builders -------------------------------------------------------
@@ -179,3 +189,80 @@ def ai_job_complete(task) -> None:
             "AIJob %s force-failed to 'timeout' by worker (task result: %s)",
             job_id, task.result,
         )
+
+
+# --- enqueue dispatcher ----------------------------------------------------
+# Two interchangeable execution backends, chosen by settings.AI_JOB_BACKEND:
+#
+#   'thread'    (default) — run the job in an in-process ThreadPoolExecutor on
+#               the web service. No extra process, so it runs on a single free
+#               host. The trade-off is durability: a job in flight when the web
+#               process restarts is lost (the stale-running reaper cleans it up).
+#
+#   'django_q'  — enqueue to the Django-Q ORM broker for a separate, durable
+#               worker (`manage.py qcluster`). Survives web restarts; needs the
+#               worker process (a paid service on Render) and ideally Postgres.
+#
+# Both call the same self-contained run_ai_job, so the rest of the system
+# (model, endpoints, frontend) is identical regardless of backend.
+
+_EXECUTOR = None
+
+
+def _thread_pool() -> ThreadPoolExecutor:
+    global _EXECUTOR
+    if _EXECUTOR is None:
+        workers = getattr(settings, "AI_JOB_THREADS", 4)
+        _EXECUTOR = ThreadPoolExecutor(
+            max_workers=workers, thread_name_prefix="aijob"
+        )
+    return _EXECUTOR
+
+
+def _run_in_thread(job_id, encrypted_key: str) -> None:
+    """Thread entry point: run the job, then release this thread's DB connection.
+
+    Django opens a fresh connection per thread on first query; close it when the
+    job ends so background threads don't leak connections.
+    """
+    try:
+        run_ai_job(job_id, encrypted_key)
+    finally:
+        connection.close()
+
+
+def enqueue_ai_job(job_id, encrypted_key: str = "") -> None:
+    """Dispatch a job to the configured execution backend."""
+    backend = getattr(settings, "AI_JOB_BACKEND", "thread")
+    if backend == "django_q":
+        from django_q.tasks import async_task
+
+        async_task(
+            "core.jobs.run_ai_job",
+            job_id,
+            encrypted_key,
+            hook="core.jobs.ai_job_complete",
+        )
+    else:
+        _thread_pool().submit(_run_in_thread, job_id, encrypted_key)
+
+
+def reap_if_stale(job: AIJob) -> AIJob:
+    """Mark a long-stuck ``running`` job as ``timeout``.
+
+    Called when the status endpoint reads a job, so an orphaned row (whose
+    thread died with the web process) resolves to a terminal state instead of
+    polling forever. No-op for jobs that aren't stale.
+    """
+    if job.status != AIJob.Status.RUNNING or not job.started_at:
+        return job
+    age = (timezone.now() - job.started_at).total_seconds()
+    if age <= STALE_RUNNING_SECONDS:
+        return job
+
+    job.status = AIJob.Status.TIMEOUT
+    job.error_message = ProviderTimeoutError().user_message
+    job.completed_at = timezone.now()
+    job.save(update_fields=["status", "error_message", "completed_at"])
+    logger.warning("AIJob %s reaped as 'timeout' after %.0fs running", job.id, age)
+    return job

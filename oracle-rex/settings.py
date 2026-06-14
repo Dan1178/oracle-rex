@@ -114,6 +114,13 @@ DATABASES = {
     )
 }
 
+# When running on SQLite (the default, zero-cost single-process deployment), use
+# WAL mode and a busy timeout so the web request thread and the in-process AI job
+# threads don't trip over each other on concurrent writes. WAL is enabled per
+# connection in core/apps.py; the busy timeout is set here.
+if DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3':
+    DATABASES['default'].setdefault('OPTIONS', {})['timeout'] = 20
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -183,7 +190,18 @@ LOGGING = {
     },
 }
 
-# Django-Q2 — asynchronous AI job queue (Milestone 2).
+# --- Async AI jobs (Milestone 2) ------------------------------------------
+#
+# Execution backend for AI jobs:
+#   'thread'   (default) run jobs in an in-process thread pool on the web
+#              service — no extra process, runs on a single free host.
+#   'django_q' enqueue to the Django-Q ORM broker for a separate, durable
+#              worker (`manage.py qcluster`); survives restarts but needs the
+#              worker process (paid on Render) and ideally Postgres.
+AI_JOB_BACKEND = os.environ.get('AI_JOB_BACKEND', 'thread')
+AI_JOB_THREADS = int(os.environ.get('AI_JOB_THREADS', '4'))
+
+# Django-Q2 config — only used when AI_JOB_BACKEND == 'django_q'.
 #
 # Uses the ORM broker ('orm': 'default'), so the shared state between the web
 # process and the worker is the database itself — no Redis. Run the worker with
