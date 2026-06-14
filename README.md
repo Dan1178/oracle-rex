@@ -69,18 +69,25 @@ Execute the following commands to install dependencies:
     python -m pip install --upgrade pip
     pip install -r requirements.txt
 
-Execute the following command to generate static files:
-
-    python manage.py collectstatic
-
 Apply database migrations:
 
     python manage.py migrate
 
-After the above steps have been completed, run the application with a single
-process:
+Run the application with a single process. For local development set
+`DJANGO_DEBUG=1` so your edited `static/` files (JS/CSS) are served directly:
 
+    # PowerShell
+    $env:DJANGO_DEBUG = "1"
     python manage.py runserver
+
+    # bash
+    DJANGO_DEBUG=1 python manage.py runserver
+
+Without `DJANGO_DEBUG=1`, the app runs in production mode (`DEBUG=False`) and
+WhiteNoise serves the **collected** copies in `staticfiles/` — so after any
+JS/CSS change you must re-run `python manage.py collectstatic`. (Stale collected
+assets calling old endpoints is a common source of "Unexpected token '<'" JSON
+errors in the browser.)
 
 AI features run as **asynchronous jobs** so long provider calls don't time out
 the web request (see "Async AI jobs" below). By default they execute in an

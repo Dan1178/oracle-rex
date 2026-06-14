@@ -35,7 +35,11 @@ SECRET_KEY = os.environ.get(
 AIJOB_FERNET_KEY = os.environ.get('AIJOB_FERNET_KEY', '')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# Default False (production-safe). Set DJANGO_DEBUG=1 for local development so
+# runserver serves your edited static/ files directly — otherwise WhiteNoise
+# serves the collected staticfiles/ copies and you must re-run collectstatic
+# after every JS/CSS change.
+DEBUG = os.environ.get('DJANGO_DEBUG', '') == '1'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', "oracle-rex.onrender.com"]
 
@@ -70,6 +74,14 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'oracle-rex.urls'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# In development (DEBUG), have WhiteNoise serve files straight from the static/
+# source dirs via the staticfiles finders and re-check them on each request, so
+# edits show up without re-running collectstatic. No effect in production, where
+# WhiteNoise serves the collected, hashed staticfiles/ as usual.
+if DEBUG:
+    WHITENOISE_USE_FINDERS = True
+    WHITENOISE_AUTOREFRESH = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
