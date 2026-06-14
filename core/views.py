@@ -1,27 +1,21 @@
 import json
+import logging
 
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_GET
+from django_q.tasks import async_task
 from rest_framework import generics
 from rest_framework.decorators import api_view
 
-from .models import Faction, Player, System, Tile
+from .models import AIJob, Faction, Player, System, Tile
 from .serializers import FactionSerializer, PlayerSerializer, SystemSerializer, TileSerializer
-from .service.ai_service import (
-    AIServiceError,
-    get_rules_response,
-    get_strategy_response,
-    get_move_response,
-    get_tac_calc_response,
-)
+from .service.ai import config
+from .service.ai.crypto import encrypt_key
 from .service.tts_string_ingest import build_game_from_string
 from .util.utils import reset_database
 
-
-def _ai_error_response(exc: AIServiceError) -> JsonResponse:
-    """Turn an AIServiceError into a clean, user-facing JSON response."""
-    return JsonResponse({'error': exc.user_message}, status=exc.http_status)
+logger = logging.getLogger("core.jobs")
 
 
 ###########         FRONTEND        ################################
@@ -71,41 +65,6 @@ class TileListView(generics.ListAPIView):
 
 
 @api_view(['POST'])
-def rules_chat_api(request):
-    if request.method == 'POST':
-        try:
-            # Parse JSON body from POST request
-            data = json.loads(request.body)
-            question = data.get('question', '')
-            api_key = data.get('api_key', '')
-            model = data.get('model', 'gpt-4')
-
-            if not question:
-                return JsonResponse({'error': 'No question provided'}, status=400)
-
-            # Get the answer from the rules chatbot (validated structured result)
-            answer = get_rules_response(question, api_key, model)
-
-            # Return the response as JSON. 'answer' stays a string for the
-            # current frontend; 'structured' is the validated object for the
-            # upcoming React UI.
-            return JsonResponse({
-                'question': question,
-                'answer': answer.to_display_text(),
-                'structured': answer.model_dump(),
-            })
-
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
-        except AIServiceError as e:
-            return _ai_error_response(e)
-        except Exception as e:
-            return JsonResponse({'error': f'Unexpected error: {str(e)}'}, status=500)
-
-    return JsonResponse({'error': 'Method not allowed, use POST'}, status=405)
-
-
-@api_view(['POST'])
 def build_game_from_tts_api(request):
     if request.method == 'POST':
         try:
@@ -128,74 +87,137 @@ def build_game_from_tts_api(request):
     return JsonResponse({'error': 'Method not allowed, use POST'}, status=405)
 
 
-def ai_suggest(request, type):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            game_json = data.get('game_json', {})
-            player_faction = data.get('player_faction', '')
-            api_key = data.get('api_key', '')
-            model = data.get('model', 'gpt-4')
+###########     ASYNC AI JOBS (Milestone 2)     ####################
+# Every AI feature runs as a background job. The create endpoints return
+# immediately with a job id; the worker (`manage.py qcluster`) runs the provider
+# call; the frontend polls the status endpoint until the job is terminal. This
+# keeps the long provider call off the request path so Render doesn't time it out.
 
-            if not game_json or not player_faction:
-                return JsonResponse({'error': 'Missing game_json or player_faction'}, status=400)
+def _create_ai_job(feature_type, input_payload, api_key, model):
+    """Create an AIJob row and enqueue it for the background worker.
 
-            if type == 'strategy':
-                result = get_strategy_response(game_json, player_faction, api_key, model)
-            elif type == 'move':
-                result = get_move_response(game_json, player_faction, api_key, model)
-            else:
-                return JsonResponse({'error': f'Unknown suggestion type: {type}'}, status=400)
+    The BYOK key is encrypted into the task argument and is never written to the
+    AIJob row (see core.service.ai.crypto).
+    """
+    resolved = config.resolve_model(model)
+    job = AIJob.objects.create(
+        feature_type=feature_type,
+        input_payload_json=input_payload,
+        model_name=resolved,
+        model_provider=config.provider_for_model(resolved),
+        prompt_version=config.prompt_version_for(feature_type),
+    )
+    async_task(
+        "core.jobs.run_ai_job",
+        str(job.id),
+        encrypt_key(api_key),
+        hook="core.jobs.ai_job_complete",
+    )
+    logger.info("Enqueued AIJob %s (%s) on %s", job.id, feature_type, resolved)
+    return job
 
-            return JsonResponse({
-                'faction': player_faction,
-                'strategy': result.to_display_text(),
-                'structured': result.model_dump(),
-            })
 
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
-        except AIServiceError as e:
-            return _ai_error_response(e)
-        except Exception as e:
-            return JsonResponse({'error': f'Unexpected error: {str(e)}'}, status=500)
+def _job_created_response(job) -> JsonResponse:
+    return JsonResponse({'job_id': str(job.id), 'status': job.status}, status=202)
 
-    return JsonResponse({'error': 'Method not allowed, use POST'}, status=405)
+
+def _job_to_dict(job) -> dict:
+    return {
+        'id': str(job.id),
+        'feature_type': job.feature_type,
+        'status': job.status,
+        'is_terminal': job.is_terminal,
+        'result': job.result_payload_json,
+        'error': job.error_message or None,
+        'model_name': job.model_name,
+        'prompt_version': job.prompt_version,
+        'created_at': job.created_at.isoformat() if job.created_at else None,
+        'completed_at': job.completed_at.isoformat() if job.completed_at else None,
+    }
 
 
 @api_view(['POST'])
-def strategy_suggester_api(request):
-    return ai_suggest(request, 'strategy')
+def rules_job_create(request):
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+
+    question = data.get('question', '')
+    if not question:
+        return JsonResponse({'error': 'No question provided'}, status=400)
+
+    job = _create_ai_job(
+        AIJob.FeatureType.RULES,
+        {'question': question},
+        data.get('api_key', ''),
+        data.get('model', 'gpt-4'),
+    )
+    return _job_created_response(job)
+
+
+def suggest_job_create(request, type):
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+
+    feature_map = {
+        'strategy': AIJob.FeatureType.STRATEGY,
+        'move': AIJob.FeatureType.MOVE,
+    }
+    feature_type = feature_map.get(type)
+    if feature_type is None:
+        return JsonResponse({'error': f'Unknown suggestion type: {type}'}, status=400)
+
+    game_json = data.get('game_json', {})
+    player_faction = data.get('player_faction', '')
+    if not game_json or not player_faction:
+        return JsonResponse({'error': 'Missing game_json or player_faction'}, status=400)
+
+    job = _create_ai_job(
+        feature_type,
+        {'game_json': game_json, 'player_faction': player_faction},
+        data.get('api_key', ''),
+        data.get('model', 'gpt-4'),
+    )
+    return _job_created_response(job)
 
 
 @api_view(['POST'])
-def move_suggester_api(request):
-    return ai_suggest(request, 'move')
+def strategy_job_create(request):
+    return suggest_job_create(request, 'strategy')
 
 
 @api_view(['POST'])
-def tactical_calculator_api(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            force_data = data.get('force_data', {})
-            api_key = data.get('api_key', '')
-            model = data.get('model', 'gpt-4')
+def move_job_create(request):
+    return suggest_job_create(request, 'move')
 
-            if not force_data:
-                return JsonResponse({'error': 'Missing force data'}, status=400)
 
-            calc_results = get_tac_calc_response(force_data, api_key, model)
+@api_view(['POST'])
+def tactical_job_create(request):
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON format'}, status=400)
 
-            return JsonResponse({
-                'calc_results': calc_results
-            })
+    force_data = data.get('force_data', {})
+    if not force_data:
+        return JsonResponse({'error': 'Missing force data'}, status=400)
 
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
-        except AIServiceError as e:
-            return _ai_error_response(e)
-        except Exception as e:
-            return JsonResponse({'error': f'Unexpected error: {str(e)}'}, status=500)
+    job = _create_ai_job(
+        AIJob.FeatureType.TAC_CALC,
+        {'force_data': force_data},
+        data.get('api_key', ''),
+        data.get('model', 'gpt-4'),
+    )
+    return _job_created_response(job)
 
-    return JsonResponse({'error': 'Method not allowed, use POST'}, status=405)
+
+@require_GET
+def ai_job_status(request, job_id):
+    try:
+        job = AIJob.objects.get(pk=job_id)
+    except AIJob.DoesNotExist:
+        return JsonResponse({'error': 'Job not found'}, status=404)
+    return JsonResponse(_job_to_dict(job))

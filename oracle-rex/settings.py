@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +23,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-s6+_jwtlw!br7qrh^lv@o*pxju=ey7!arv6srw0#xs)($8hx(8'
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'django-insecure-s6+_jwtlw!br7qrh^lv@o*pxju=ey7!arv6srw0#xs)($8hx(8',
+)
+
+# Fernet key used to encrypt BYOK API keys before they enter the Django-Q broker
+# table (see core.service.ai.crypto). Set AIJOB_FERNET_KEY in production so the
+# web and worker processes share a stable key; otherwise one is derived from
+# SECRET_KEY, which both processes already read identically.
+AIJOB_FERNET_KEY = os.environ.get('AIJOB_FERNET_KEY', '')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -38,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_q',
     'core',
     'corsheaders',
 ]
@@ -86,12 +99,19 @@ WSGI_APPLICATION = 'oracle-rex.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+#
+# Env-driven via DATABASE_URL (dj-database-url). Production on Render points this
+# at Postgres — the same instance the web service and the Django-Q background
+# worker share, which is what makes the ORM broker work without Redis. With no
+# DATABASE_URL set, it falls back to the local SQLite file so a fresh checkout
+# still runs. ``conn_max_age`` keeps Postgres connections warm; the worker holds
+# long-lived connections while polling the broker table.
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+    )
 }
 
 
@@ -155,5 +175,37 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False,
         },
+        'django_q': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     },
+}
+
+# Django-Q2 — asynchronous AI job queue (Milestone 2).
+#
+# Uses the ORM broker ('orm': 'default'), so the shared state between the web
+# process and the worker is the database itself — no Redis. Run the worker with
+# `python manage.py qcluster`. Locally that's a second process alongside
+# `runserver` (see the Procfile); on Render it's a dedicated Background Worker
+# pointed at the same Postgres instance.
+#
+# 'timeout' kills a task that runs too long (a hung provider call) so a job can't
+# wedge a worker forever; the completion hook then marks the AIJob 'timeout'.
+# It is set a little above the service layer's own provider timeout
+# (DEFAULT_REQUEST_TIMEOUT, 90s) so the graceful in-task timeout normally wins
+# and this is only a hard safety net. 'retry' must exceed 'timeout'.
+Q_CLUSTER = {
+    'name': 'oracle_rex',
+    'workers': int(os.environ.get('Q_WORKERS', '2')),
+    'timeout': 120,
+    'retry': 180,
+    'max_attempts': 1,
+    'catch_up': False,
+    'save_limit': 250,
+    'orm': 'default',
+    # In tests / one-off scripts, force synchronous execution so enqueued tasks
+    # run inline without a separate qcluster process.
+    'sync': os.environ.get('Q_SYNC', '') == '1',
 }

@@ -82,6 +82,24 @@ TAC_CALC_REASONING_EFFORT = "medium"    # probability / combat arithmetic
 # moves long AI work onto async jobs.
 DEFAULT_REQUEST_TIMEOUT = 90.0
 
+# --- Prompt versions (per feature) ----------------------------------------
+
+# Stamped onto every AIJob so logs/admin show which prompt produced a result.
+# Bump the version when a prompt's wording changes materially; this seeds the
+# optional prompt-versioning feature without extra plumbing.
+PROMPT_VERSIONS = {
+    "rules": "rules_chat_v1",
+    "strategy": "strategic_plan_v1",
+    "move": "tactical_move_v1",
+    "tac_calc": "tactical_calculator_v1",
+}
+
+
+def prompt_version_for(feature_type: str) -> str:
+    """Return the current prompt version string for a feature, or ''."""
+    return PROMPT_VERSIONS.get(feature_type, "")
+
+
 # Provider SDKs retry timeouts/5xx automatically (OpenAI defaults to 2 retries).
 # For a slow reasoning model that exceeds the timeout, that turns one 90s wait
 # into ~3x90s of silent hanging before failing — and each aborted attempt never

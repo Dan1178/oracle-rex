@@ -73,14 +73,76 @@ Execute the following command to generate static files:
 
     python manage.py collectstatic
 
-After the above steps have been completed, you can run the application locally by executing:
+Apply database migrations:
 
-    python manage.py runserver
+    python manage.py migrate
+
+After the above steps have been completed, you can run the application locally.
+AI features now run as **asynchronous background jobs** (so long provider calls
+don't time out the web request — see "Async AI jobs" below), which means two
+processes: the web server and the Django-Q worker.
+
+    python manage.py runserver        # web (terminal 1)
+    python manage.py qcluster         # AI job worker (terminal 2)
+
+If the worker isn't running, AI jobs are created but never processed and the
+frontend polls forever. To launch both at once, use a Procfile runner such as
+[honcho](https://github.com/nickstenning/honcho):
+
+    honcho start
+
+### Database
+
+The database is configured from the `DATABASE_URL` environment variable
+(`dj-database-url`). With no `DATABASE_URL` set it falls back to a local SQLite
+file, which is fine for quick local runs. For a setup that matches production —
+and to avoid SQLite write-lock contention between the web and worker processes —
+point it at Postgres (Docker is fine):
+
+    DATABASE_URL=postgres://user:pass@localhost:5432/oracle_rex
+
+### Async AI jobs
+
+Each AI feature POSTs to a `/api/jobs/<feature>/` endpoint that returns a job id
+immediately; the worker runs the provider call; the frontend polls
+`/api/jobs/<id>/` until the job is `completed`/`failed`/`timeout`. BYOK API keys
+are encrypted (Fernet) before they enter the Django-Q broker and decrypted only
+in the worker — they are never stored on the job row. Recent jobs (including
+failures and the prompt version used) are visible in the Django admin under
+**AI jobs**.
+
+Optional environment variables:
+
+- `AIJOB_FERNET_KEY` — stable key for BYOK encryption shared by web + worker.
+  If unset, one is derived from `SECRET_KEY` (both processes derive it
+  identically).
+- `Q_WORKERS` — worker process count (default 2).
 
 ## Deployment:
 
 This application automatically deploys on Render when a successful build runs on the main branch.
 See CI.yml for details.
+
+Render runs **two services** against the same Postgres instance:
+
+- a **Web Service** with start command `gunicorn oracle-rex.wsgi:application`
+- a **Background Worker** with start command `python manage.py qcluster`
+
+The simplest way to provision all three resources (web, worker, Postgres) wired
+together is the included **`render.yaml` Blueprint**: in the Render dashboard
+choose *New > Blueprint* and point it at this repo. It generates a shared
+`DJANGO_SECRET_KEY` on the web service and references it from the worker, so both
+processes derive the same BYOK-encryption key with no manual step.
+
+Notes:
+
+- The background worker needs a **paid** instance — Render's free tier doesn't
+  offer background workers. Without a running worker, AI jobs are created but
+  never processed.
+- Free-tier Postgres expires after ~30 days; switch the `oracle-rex-db` plan to a
+  paid tier for anything long-lived.
+- To set your own `AIJOB_FERNET_KEY` instead of deriving it from the secret key,
+  add the **same** value to both the web and worker services.
 
 ## LLMs in Use:
     - grok-4.3

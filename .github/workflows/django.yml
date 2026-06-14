@@ -25,4 +25,4 @@ jobs:
         pip install -r requirements.txt
     - name: Run Tests
       run: |
-        python manage.py test core.tests.service
+        python manage.py test core.tests

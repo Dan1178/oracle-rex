@@ -5,8 +5,11 @@ from .views import (
     # Backend
     FactionListView, FactionDetailView,
     PlayerListCreateView, PlayerDetailView,
-    SystemListView, TileListView, reset_database_api, rules_chat_api, build_game_from_tts_api,
-    strategy_suggester_api, move_suggester_api, tactical_calculator_api,
+    SystemListView, TileListView, reset_database_api, build_game_from_tts_api,
+
+    # Async AI jobs (Milestone 2)
+    rules_job_create, strategy_job_create, move_job_create, tactical_job_create,
+    ai_job_status,
 
     # Front end
 
@@ -23,11 +26,14 @@ urlpatterns = [
     path('players/<int:pk>/', PlayerDetailView.as_view(), name='player-detail'),
     path('systems/', SystemListView.as_view(), name='system-list'),
     path('tiles/', TileListView.as_view(), name='tile-list'),
-    path('rules-chat/', rules_chat_api, name='rules-chat'),
     path('build-game-from-tts/', build_game_from_tts_api, name='build_game_from_tts'),
-    path('strategy-suggester/', strategy_suggester_api, name='strategy_suggester'),
-    path('move-suggester/', move_suggester_api, name='move_suggester'),
-    path('tactical-calculator/', tactical_calculator_api, name='tactical_calculator'),
+
+    ### ASYNC AI JOBS (Milestone 2)
+    path('jobs/rules/', rules_job_create, name='rules_job_create'),
+    path('jobs/strategy/', strategy_job_create, name='strategy_job_create'),
+    path('jobs/move/', move_job_create, name='move_job_create'),
+    path('jobs/tactical/', tactical_job_create, name='tactical_job_create'),
+    path('jobs/<uuid:job_id>/', ai_job_status, name='ai_job_status'),
 
     ### FRONTEND
     path('', frontend_view, name='frontend'),

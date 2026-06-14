@@ -8,3 +8,8 @@ numpy==2.2.4
 django-cors-headers
 gunicorn
 whitenoise
+# Milestone 2 — async AI jobs (Django-Q2 ORM broker) + Postgres + BYOK key encryption
+django-q2==1.8.0
+dj-database-url==2.3.0
+psycopg[binary]==3.2.9
+cryptography==45.0.5

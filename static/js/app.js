@@ -125,21 +125,17 @@ function suggestStrategy(gameName) {
         return;
     }
 
-    answerBox.classList.add('loading');
-    fetch('/api/' + gameName + '-suggester/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_json: gameData, player_faction: faction, api_key: api_key, model: model })
-    })
-    .then(response => response.json())
-    .then(data => {
-        answerBox.textContent = data.strategy || data.error;
-        answerBox.classList.remove('loading');
-    })
-    .catch(error => {
-        answerBox.textContent = 'Error: ' + error;
-        answerBox.classList.remove('loading');
-    });
+    const loadingText = gameName === 'move'
+        ? 'Evaluating tactical options...'
+        : 'Analyzing board state...';
+
+    runAiJob(
+        '/api/jobs/' + gameName + '/',
+        { game_json: gameData, player_faction: faction, api_key: api_key, model: model },
+        answerBox,
+        loadingText,
+        (result, box) => { box.textContent = result.strategy || 'No recommendation was returned.'; }
+    );
 }
 
 function exportFleetManagerToMoveSuggester() {
@@ -158,4 +154,79 @@ function getSelectedApiKey(tabPrefix, model) {
     const apiMake = radio ? radio.getAttribute('data-api-make') : 'openai';
     api_key = document.getElementById(`${apiMake}-api-key`).value;
     return api_key;
+}
+
+
+// --- Async AI job polling (Milestone 2) -------------------------------------
+// AI features now run as background jobs: POST to create the job (returns
+// immediately with a job id), then poll the status endpoint until the job
+// reaches a terminal state. This keeps the long provider call off the
+// browser->backend request path so the hosted app doesn't time out on Render.
+
+const AI_JOB_POLL_INTERVAL_MS = 1500;
+const AI_JOB_POLL_TIMEOUT_MS = 180000; // stop polling after 3 minutes
+
+function pollAiJob(jobId, onDone, onError) {
+    const startedAt = Date.now();
+    const tick = () => {
+        fetch('/api/jobs/' + jobId + '/')
+            .then(response => {
+                if (!response.ok) throw new Error('Could not check job status.');
+                return response.json();
+            })
+            .then(job => {
+                if (job.is_terminal) {
+                    if (job.status === 'completed') {
+                        onDone(job.result || {});
+                    } else {
+                        onError(job.error ||
+                            'The AI request failed. You can retry, switch to demo mode, ' +
+                            'or provide your own API key in Live AI Mode.');
+                    }
+                    return;
+                }
+                if (Date.now() - startedAt > AI_JOB_POLL_TIMEOUT_MS) {
+                    onError('The AI request is taking longer than expected. ' +
+                        'Try a smaller scenario, a faster model, or retry.');
+                    return;
+                }
+                setTimeout(tick, AI_JOB_POLL_INTERVAL_MS);
+            })
+            .catch(err => onError('Error checking job status: ' + err.message));
+    };
+    tick();
+}
+
+// Submit an AI job and drive its full lifecycle (loading -> success/error)
+// into a single answer box. ``renderResult(result, answerBox)`` renders the
+// terminal job result payload returned by the worker.
+function runAiJob(createUrl, body, answerBox, loadingText, renderResult) {
+    answerBox.classList.add('loading');
+    answerBox.textContent = loadingText;
+    fetch(createUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    })
+    .then(response => response.json().then(data => ({ ok: response.ok, data })))
+    .then(({ ok, data }) => {
+        if (!ok || !data.job_id) {
+            throw new Error(data.error || 'Could not start the AI request.');
+        }
+        pollAiJob(
+            data.job_id,
+            result => {
+                answerBox.classList.remove('loading');
+                renderResult(result, answerBox);
+            },
+            message => {
+                answerBox.classList.remove('loading');
+                answerBox.textContent = message;
+            }
+        );
+    })
+    .catch(err => {
+        answerBox.classList.remove('loading');
+        answerBox.textContent = 'Error: ' + err.message;
+    });
 }

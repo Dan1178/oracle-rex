@@ -6,15 +6,16 @@ upgrade plan). Views never call provider SDKs directly; they call
 
 ## AI call-site audit
 
-There are four AI-powered features. Each is now backed by one service function
-and reached through one view:
+There are four AI-powered features. Each is backed by one service function,
+dispatched by the async worker (`core/jobs.py`, Milestone 2) and reached through
+a `/api/jobs/<feature>/` create endpoint:
 
-| Feature            | View (`core/views.py`)      | Service fn (`ai/service.py`) | Prompt (`ai/prompts/`)     | Schema (`ai/schemas/`) |
-| ------------------ | --------------------------- | ---------------------------- | -------------------------- | ---------------------- |
-| Rules Q&A          | `rules_chat_api`            | `get_rules_response`         | `rules_chat.py`            | `RulesAnswer`          |
-| Strategy suggester | `strategy_suggester_api`    | `get_strategy_response`      | `strategic_plan.py`        | `StrategicPlan`        |
-| Move suggester     | `move_suggester_api`        | `get_move_response`          | `tactical_move.py`         | `TacticalMove`         |
-| Battle calculator  | `tactical_calculator_api`   | `get_tac_calc_response`      | `tactical_calculator.py`   | — (rigid text format)  |
+| Feature            | Create endpoint (`core/views.py`) | Service fn (`ai/service.py`) | Prompt (`ai/prompts/`)     | Schema (`ai/schemas/`) |
+| ------------------ | --------------------------------- | ---------------------------- | -------------------------- | ---------------------- |
+| Rules Q&A          | `rules_job_create`                | `get_rules_response`         | `rules_chat.py`            | `RulesAnswer`          |
+| Strategy suggester | `strategy_job_create`             | `get_strategy_response`      | `strategic_plan.py`        | `StrategicPlan`        |
+| Move suggester     | `move_job_create`                 | `get_move_response`          | `tactical_move.py`         | `TacticalMove`         |
+| Battle calculator  | `tactical_job_create`             | `get_tac_calc_response`      | `tactical_calculator.py`   | — (rigid text format)  |
 
 ### Before this milestone
 
@@ -37,8 +38,6 @@ core/service/ai/
   schemas/         Pydantic models with to_display_text() + fallback_from_text()
   service.py       public functions; validation, structured output, error mapping
 ```
-
-`core/service/ai_service.py` is a thin backward-compatible re-export.
 
 ### Providers and models
 

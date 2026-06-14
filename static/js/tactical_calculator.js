@@ -112,19 +112,11 @@ function tacticalCalculator() {
         return;
     }
 
-    answerBox.classList.add('loading');
-    fetch('/api/tactical-calculator/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ force_data: forceData, api_key: api_key, model: model })
-    })
-    .then(response => response.json())
-    .then(data => {
-        answerBox.textContent = data.calc_results || data.error;
-        answerBox.classList.remove('loading');
-    })
-    .catch(error => {
-        answerBox.textContent = 'Error: ' + error;
-        answerBox.classList.remove('loading');
-    });
+    runAiJob(
+        '/api/jobs/tactical/',
+        { force_data: forceData, api_key: api_key, model: model },
+        answerBox,
+        'Calculating combat odds...',
+        (result, box) => { box.textContent = result.calc_results || 'No result was returned.'; }
+    );
 }

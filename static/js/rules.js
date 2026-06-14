@@ -10,19 +10,11 @@ function askRules() {
         return;
     }
 
-    answerBox.classList.add('loading');
-    fetch('/api/rules-chat/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: question, api_key: api_key, model: model })
-    })
-    .then(response => response.json())
-    .then(data => {
-        answerBox.textContent = data.answer || data.error;
-        answerBox.classList.remove('loading');
-    })
-    .catch(error => {
-        answerBox.textContent = 'Error: ' + error;
-        answerBox.classList.remove('loading');
-    });
+    runAiJob(
+        '/api/jobs/rules/',
+        { question: question, api_key: api_key, model: model },
+        answerBox,
+        'Consulting rules advisor...',
+        (result, box) => { box.textContent = result.answer || 'No answer was returned.'; }
+    );
 }

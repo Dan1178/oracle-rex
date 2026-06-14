@@ -1,0 +1,70 @@
+# Render Blueprint — provisions the whole stack so the async AI worker is
+# deployed alongside the web service (Milestone 2).
+#
+# Apply via the Render dashboard: New > Blueprint, point it at this repo. Render
+# reads this file and creates/updates all three resources together.
+#
+# Three resources, one shared Postgres:
+#   - oracle-rex          web service (gunicorn) — serves the app + job API
+#   - oracle-rex-worker   background worker (qcluster) — runs the AI jobs
+#   - oracle-rex-db       Postgres — the Django-Q ORM broker + app data
+#
+# The web and worker MUST share both the database (DATABASE_URL) and the secret
+# that keys BYOK encryption. DJANGO_SECRET_KEY is generated once on the web
+# service and referenced by the worker, so both processes derive the identical
+# Fernet key (see core/service/ai/crypto.py) without any manual step.
+
+databases:
+  - name: oracle-rex-db
+    databaseName: oracle_rex
+    region: oregon
+    # 'free' Postgres works for a demo but expires after ~30 days — switch to a
+    # paid plan (e.g. basic-256mb) for anything long-lived.
+    plan: free
+
+services:
+  # --- Web service -------------------------------------------------------
+  - type: web
+    name: oracle-rex
+    runtime: python
+    region: oregon
+    branch: main
+    plan: free
+    # migrate runs here (build step) so the django_q + core tables exist before
+    # either process starts; collectstatic prepares whitenoise assets.
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput"
+    startCommand: "gunicorn oracle-rex.wsgi:application"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: oracle-rex-db
+          property: connectionString
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.13.2
+
+  # --- Background worker (AI job queue) ----------------------------------
+  # Background workers are not offered on Render's free tier; this needs a paid
+  # instance. Without it, AI jobs are created but never processed.
+  - type: worker
+    name: oracle-rex-worker
+    runtime: python
+    region: oregon
+    branch: main
+    plan: starter
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python manage.py qcluster"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: oracle-rex-db
+          property: connectionString
+      # Share the web service's generated secret so the Fernet key matches.
+      - key: DJANGO_SECRET_KEY
+        fromService:
+          type: web
+          name: oracle-rex
+          envVarKey: DJANGO_SECRET_KEY
+      - key: PYTHON_VERSION
+        value: 3.13.2
