@@ -38,8 +38,9 @@ logger = logging.getLogger("core.jobs")
 # ``running`` longer than this. The status endpoint reaps such rows on read so
 # they don't hang forever — the safety net for the in-process thread backend,
 # which (unlike a durable worker) loses in-flight jobs when the web dyno
-# restarts or spins down.
-STALE_RUNNING_SECONDS = 300
+# restarts or spins down. Sourced from settings so it stays above the provider
+# timeout (a normally-slow call must not be reaped mid-flight).
+STALE_RUNNING_SECONDS = getattr(settings, "AI_JOB_STALE_SECONDS", 300)
 
 
 # --- result builders -------------------------------------------------------

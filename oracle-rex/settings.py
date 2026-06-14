@@ -213,6 +213,18 @@ LOGGING = {
 AI_JOB_BACKEND = os.environ.get('AI_JOB_BACKEND', 'thread')
 AI_JOB_THREADS = int(os.environ.get('AI_JOB_THREADS', '4'))
 
+# Single time budget for a provider call, shared by the service layer
+# (core/service/ai/config.py reads the same AI_REQUEST_TIMEOUT env var) and the
+# downstream timeouts below, so they stay coherent: the provider call gets
+# AI_REQUEST_TIMEOUT, and the worker kill / stale-job reaper sit above it so the
+# graceful in-task timeout normally wins.
+AI_REQUEST_TIMEOUT = float(os.environ.get('AI_REQUEST_TIMEOUT', '180'))
+
+# How long (seconds) a job may sit in 'running' before the status endpoint reaps
+# it to 'timeout' — the safety net for the in-process thread backend. Above the
+# provider timeout so a normally-slow call isn't reaped mid-flight.
+AI_JOB_STALE_SECONDS = int(AI_REQUEST_TIMEOUT) + 120
+
 # Django-Q2 config — only used when AI_JOB_BACKEND == 'django_q'.
 #
 # Uses the ORM broker ('orm': 'default'), so the shared state between the web
@@ -222,15 +234,15 @@ AI_JOB_THREADS = int(os.environ.get('AI_JOB_THREADS', '4'))
 # pointed at the same Postgres instance.
 #
 # 'timeout' kills a task that runs too long (a hung provider call) so a job can't
-# wedge a worker forever; the completion hook then marks the AIJob 'timeout'.
-# It is set a little above the service layer's own provider timeout
-# (DEFAULT_REQUEST_TIMEOUT, 90s) so the graceful in-task timeout normally wins
-# and this is only a hard safety net. 'retry' must exceed 'timeout'.
+# wedge a worker forever; the completion hook then marks the AIJob 'timeout'. It
+# sits above the service layer's own provider timeout (AI_REQUEST_TIMEOUT) so the
+# graceful in-task timeout normally wins and this is only a hard safety net.
+# 'retry' must exceed 'timeout'.
 Q_CLUSTER = {
     'name': 'oracle_rex',
     'workers': int(os.environ.get('Q_WORKERS', '2')),
-    'timeout': 120,
-    'retry': 180,
+    'timeout': int(AI_REQUEST_TIMEOUT) + 30,
+    'retry': int(AI_REQUEST_TIMEOUT) + 90,
     'max_attempts': 1,
     'catch_up': False,
     'save_limit': 250,

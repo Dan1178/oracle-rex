@@ -11,6 +11,8 @@ provider choices; they pass a model string through to the service layer, and
 everything here decides how that maps to a concrete provider client.
 """
 
+import os
+
 # --- Providers -------------------------------------------------------------
 
 OPENAI = "openai"
@@ -76,11 +78,13 @@ TAC_CALC_REASONING_EFFORT = "medium"    # probability / combat arithmetic
 
 # --- Timeouts --------------------------------------------------------------
 
-# Hard ceiling (seconds) on a single blocking provider request. Bumped from 60s
-# because reasoning models are slower. This is a stop-gap so a hung request
-# fails with a usable error instead of holding the worker open; Milestone 2
-# moves long AI work onto async jobs.
-DEFAULT_REQUEST_TIMEOUT = 90.0
+# Ceiling (seconds) on a single provider request. Now that AI work runs as an
+# async job (Milestone 2) rather than inside the HTTP request, this no longer has
+# to fit under a web-request deadline, so it's generous enough for slow reasoning
+# models on big prompts (strategy/move use the largest token budgets). Tune with
+# the AI_REQUEST_TIMEOUT env var; the worker/poller/reaper timeouts in settings
+# are derived from the same value so they stay coherent.
+DEFAULT_REQUEST_TIMEOUT = float(os.environ.get("AI_REQUEST_TIMEOUT", "180"))
 
 # --- Prompt versions (per feature) ----------------------------------------
 

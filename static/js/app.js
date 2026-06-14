@@ -164,7 +164,11 @@ function getSelectedApiKey(tabPrefix, model) {
 // browser->backend request path so the hosted app doesn't time out on Render.
 
 const AI_JOB_POLL_INTERVAL_MS = 1500;
-const AI_JOB_POLL_TIMEOUT_MS = 180000; // stop polling after 3 minutes
+// Stop polling after 5.5 min — above the backend budget (default provider
+// timeout 180s + worker/reaper slack ~300s) so a slow-but-valid job resolves to
+// a real terminal status before the client gives up. Lower AI_REQUEST_TIMEOUT on
+// the server for snappier failures.
+const AI_JOB_POLL_TIMEOUT_MS = 330000;
 
 function pollAiJob(jobId, onDone, onError) {
     const startedAt = Date.now();
