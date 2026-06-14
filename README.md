@@ -6,6 +6,23 @@ Currently deployed at https://oracle-rex.onrender.com/
 
 Oracle Rex is an AI-powered companion application for the board game Twilight Imperium. This application was built with a Python (Django) backend and a simple Javascript / HTML frontend, with Django static loading.
 TTS Strings required for many functions of this application can be retrieved from a board generated with this tool: https://milty.shenanigans.be/
+
+### Ways to use it (modes)
+
+Oracle Rex supports three modes so it can be explored with or without an API key:
+
+- **Demo mode** — the default public experience. Every feature has a one-click
+  sample (the **Demo** boxes in each tab, and prompt chips on Rules Q&A) backed by
+  *pregenerated* AI responses stored in [`core/demo/`](core/demo). No API key is
+  required and **no provider call is made**, so demo mode can never run up the
+  owner's AI bill. Demo results are clearly labeled as saved responses.
+- **Live AI (BYOK)** — paste your own provider API key in **Settings** to generate
+  fresh responses. Keys stay in the browser and are sent only with your own
+  requests (encrypted on the backend before the job runs; never stored).
+- **Private live demo** — for interviews: an owner-set access code unlocks a
+  controlled backend key behind a cheap model, an output-token cap, and a daily
+  request limit (see the live-demo env vars under *Deployment*).
+
 The following tabs make up all the functions of this application:
   
   - **Settings**: This tab allows the user to enter an api key for X AI and OpenAI. These keys are not stored in the backend.
@@ -137,6 +154,68 @@ Optional environment variables:
   share `SECRET_KEY` (or set the same `AIJOB_FERNET_KEY` on both) so the key
   matches.
 - `Q_WORKERS` — Django-Q worker process count (default 2; `django_q` backend only).
+
+### Demo mode & private live access (Milestone 3)
+
+Demo mode needs no configuration — the sample scenarios and cached responses live
+in [`core/demo/`](core/demo) and are served by the `/api/demo/` endpoints.
+
+The optional **private live demo** lets an interviewer run *live* AI on the
+owner's key without exposing it. It is **off unless both** an access code and a
+backend key are set:
+
+- `DEMO_LIVE_ACCESS_CODE` — code a user enters in Settings to unlock live AI on
+  the owner's key.
+- `DEMO_LIVE_API_KEY` — the owner's provider API key used for those requests.
+- `DEMO_LIVE_MODEL` — model forced for live-demo requests (default
+  `gpt-5.4-nano`, a cheap/fast model).
+- `DEMO_LIVE_MAX_OUTPUT_TOKENS` — optional hard output cap. Default `0` uses the
+  reasoning-safe **per-feature** caps (`config.live_demo_max_tokens`: ~3000 for
+  rules/calc, ~7000 for strategy/move) so the heavier reasoning features aren't
+  starved into empty output. Set a positive value only to force one ceiling
+  across all features (a low value can break strategy/move).
+- `DEMO_LIVE_DAILY_LIMIT` — max shared live-demo requests per UTC day (default
+  50; `0` disables the limit). Counted in the cache; resets daily and on restart.
+
+### Data correctness & validation (Milestone 4)
+
+The board data (systems, planets, factions, wormholes, anomalies, legendary
+planets) lives in [`core/util/default_data/`](core/util/default_data) and is
+loaded into the DB by `reset_database()` on each session start. The canonical
+reference is the **Milty Draft** export, copied verbatim into
+[`core/data/source/`](core/data/source) (`milty_draft_tiles.json`,
+`milty_draft_factions.json`).
+
+Oracle Rex preserves Milty Draft's data while using its own field names — e.g.
+planet `specialty: "biotic"` is stored as `tech_specialty: "green"`
+(`biotic→green`, `propulsion→blue`, `cybernetic→yellow`, `warfare→red`).
+
+Run the validators locally (exits non-zero on any mismatch, so it can gate CI):
+
+    python manage.py validate_data
+
+The validators ([`core/data/validators.py`](core/data/validators.py)) check:
+
+- **internal consistency** — unique tile ids; valid wormhole/anomaly/trait/tech
+  values against the model constants; no orphan planets; systems reference real
+  planets; factions reference real home systems.
+- **Milty source parity** — every tile/planet/faction matches the canonical
+  export (resources, influence, trait, tech specialty, legendary, wormhole,
+  anomaly, planet membership, faction ids and home tiles).
+- **tile images** — every system has a board graphic
+  (`static/images/systems/ST_<tile_id>.png`).
+- **TTS parser config** — the home-system ids the parser accepts are exactly the
+  faction home tiles in the source data.
+
+These checks are also run as part of the test suite
+([`core/tests/test_data_validation.py`](core/tests/test_data_validation.py)).
+
+### Running the tests
+
+    python manage.py test core.tests
+
+(Use `core.tests`, not `core` — the hyphenated project directory breaks bare
+test discovery.)
 
 ## Deployment:
 

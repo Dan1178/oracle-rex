@@ -174,12 +174,12 @@ DEFAULT_PLANETS = [
     {"name": "Sierpen", "resources": 2, "influence": 0, "trait": "cultural", "tech_specialty": "none"},
     {"name": "Regnem", "resources": 0, "influence": 2, "trait": "hazardous", "tech_specialty": "none"},
     # Legendaries
-    {"name": "Primor", "resources": 2, "influence": 1, "trait": "cultural", "tech_specialty": "none"},
-    {"name": "Hope's End", "resources": 3, "influence": 0, "trait": "hazardous", "tech_specialty": "none"},
-    {"name": "Mallice", "resources": 0, "influence": 3, "trait": "cultural", "tech_specialty": "none"},
-    {"name": "Silence", "resources": 2, "influence": 2, "trait": "industrial", "tech_specialty": "none"},
-    {"name": "Echo", "resources": 1, "influence": 2, "trait": "hazardous", "tech_specialty": "none"},
-    {"name": "Tarrock", "resources": 3, "influence": 0, "trait": "industrial", "tech_specialty": "none"},
-    {"name": "Prism", "resources": 0, "influence": 3, "trait": "industrial", "tech_specialty": "none"},
-    {"name": "Domna", "resources": 2, "influence": 1, "trait": "hazardous", "tech_specialty": "none"}
+    {"name": "Primor", "resources": 2, "influence": 1, "trait": "cultural", "tech_specialty": "none", "legendary": True},
+    {"name": "Hope's End", "resources": 3, "influence": 0, "trait": "hazardous", "tech_specialty": "none", "legendary": True},
+    {"name": "Mallice", "resources": 0, "influence": 3, "trait": "cultural", "tech_specialty": "none", "legendary": True},
+    {"name": "Silence", "resources": 2, "influence": 2, "trait": "industrial", "tech_specialty": "none", "legendary": True},
+    {"name": "Echo", "resources": 1, "influence": 2, "trait": "hazardous", "tech_specialty": "none", "legendary": True},
+    {"name": "Tarrock", "resources": 3, "influence": 0, "trait": "industrial", "tech_specialty": "none", "legendary": True},
+    {"name": "Prism", "resources": 0, "influence": 3, "trait": "industrial", "tech_specialty": "none", "legendary": True},
+    {"name": "Domna", "resources": 2, "influence": 1, "trait": "hazardous", "tech_specialty": "none", "legendary": True}
 ]
