@@ -218,50 +218,82 @@ Frontend polls job status
 Frontend renders result when complete
 ```
 
-## Implementation Options
+## Decision (locked 2026-06-14)
 
-Choose one based on project complexity and current dependencies.
+**Approach: DB-backed AI job queue with Django-Q2 (ORM broker) + a dedicated Render
+background worker, backed by Postgres. Frontend polls job status.**
 
-### Option A — Celery + Redis
+Rationale (see options considered below): the live-AI path is low-volume (BYOK and
+controlled private demo; public demo serves cached responses), so this is a
+timeout problem, not a throughput problem. The fix is to stop holding the
+browser→backend request open. Django-Q2's ORM broker means **no Redis** — the
+shared state between web and worker is the database itself. Moving from SQLite to
+Postgres is the enabling change: it removes SQLite's file-lock contention between
+the two processes and matches production. User already runs Postgres at work, so
+the local two-process dev loop is acceptable.
 
-Best if the project already uses or can easily add Redis.
+### Consequences for local development
 
-Pros:
+- Run **two processes**: `python manage.py runserver` (web) and
+  `python manage.py qcluster` (worker). A Procfile / `honcho` one-liner should
+  launch both so the worker isn't forgotten (queued jobs hang silently otherwise).
+- Local Postgres required (Docker is fine). `DATABASES` becomes env-driven
+  (`DATABASE_URL` via `dj-database-url`); keep a sensible default.
+- `db.sqlite3` stops being the committed source of truth — seed via migrations /
+  `reset_database_api` flow.
 
-- Standard Django production pattern.
-- Good resume signal.
-- Scales better.
+### Options considered
 
-Cons:
+- **Option A — Celery + Redis.** Standard, strongest resume keyword, but on Render
+  means a Redis add-on *plus* a worker dyno (more cost/ops) and free-tier worker
+  spin-down. Over-engineered for this load. Rejected.
+- **Option B — RQ / Huey / Django-Q.** Sweet spot. **Django-Q2 with the ORM broker
+  chosen** specifically to avoid Redis while keeping a real worker + job story.
+- **Option C — Streaming responses.** Right tool for the **rules chatbot** UX, wrong
+  tool for the structured strategy/move/calc features (single validated JSON object
+  via `with_structured_output`). Deferred — add later for chat only, not as the
+  primary timeout fix.
+- **In-process threads (no separate worker).** Considered as the zero-local-change
+  fallback; rejected in favor of the durable worker now that Postgres is in.
 
-- More setup complexity on Render.
+### Render-specific notes
 
-### Option B — RQ / Huey / Django-Q
+- Raise/avoid gunicorn worker timeout: the create-job request must return
+  immediately, so the long provider call never runs inside an HTTP request.
+- Worker runs as a separate Render **Background Worker** service pointed at the same
+  Postgres instance.
 
-Pros:
+### BYOK key handling (decided 2026-06-14)
 
-- Simpler than Celery.
-- Good enough for a portfolio app.
+BYOK keys are routed through the async worker too (BYOK is most of the live-AI
+traffic, so it must get the timeout fix). The key is **encrypted before it enters
+the Django-Q task/broker** (e.g. Fernet keyed off a server secret) and decrypted in
+the worker. It is **never** persisted on the `AIJob` row. This avoids plaintext user
+keys sitting in the Postgres broker table.
 
-Cons:
+### Build order
 
-- Less standard than Celery.
+0. **Postgres switch** — `dj-database-url` + `psycopg`, env-driven `DATABASES`;
+   provision Render Postgres. Standalone, verifiable on its own.
+1. **`AIJob` model** — fields/states per spec above; register in admin.
+2. **`run_ai_job(job_id)`** in `core/jobs.py` — routes by `feature_type` to
+   `service.py`, stores result, maps `AIServiceError` to terminal states. Unit-test
+   with mocked `get_chat` before adding the queue.
+3. **Wire Django-Q2** — ORM broker, `Q_CLUSTER`, migrate; prove enqueue→complete
+   from the shell with `qcluster` running.
+4. **Endpoints (additive)** — per-feature POST create (returns `{job_id}`) +
+   `GET /api/jobs/<id>/`. Encrypt BYOK key into the task arg. Keep old sync
+   endpoints alive until frontend cutover.
+5. **Frontend polling** — plain-JS handlers submit→poll→render the `structured`
+   field; add per-feature loading copy.
+6. **Timeout/failure + logging** — Q task timeout → `status=timeout`; log duration
+   and provider errors.
+7. **Render deploy + cleanup** — add Background Worker service (`manage.py
+   qcluster`), Procfile/honcho for local, remove dead sync endpoints, retire legacy
+   `core/service/ai_service.py`.
 
-### Option C — Streaming Responses
-
-Pros:
-
-- Better chatbot UX.
-- Avoids some perceived waiting.
-
-Cons:
-
-- May still be fragile depending on Render timeout behavior.
-- More frontend complexity.
-
-## Recommendation
-
-Use a job queue plus frontend polling unless the current project structure makes that too expensive.
+Opportunistic: stamp `prompt_version` on each job now (seeds the optional
+prompt-versioning feature for free).
 
 ## Tasks
 
