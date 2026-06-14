@@ -1,5 +1,9 @@
 staticfiles
 
+# SQLite WAL sidecar files (transient; created when DB runs in WAL mode)
+db.sqlite3-wal
+db.sqlite3-shm
+
 # Python
 __pycache__/
 *.py[cod]
