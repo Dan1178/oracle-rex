@@ -10,6 +10,7 @@ class Planet(models.Model):
     influence = models.PositiveIntegerField(default=0)
     trait = models.CharField(max_length=20, choices=PlanetTraits, default="none")
     tech_specialty = models.CharField(max_length=20, choices=PlanetTechs, default="none")
+    legendary = models.BooleanField(default=False)
     ground_forces = models.ForeignKey(GroundForces, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
@@ -22,6 +23,7 @@ class Planet(models.Model):
             "influence": self.influence,
             "trait": self.trait,
             "tech_specialty": self.tech_specialty,
+            "legendary": self.legendary,
             "ground_forces": self.ground_forces.to_json() if self.ground_forces else None,
         }
 

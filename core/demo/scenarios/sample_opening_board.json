@@ -1,0 +1,9 @@
+{
+  "key": "sample_opening_board",
+  "feature": "strategy",
+  "title": "Load Sample Milty Draft Board",
+  "description": "A balanced 6-player Milty Draft board. Loads the map, renders it, and auto-selects the Federation of Sol so you can view a saved strategy with one click.",
+  "tts_string": "78 40 42 67 28 38 76 43 21 44 77 63 50 64 74 48 49 39 1 71 35 16 27 36 55 31 20 58 69 45 4 23 22 57 34 25",
+  "suggested_faction": "sol",
+  "response_key": "sample_opening_strategy"
+}

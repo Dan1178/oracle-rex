@@ -167,6 +167,6 @@ DEFAULT_SYSTEMS = [
     {"tile_id": 4272, "name": "Nebula Beta Wormhole", "planets": [], "anomaly": "nebula", "wormhole": "beta"},
     {"tile_id": 4273, "name": "Asteroid Nebula", "planets": [], "anomaly": "asteroid-nebula", "wormhole": "none"},
     {"tile_id": 4274, "name": "Asteroid Gravity Rift", "planets": [], "anomaly": "asteroid-rift", "wormhole": "none"},
-    {"tile_id": 4275, "name": "Gravity Rift Gamma Wormhole", "planets": [], "anomaly": "gravity rift", "wormhole": "gamma"},
+    {"tile_id": 4275, "name": "Gravity Rift Gamma Wormhole", "planets": [], "anomaly": "gravity-rift", "wormhole": "gamma"},
     {"tile_id": 4276, "name": "Supernova 3 System", "planets": [], "anomaly": "supernova", "wormhole": "none"}
 ]

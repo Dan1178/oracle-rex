@@ -1,0 +1,38 @@
+Todos in no particular order:
+
+- implement django rest auth
+- implement technologies (held by players and faction starting techs)
+- implement current score
+- give all the ai some character
+- tactical planner tab
+    - V2: select factions for enemy and friendly
+    - V3: include techs
+- modernize and merge AI functions in backend
+
+In-Order Todo:
+- add starting ships to faction (?)
+    - when processing TTS string, should place ships in starting position
+
+
+rm db.sqlite3
+python manage.py makemigrations core
+python manage.py migrate
+
+
+
+python manage.py runserver
+
+
+
+
+
+TODO:
+    - after unit data is saved to a tile, there should be an icon of some kind on the tile showing player x X number of units total, to make it easier to see who's where on the map
+
+- use django static load instead of the img src thing?
+
+OG Test:
+78 40 42 67 28 38 76 43 21 44 77 63 50 64 74 48 49 39 1 71 35 16 27 36 55 31 20 58 69 45 4 23 22 57 34 25
+
+Discordant Stars Upgrade Test:
+4270 30 32 4273 78 73 74 28 22 4256 76 60 61 4258 33 4259 24 46 DS_khrask 62 68 DS_tnelis 44 4276 DS_kjalengard 42 29 13 67 63 58 4269 4261 52 77 4275

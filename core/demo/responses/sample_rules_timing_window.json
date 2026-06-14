@@ -1,0 +1,19 @@
+{
+  "question": "What happens if two players have abilities that trigger at the same timing window?",
+  "answer": "When multiple abilities want to resolve in the same timing window, the active player resolves their ability first, then play proceeds clockwise. Each player resolves all of their own pending abilities for that window before passing to the next player. You only move on from the window once every player has declined to resolve anything further.",
+  "structured": {
+    "answer": "When multiple abilities want to resolve in the same timing window, the active player resolves theirs first, then resolution proceeds clockwise. Each player resolves all of their own pending abilities before passing; the window ends only once every player declines to resolve anything further.",
+    "assumptions": [
+      "By 'same timing window' you mean abilities with the same trigger (e.g., 'after an action', 'when a unit is destroyed')."
+    ],
+    "rule_basis": [
+      "Ability resolution / timing rules",
+      "Active player resolves first, then clockwise order"
+    ],
+    "caveats": [
+      "Some specific cards say 'cannot be cancelled' or override normal order — the card text wins.",
+      "For exact wording in a tournament dispute, check the Living Rules Reference entry on 'Abilities' and 'Timing'."
+    ],
+    "needs_exact_text": false
+  }
+}

@@ -5,3 +5,4 @@ from .system import System
 from .tile import Tile
 from .game import Game
 from .units import Ship, Fleet, ShipClass, Structure, StructureClass, GroundUnit, GroundUnitClass, GroundForces
+from .ai_job import AIJob

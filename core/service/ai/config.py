@@ -11,6 +11,8 @@ provider choices; they pass a model string through to the service layer, and
 everything here decides how that maps to a concrete provider client.
 """
 
+import os
+
 # --- Providers -------------------------------------------------------------
 
 OPENAI = "openai"
@@ -63,6 +65,28 @@ STRATEGY_MAX_TOKENS = 12000
 MOVE_MAX_TOKENS = 12000
 TAC_CALC_MAX_TOKENS = 4000
 
+# --- Live-demo output caps (per feature) ----------------------------------
+
+# Owner-paid private-live-demo requests cap output below the per-feature default
+# to bound cost. The cap is PER FEATURE on purpose: these are reasoning models
+# whose hidden thinking is billed against max_tokens, so a single low number
+# (e.g. 2000) that's fine for the lightweight rules/calc features would starve
+# the strategy/move features and make them return empty output. These values sit
+# below each feature's normal budget (so they genuinely cap cost) but well above
+# the point where a medium-effort reasoning model produces nothing.
+LIVE_DEMO_MAX_TOKENS = {
+    "rules": 3000,
+    "strategy": 7000,
+    "move": 7000,
+    "tac_calc": 3000,
+}
+LIVE_DEMO_DEFAULT_MAX_TOKENS = 4000  # fallback for an unrecognized feature
+
+
+def live_demo_max_tokens(feature_type: str) -> int:
+    """Reasoning-safe output cap for a private-live-demo request, per feature."""
+    return LIVE_DEMO_MAX_TOKENS.get(feature_type, LIVE_DEMO_DEFAULT_MAX_TOKENS)
+
 # --- Reasoning effort (OpenAI GPT-5.x only) -------------------------------
 
 # Controls how much these models deliberate before answering. Lower = faster
@@ -76,11 +100,31 @@ TAC_CALC_REASONING_EFFORT = "medium"    # probability / combat arithmetic
 
 # --- Timeouts --------------------------------------------------------------
 
-# Hard ceiling (seconds) on a single blocking provider request. Bumped from 60s
-# because reasoning models are slower. This is a stop-gap so a hung request
-# fails with a usable error instead of holding the worker open; Milestone 2
-# moves long AI work onto async jobs.
-DEFAULT_REQUEST_TIMEOUT = 90.0
+# Ceiling (seconds) on a single provider request. Now that AI work runs as an
+# async job (Milestone 2) rather than inside the HTTP request, this no longer has
+# to fit under a web-request deadline, so it's generous enough for slow reasoning
+# models on big prompts (strategy/move use the largest token budgets). Tune with
+# the AI_REQUEST_TIMEOUT env var; the worker/poller/reaper timeouts in settings
+# are derived from the same value so they stay coherent.
+DEFAULT_REQUEST_TIMEOUT = float(os.environ.get("AI_REQUEST_TIMEOUT", "180"))
+
+# --- Prompt versions (per feature) ----------------------------------------
+
+# Stamped onto every AIJob so logs/admin show which prompt produced a result.
+# Bump the version when a prompt's wording changes materially; this seeds the
+# optional prompt-versioning feature without extra plumbing.
+PROMPT_VERSIONS = {
+    "rules": "rules_chat_v1",
+    "strategy": "strategic_plan_v1",
+    "move": "tactical_move_v1",
+    "tac_calc": "tactical_calculator_v1",
+}
+
+
+def prompt_version_for(feature_type: str) -> str:
+    """Return the current prompt version string for a feature, or ''."""
+    return PROMPT_VERSIONS.get(feature_type, "")
+
 
 # Provider SDKs retry timeouts/5xx automatically (OpenAI defaults to 2 retries).
 # For a slow reasoning model that exceeds the timeout, that turns one 90s wait

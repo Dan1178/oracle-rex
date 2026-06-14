@@ -1,0 +1,19 @@
+{
+  "question": "Explain how tactical actions work like I'm new to TI.",
+  "answer": "A tactical action is the main thing you do on your turn. Here is the simple version:\n\n1. Activate a system: place one of your command tokens from your tactic pool onto any system that does not already have your token. That system is now 'active'.\n2. Move ships: move your ships from adjacent systems into the active system (respecting their movement value). Ships can carry ground forces and fighters using capacity.\n3. Space combat: if enemy ships are there, you fight until one side is gone or retreats.\n4. Invade: drop ground forces onto planets and fight any defenders to take the planet.\n5. Produce: if you have a Space Dock in the active system, you may build new units.\n\nYou can only activate a system you do not already have a token in, so spreading your tokens lets you act in more places. When your tactic pool is empty, you can't take more tactical actions until you refill it (usually with the Leadership strategy card).",
+  "structured": {
+    "answer": "A tactical action is your main turn action. You: (1) activate a system by placing a command token from your tactic pool on it; (2) move ships into that active system; (3) resolve space combat if enemies are present; (4) invade planets with ground forces; (5) produce units if you have a Space Dock there. You can't activate a system you already have a token in, and you stop taking tactical actions when your tactic pool is empty.",
+    "assumptions": [
+      "You want the beginner-friendly overview, not every edge case."
+    ],
+    "rule_basis": [
+      "Tactical action steps: Activation, Movement, Space Combat, Invasion, Production",
+      "Command tokens and the tactic pool"
+    ],
+    "caveats": [
+      "Many faction abilities, technologies, and action cards add exceptions to these steps.",
+      "Refill your tactic pool mainly via the Leadership strategy card."
+    ],
+    "needs_exact_text": false
+  }
+}

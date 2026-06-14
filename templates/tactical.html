@@ -1,6 +1,20 @@
 {% load static %}
 <div id="tactical" class="tab-pane">
     <h2>Tactical Calculator</h2>
+    <p class="tab-intro">
+        Estimate your odds of winning a space battle and get recommended fleet compositions.
+        New here? Click <strong>Load Example Battle</strong> to preload a scenario with no setup.
+    </p>
+
+    <div class="demo-box">
+        <h4>Demo &mdash; no API key needed</h4>
+        <p class="demo-desc" data-demo-description="tac_calc">
+            Preloads both fleets and shows a saved combat-odds result.
+        </p>
+        <button type="button" class="demo-button" onclick="loadDemoScenario('tac_calc')">
+            Load Example Battle
+        </button>
+    </div>
 
     <!-- Fleet Div -->
     <div id="fleet-section">

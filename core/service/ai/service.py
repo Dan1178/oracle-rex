@@ -118,45 +118,70 @@ def _require(condition: bool, message: str):
 
 # --- public API ------------------------------------------------------------
 
-def get_rules_response(question: str, api_key: str, model: str) -> RulesAnswer:
+def _token_budget(default: int, override) -> int:
+    """Resolve the max-token budget for a call.
+
+    ``override`` (when a positive int) caps output below the per-feature default
+    — used by the private live-demo path to bound owner-paid cost. A None/0/
+    larger value leaves the generous default in place.
+    """
+    if override and 0 < int(override) < default:
+        return int(override)
+    return default
+
+
+def get_rules_response(
+    question: str, api_key: str, model: str, max_tokens: int = None
+) -> RulesAnswer:
     _require(bool(question and question.strip()), "No question was provided.")
     chat = get_chat(
-        model, api_key, config.RULES_MAX_TOKENS, config.RULES_REASONING_EFFORT
+        model, api_key,
+        _token_budget(config.RULES_MAX_TOKENS, max_tokens),
+        config.RULES_REASONING_EFFORT,
     )
     messages = rules_chat.build_messages(question)
     return _invoke_structured(chat, messages, RulesAnswer, "rules")
 
 
 def get_strategy_response(
-    game_json: Dict[str, Any], player_faction: str, api_key: str = None, model: str = None
+    game_json: Dict[str, Any], player_faction: str, api_key: str = None,
+    model: str = None, max_tokens: int = None,
 ) -> StrategicPlan:
     _require(bool(game_json), "No board state was provided.")
     _require(bool(player_faction), "No faction was selected.")
     chat = get_chat(
-        model, api_key, config.STRATEGY_MAX_TOKENS, config.STRATEGY_REASONING_EFFORT
+        model, api_key,
+        _token_budget(config.STRATEGY_MAX_TOKENS, max_tokens),
+        config.STRATEGY_REASONING_EFFORT,
     )
     messages = strategic_plan_prompt.build_messages(game_json, player_faction)
     return _invoke_structured(chat, messages, StrategicPlan, "strategy")
 
 
 def get_move_response(
-    game_json: Dict[str, Any], player_faction: str, api_key: str = None, model: str = None
+    game_json: Dict[str, Any], player_faction: str, api_key: str = None,
+    model: str = None, max_tokens: int = None,
 ) -> TacticalMove:
     _require(bool(game_json), "No board state was provided.")
     _require(bool(player_faction), "No faction was selected.")
     chat = get_chat(
-        model, api_key, config.MOVE_MAX_TOKENS, config.MOVE_REASONING_EFFORT
+        model, api_key,
+        _token_budget(config.MOVE_MAX_TOKENS, max_tokens),
+        config.MOVE_REASONING_EFFORT,
     )
     messages = tactical_move_prompt.build_messages(game_json, player_faction)
     return _invoke_structured(chat, messages, TacticalMove, "move")
 
 
 def get_tac_calc_response(
-    force_data: Dict[str, Any], api_key: str = None, model: str = None
+    force_data: Dict[str, Any], api_key: str = None, model: str = None,
+    max_tokens: int = None,
 ) -> str:
     _require(bool(force_data), "No fleet data was provided.")
     chat = get_chat(
-        model, api_key, config.TAC_CALC_MAX_TOKENS, config.TAC_CALC_REASONING_EFFORT
+        model, api_key,
+        _token_budget(config.TAC_CALC_MAX_TOKENS, max_tokens),
+        config.TAC_CALC_REASONING_EFFORT,
     )
     messages = tactical_calculator.build_messages(force_data)
     return _invoke_plain(chat, messages, "tac_calc")

@@ -1,13 +1,21 @@
-import numpy as np
 from django.core.exceptions import ValidationError
 
 from ..models import Tile, System, Faction, Player, Game
+from ..util.default_data.default_factions import DEFAULT_FACTIONS
+from ..util.default_data.default_systems import DEFAULT_SYSTEMS
 from ..util.utils import reset_to_default_for_game
 
 EXPECTED_STR_LEN = 36  # Expected id count for TTS String (string does not include Mechatol's ID)
 MAX_ID_NUM = 4276  # Highest ID in standard TI + PoK + discordant tileset
 MIN_ID_NUM = 1
-HOME_SYSTEM_IDS = np.concatenate([np.arange(1, 18), np.arange(52, 59), np.arange(4200, 4236)])
+
+# Valid home-system tile ids, derived from the faction data so it stays in sync
+# with default_data (rather than a hardcoded numeric range that drifted: the old
+# arange wrongly accepted anomaly tiles 4224/4225 and omitted Edyn at 4236).
+_SYSTEM_NAME_TO_TILE_ID = {s["name"]: s["tile_id"] for s in DEFAULT_SYSTEMS}
+HOME_SYSTEM_IDS = frozenset(
+    _SYSTEM_NAME_TO_TILE_ID[f["home_system"]] for f in DEFAULT_FACTIONS
+)
 
 
 def split_array(arr, indices):

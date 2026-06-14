@@ -1,0 +1,17 @@
+{
+  "faction": "ul",
+  "strategy": "Recommended move: Activate the system holding the over-extended enemy carrier, move your cruiser plus 2 fighters in, and destroy it — then follow up by dropping infantry on the now-uncontested planet next round.\n\nReasoning:\nThe enemy carrier (1 fighter escort) is a free kill for your cruiser and 2 fighters: you out-roll them on combat dice and they have no way to retreat into supporting ships. Taking the trade now removes their forward presence between you and Mecatol Rex and leaves you holding the tempo. Your carrier with infantry stays home this activation so you are not over-extended in turn.\n\nExpected benefit:\nYou trade nothing for an enemy carrier and fighter, deny them the central system, and set up an uncontested planet grab next round. That is roughly a full round of board position swing in your favor.\n\nCombat risk:\nLow. Worst case you lose the 2 fighters but still kill the carrier; you keep the cruiser. Watch for an enemy action card (e.g., Direct Hit / Skilled Retreat) — keep one command token in reserve to react.\n\nConservative alternative:\nMove only into the empty Beta wormhole system to claim it and keep your fleet intact. Safer, but it cedes the carrier kill and the tempo.\n\nAggressive alternative:\nCommit the cruiser, both fighters, AND the carrier forward, killing the carrier and immediately landing infantry. Highest upside, but it leaves your home system thin to a counter-activation.\n\nAssumptions:\n- The enemy carrier cannot be reinforced before combat resolves.\n- You are not holding a 'Skilled Retreat' counter that would change the math.\n- Antimass Deflectors are only needed if you take the wormhole line.",
+  "structured": {
+    "recommended_move": "Activate the system holding the over-extended enemy carrier; move your cruiser and 2 fighters in and destroy it, then drop infantry on the uncontested planet next round.",
+    "reasoning": "The lone carrier (1 fighter) is a free kill for a cruiser and 2 fighters — you out-roll them and they cannot retreat into support. Taking the trade removes their forward presence toward Mecatol Rex and hands you the tempo, while your infantry-laden carrier stays home so you are not over-extended.",
+    "expected_benefit": "You trade nothing for an enemy carrier and fighter, deny them the central system, and set up an uncontested planet grab next round — roughly a full round of board-position swing.",
+    "combat_risk": "Low. Worst case you lose 2 fighters but still kill the carrier and keep the cruiser. Hold a command token to react to a Direct Hit / Skilled Retreat action card.",
+    "alternative_conservative_move": "Move only into the empty Beta wormhole system to claim it and keep your fleet intact — safer, but cedes the carrier kill and the tempo.",
+    "alternative_aggressive_move": "Commit the cruiser, both fighters, and the carrier forward to kill the carrier and immediately land infantry — highest upside, but leaves your home system thin to a counter-activation.",
+    "assumptions": [
+      "The enemy carrier cannot be reinforced before combat resolves.",
+      "You are not holding a Skilled Retreat counter that would change the math.",
+      "Antimass Deflectors only matter if you take the wormhole line."
+    ]
+  }
+}

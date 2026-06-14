@@ -1,0 +1,19 @@
+{
+  "question": "Can I retreat from space combat if I have no ships left?",
+  "answer": "No. Retreat moves your surviving ships to an adjacent eligible system, so you need at least one ship to retreat. If you have no ships remaining you have lost the space combat, and combat ends. You also must have announced the retreat before the combat round resolved and have a valid adjacent system (one you control or that is empty, and not the system the attacker came from in the same way that blocks it).",
+  "structured": {
+    "answer": "No — a retreat moves your surviving ships, so you must have at least one ship left to retreat. With no ships remaining you have lost the space combat and it ends.",
+    "assumptions": [
+      "You are asking about a standard space combat retreat, not a special faction ability."
+    ],
+    "rule_basis": [
+      "Space combat — Retreat step",
+      "A retreat requires surviving ships and a valid adjacent system"
+    ],
+    "caveats": [
+      "Retreat must be announced before the round's hits are assigned/resolved and needs an eligible adjacent system.",
+      "Some abilities (e.g., Skilled Retreat action card) change where or how you can retreat."
+    ],
+    "needs_exact_text": false
+  }
+}

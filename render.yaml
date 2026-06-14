@@ -1,0 +1,76 @@
+# Render Blueprint.
+#
+# Default (free) deployment: a single web service. AI features run as async jobs
+# in an in-process thread pool on the web service (AI_JOB_BACKEND=thread), so no
+# separate worker and no external broker are needed — the long provider call is
+# off the HTTP request path, which is what fixes the Render timeout.
+#
+# Apply via the Render dashboard: New > Blueprint, point it at this repo.
+#
+# The database defaults to the SQLite file committed in the repo (no DATABASE_URL
+# set). On Render's ephemeral filesystem that file resets to the committed,
+# seeded copy on each deploy — fine for a demo. AI job rows are transient.
+#
+# To upgrade to the durable, separate-worker setup (survives restarts, scales the
+# worker independently), uncomment the worker service and the Postgres database
+# below and set AI_JOB_BACKEND=django_q on BOTH services. Note: a background
+# worker is NOT available on Render's free tier (needs a paid instance), and free
+# Postgres expires after ~30 days. See the README "Deployment" section.
+
+services:
+  - type: web
+    name: oracle-rex
+    runtime: python
+    region: oregon
+    branch: main
+    plan: free
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput"
+    startCommand: "gunicorn oracle-rex.wsgi:application"
+    envVars:
+      - key: AI_JOB_BACKEND
+        value: thread
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.13.2
+      # Durable-worker upgrade: point both services at Postgres by uncommenting
+      # the database below and this var, then set AI_JOB_BACKEND=django_q.
+      # - key: DATABASE_URL
+      #   fromDatabase:
+      #     name: oracle-rex-db
+      #     property: connectionString
+
+  # --- Durable worker (optional, paid) -----------------------------------
+  # Uncomment to run AI jobs in a separate, restart-surviving worker via
+  # Django-Q. Requires AI_JOB_BACKEND=django_q on this and the web service, and
+  # the shared Postgres database below. Background workers are paid-only.
+  # - type: worker
+  #   name: oracle-rex-worker
+  #   runtime: python
+  #   region: oregon
+  #   branch: main
+  #   plan: starter
+  #   buildCommand: "pip install -r requirements.txt"
+  #   startCommand: "python manage.py qcluster"
+  #   envVars:
+  #     - key: AI_JOB_BACKEND
+  #       value: django_q
+  #     - key: DATABASE_URL
+  #       fromDatabase:
+  #         name: oracle-rex-db
+  #         property: connectionString
+  #     - key: DJANGO_SECRET_KEY
+  #       fromService:
+  #         type: web
+  #         name: oracle-rex
+  #         envVarKey: DJANGO_SECRET_KEY
+  #     - key: PYTHON_VERSION
+  #       value: 3.13.2
+
+# Shared Postgres for the durable-worker upgrade. Uncomment together with the
+# worker service and the DATABASE_URL vars above.
+# databases:
+#   - name: oracle-rex-db
+#     databaseName: oracle_rex
+#     region: oregon
+#     plan: free   # expires ~30 days; use a paid plan for anything long-lived

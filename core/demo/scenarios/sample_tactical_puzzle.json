@@ -1,0 +1,10 @@
+{
+  "key": "sample_tactical_puzzle",
+  "feature": "move",
+  "title": "Load Tactical Puzzle",
+  "description": "An early-game crossroads for the Titans of Ul: a contested wormhole nexus, a vulnerable enemy carrier, and a tempo decision worth a full round of board position. Loads the board, selects the faction, and shows a saved recommendation.",
+  "tts_string": "78 40 42 67 28 38 76 43 21 44 77 63 50 64 74 48 49 39 1 71 35 16 27 36 55 31 20 58 69 45 4 23 22 57 34 25",
+  "suggested_faction": "ul",
+  "puzzle": "It is the end of Round 1. Your Titans fleet (1 cruiser, 1 carrier with 2 infantry, 2 fighters) sits in your home system. A neighbor has over-extended a lone carrier with 1 fighter into the system between you and Mecatol Rex, and the adjacent Beta wormhole system is still empty. You have Antimass Deflectors and 3 command tokens in your tactic pool. What is the strongest move?",
+  "response_key": "sample_tactical_recommendation"
+}

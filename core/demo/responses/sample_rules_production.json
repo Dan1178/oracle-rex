@@ -1,0 +1,20 @@
+{
+  "question": "How does production capacity work?",
+  "answer": "Production capacity is the total number of units a single unit with the Production ability (usually a Space Dock) can build during one PRODUCTION step. Each producing unit has a Production value (e.g., Space Dock I produces up to the planet's resource value + a bonus, Space Dock II is higher). You add up the resources of the units you build (their cost) and that total cannot exceed your available resources, while the COUNT of units cannot exceed the producing unit's production value. Fighters and infantry are produced two per cost, but each still counts toward the production-capacity unit count.",
+  "structured": {
+    "answer": "Production capacity is the maximum number of units a producing unit (usually a Space Dock) can build in one PRODUCTION step, set by that unit's Production value. You pay resources equal to the combined cost of what you build (not exceeding your available resources), and the number of units built cannot exceed the production value.",
+    "assumptions": [
+      "You are asking about producing at a Space Dock during a tactical action's Production step."
+    ],
+    "rule_basis": [
+      "Production ability",
+      "Space Dock production values",
+      "Fighters/infantry are produced two per resource but each counts toward the unit-count limit"
+    ],
+    "caveats": [
+      "Some technologies, faction abilities, and the 'Sarween Tools' style effects modify production or cost.",
+      "Producing at a Space Dock blockaded by enemy ships is restricted."
+    ],
+    "needs_exact_text": false
+  }
+}

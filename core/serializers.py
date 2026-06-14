@@ -23,7 +23,7 @@ class PlayerSerializer(serializers.ModelSerializer):
 class PlanetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Planet
-        fields = ['id', 'name', 'resources', 'influence', 'trait', 'tech_specialty']
+        fields = ['id', 'name', 'resources', 'influence', 'trait', 'tech_specialty', 'legendary']
 
 
 class SystemSerializer(serializers.ModelSerializer):

@@ -85,6 +85,7 @@ class TestGameJsonOutput(TestCase):
                             "influence": 6,
                             "trait": "none",
                             "tech_specialty": "none",
+                            "legendary": False,
                             "ground_forces": None
                         }],
                         "fleet": None
@@ -104,6 +105,7 @@ class TestGameJsonOutput(TestCase):
                             "influence": 2,
                             "trait": "none",
                             "tech_specialty": "none",
+                            "legendary": False,
                             "ground_forces": None
                         }],
                         "fleet": None
@@ -184,7 +186,7 @@ class TestUnitJsonOutput(TestCase):
         system_json = self.mecatol_system.to_json()
         expected_json = {'name': 'Mecatol Rex System', 'tile_id': 18, 'anomaly': 'none', 'wormhole': 'none',
                          'planets': [{'name': 'Mecatol Rex', 'resources': 1, 'influence': 6, 'trait': 'none',
-                                      'tech_specialty': 'none',
+                                      'tech_specialty': 'none', 'legendary': False,
                                       'ground_forces': {'owner': 'Player 1', 'structures': {'pds': 1, 'space_dock': 1},
                                                         'units': {'infantry': 3, 'mech': 1}}}],
                          'fleet': {'owner': 'Player 1', 'ships': {'destroyer': 3, 'dreadnought': 1, 'fighter': 1}}}

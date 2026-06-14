@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,10 +23,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-s6+_jwtlw!br7qrh^lv@o*pxju=ey7!arv6srw0#xs)($8hx(8'
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'django-insecure-s6+_jwtlw!br7qrh^lv@o*pxju=ey7!arv6srw0#xs)($8hx(8',
+)
+
+# Fernet key used to encrypt BYOK API keys before they enter the Django-Q broker
+# table (see core.service.ai.crypto). Set AIJOB_FERNET_KEY in production so the
+# web and worker processes share a stable key; otherwise one is derived from
+# SECRET_KEY, which both processes already read identically.
+AIJOB_FERNET_KEY = os.environ.get('AIJOB_FERNET_KEY', '')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# Default False (production-safe). Set DJANGO_DEBUG=1 for local development so
+# runserver serves your edited static/ files directly — otherwise WhiteNoise
+# serves the collected staticfiles/ copies and you must re-run collectstatic
+# after every JS/CSS change.
+DEBUG = os.environ.get('DJANGO_DEBUG', '') == '1'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', "oracle-rex.onrender.com"]
 
@@ -38,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_q',
     'core',
     'corsheaders',
 ]
@@ -57,6 +74,14 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'oracle-rex.urls'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# In development (DEBUG), have WhiteNoise serve files straight from the static/
+# source dirs via the staticfiles finders and re-check them on each request, so
+# edits show up without re-running collectstatic. No effect in production, where
+# WhiteNoise serves the collected, hashed staticfiles/ as usual.
+if DEBUG:
+    WHITENOISE_USE_FINDERS = True
+    WHITENOISE_AUTOREFRESH = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
@@ -86,13 +111,27 @@ WSGI_APPLICATION = 'oracle-rex.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+#
+# Env-driven via DATABASE_URL (dj-database-url). Production on Render points this
+# at Postgres — the same instance the web service and the Django-Q background
+# worker share, which is what makes the ORM broker work without Redis. With no
+# DATABASE_URL set, it falls back to the local SQLite file so a fresh checkout
+# still runs. ``conn_max_age`` keeps Postgres connections warm; the worker holds
+# long-lived connections while polling the broker table.
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+    )
 }
+
+# When running on SQLite (the default, zero-cost single-process deployment), use
+# WAL mode and a busy timeout so the web request thread and the in-process AI job
+# threads don't trip over each other on concurrent writes. WAL is enabled per
+# connection in core/apps.py; the busy timeout is set here.
+if DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3':
+    DATABASES['default'].setdefault('OPTIONS', {})['timeout'] = 20
 
 
 # Password validation
@@ -155,5 +194,87 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False,
         },
+        'django_q': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     },
+}
+
+# --- Async AI jobs (Milestone 2) ------------------------------------------
+#
+# Execution backend for AI jobs:
+#   'thread'   (default) run jobs in an in-process thread pool on the web
+#              service — no extra process, runs on a single free host.
+#   'django_q' enqueue to the Django-Q ORM broker for a separate, durable
+#              worker (`manage.py qcluster`); survives restarts but needs the
+#              worker process (paid on Render) and ideally Postgres.
+AI_JOB_BACKEND = os.environ.get('AI_JOB_BACKEND', 'thread')
+AI_JOB_THREADS = int(os.environ.get('AI_JOB_THREADS', '4'))
+
+# Single time budget for a provider call, shared by the service layer
+# (core/service/ai/config.py reads the same AI_REQUEST_TIMEOUT env var) and the
+# downstream timeouts below, so they stay coherent: the provider call gets
+# AI_REQUEST_TIMEOUT, and the worker kill / stale-job reaper sit above it so the
+# graceful in-task timeout normally wins.
+AI_REQUEST_TIMEOUT = float(os.environ.get('AI_REQUEST_TIMEOUT', '180'))
+
+# How long (seconds) a job may sit in 'running' before the status endpoint reaps
+# it to 'timeout' — the safety net for the in-process thread backend. Above the
+# provider timeout so a normally-slow call isn't reaped mid-flight.
+AI_JOB_STALE_SECONDS = int(AI_REQUEST_TIMEOUT) + 120
+
+# --- Demo mode & private live access (Milestone 3) ------------------------
+#
+# Three modes the hosted app supports:
+#   * Demo      — default public experience; one-click sample scenarios served
+#                 from pregenerated responses (core/demo). No key, no provider
+#                 call, so it can never run up the owner's AI bill.
+#   * BYOK      — the user pastes their own provider API key (existing flow).
+#   * Live demo — owner-controlled access for interviews: a shared access code
+#                 unlocks the owner's backend key, but only behind a cheap model,
+#                 an output-token cap, and a daily request limit.
+#
+# Live demo is OFF unless BOTH an access code and a backend key are configured.
+DEMO_LIVE_ACCESS_CODE = os.environ.get('DEMO_LIVE_ACCESS_CODE', '')
+DEMO_LIVE_API_KEY = os.environ.get('DEMO_LIVE_API_KEY', '')
+# Cheap, fast default model for owner-paid live demo requests.
+DEMO_LIVE_MODEL = os.environ.get('DEMO_LIVE_MODEL', 'gpt-5.4-nano')
+# Optional hard cap on output tokens per live-demo call. Default 0 means "use the
+# reasoning-safe per-feature caps" (core/service/ai/config.py live_demo_max_tokens),
+# which is recommended. Set a positive value only to force a single hard ceiling
+# across all features — note that a low value (e.g. <4000) can starve the
+# strategy/move reasoning calls and make them return empty output.
+DEMO_LIVE_MAX_OUTPUT_TOKENS = int(os.environ.get('DEMO_LIVE_MAX_OUTPUT_TOKENS', '0'))
+# Max shared live-demo requests per UTC day (0 disables the limit). Counted in
+# the cache; resets daily and on process restart (a soft cost ceiling).
+DEMO_LIVE_DAILY_LIMIT = int(os.environ.get('DEMO_LIVE_DAILY_LIMIT', '50'))
+DEMO_LIVE_ENABLED = bool(DEMO_LIVE_ACCESS_CODE and DEMO_LIVE_API_KEY)
+
+# Django-Q2 config — only used when AI_JOB_BACKEND == 'django_q'.
+#
+# Uses the ORM broker ('orm': 'default'), so the shared state between the web
+# process and the worker is the database itself — no Redis. Run the worker with
+# `python manage.py qcluster`. Locally that's a second process alongside
+# `runserver` (see the Procfile); on Render it's a dedicated Background Worker
+# pointed at the same Postgres instance.
+#
+# 'timeout' kills a task that runs too long (a hung provider call) so a job can't
+# wedge a worker forever; the completion hook then marks the AIJob 'timeout'. It
+# sits above the service layer's own provider timeout (AI_REQUEST_TIMEOUT) so the
+# graceful in-task timeout normally wins and this is only a hard safety net.
+# 'retry' must exceed 'timeout'.
+Q_CLUSTER = {
+    'name': 'oracle_rex',
+    'workers': int(os.environ.get('Q_WORKERS', '2')),
+    'timeout': int(AI_REQUEST_TIMEOUT) + 30,
+    'retry': int(AI_REQUEST_TIMEOUT) + 90,
+    'max_attempts': 1,
+    'catch_up': False,
+    'save_limit': 250,
+    'orm': 'default',
+    # In tests / one-off scripts, force synchronous execution so enqueued tasks
+    # run inline without a separate qcluster process.
+    'sync': os.environ.get('Q_SYNC', '') == '1',
 }

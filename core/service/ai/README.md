@@ -6,15 +6,30 @@ upgrade plan). Views never call provider SDKs directly; they call
 
 ## AI call-site audit
 
-There are four AI-powered features. Each is now backed by one service function
-and reached through one view:
+There are four AI-powered features. Each is backed by one service function,
+dispatched by the async worker (`core/jobs.py`, Milestone 2) and reached through
+a `/api/jobs/<feature>/` create endpoint:
 
-| Feature            | View (`core/views.py`)      | Service fn (`ai/service.py`) | Prompt (`ai/prompts/`)     | Schema (`ai/schemas/`) |
-| ------------------ | --------------------------- | ---------------------------- | -------------------------- | ---------------------- |
-| Rules Q&A          | `rules_chat_api`            | `get_rules_response`         | `rules_chat.py`            | `RulesAnswer`          |
-| Strategy suggester | `strategy_suggester_api`    | `get_strategy_response`      | `strategic_plan.py`        | `StrategicPlan`        |
-| Move suggester     | `move_suggester_api`        | `get_move_response`          | `tactical_move.py`         | `TacticalMove`         |
-| Battle calculator  | `tactical_calculator_api`   | `get_tac_calc_response`      | `tactical_calculator.py`   | — (rigid text format)  |
+| Feature            | Create endpoint (`core/views.py`) | Service fn (`ai/service.py`) | Prompt (`ai/prompts/`)     | Schema (`ai/schemas/`) |
+| ------------------ | --------------------------------- | ---------------------------- | -------------------------- | ---------------------- |
+| Rules Q&A          | `rules_job_create`                | `get_rules_response`         | `rules_chat.py`            | `RulesAnswer`          |
+| Strategy suggester | `strategy_job_create`             | `get_strategy_response`      | `strategic_plan.py`        | `StrategicPlan`        |
+| Move suggester     | `move_job_create`                 | `get_move_response`          | `tactical_move.py`         | `TacticalMove`         |
+| Battle calculator  | `tactical_job_create`             | `get_tac_calc_response`      | `tactical_calculator.py`   | — (rigid text format)  |
+
+Each create endpoint resolves credentials via `_resolve_ai_credentials`: an
+`access_code` in the request body unlocks the private live demo (owner key +
+cheap `DEMO_LIVE_MODEL` + a `max_tokens` output cap + a daily request limit);
+otherwise the user's BYOK key and chosen model are used. The cap is threaded into
+the job as an internal `_max_tokens` payload directive and applied in `service.py`
+via `_token_budget` (it only ever caps *below* the per-feature default).
+
+**Demo mode (Milestone 3).** The public, no-key experience lives in `core/demo/`
+(sample scenarios + pregenerated responses). `/api/demo/run/` serves a cached
+response as a *pre-completed* `AIJob`, so the same polling frontend renders it
+with no provider call — demo mode can't run up owner cost. `/api/demo/catalog/`
+drives the one-click sample entries; `/api/demo/status/` reports whether the
+private live demo is configured.
 
 ### Before this milestone
 
@@ -37,8 +52,6 @@ core/service/ai/
   schemas/         Pydantic models with to_display_text() + fallback_from_text()
   service.py       public functions; validation, structured output, error mapping
 ```
-
-`core/service/ai_service.py` is a thin backward-compatible re-export.
 
 ### Providers and models
 
