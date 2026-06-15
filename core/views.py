@@ -27,6 +27,14 @@ def frontend_view(request):
     return render(request, 'index.html')
 
 
+def spa_view(request):
+    """Temporary mount point for the React/TS SPA during the Milestone 5
+    migration. The legacy plain-JS frontend stays at ``/``; the SPA lives at
+    ``/app`` until the Phase 8 cutover, when it takes over ``/`` and this route
+    is removed."""
+    return render(request, 'spa.html')
+
+
 ###########         BACKEND         ################################
 
 @require_GET

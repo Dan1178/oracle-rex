@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'django_q',
+    'django_vite',
     'core',
     'corsheaders',
 ]
@@ -169,8 +170,33 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]
+# The React/Vite build output (frontend/dist) is a second static source so
+# collectstatic picks up the hashed JS/CSS bundles alongside the legacy
+# static/ assets (images, fonts, the plain-JS frontend). Both are served by
+# WhiteNoise under STATIC_URL on the single web service — no separate host.
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+    BASE_DIR / "frontend" / "dist",
+]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# --- React/TS frontend via Vite (Milestone 5) -----------------------------
+#
+# django-vite reads Vite's build manifest to emit hashed <script>/<link> tags
+# for the SPA (see templates/spa.html). Two modes:
+#   * dev_mode=True  — tags point at the Vite dev server (HMR). Set
+#                      DJANGO_VITE_DEV_MODE=1 and run `npm run dev` in frontend/
+#                      alongside `manage.py runserver`.
+#   * dev_mode=False — tags resolve through the manifest + Django's static
+#                      storage (the production/collectstatic path). Default, so
+#                      a plain checkout and Render deploy are production-safe.
+DJANGO_VITE = {
+    "default": {
+        "dev_mode": os.environ.get("DJANGO_VITE_DEV_MODE", "") == "1",
+        "dev_server_port": 5173,
+        "manifest_path": BASE_DIR / "frontend" / "dist" / ".vite" / "manifest.json",
+    }
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

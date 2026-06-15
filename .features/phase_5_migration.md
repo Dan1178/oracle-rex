@@ -285,3 +285,57 @@ frontend/
 - Performance (board memoization, calculator tuning) → **M7**.
 - Frontend test depth beyond smoke/component basics → **M8**.
 - Any backend/API contract changes, new AI features, account system.
+
+---
+
+## 10. Cleanup Work (side tasks discovered during implementation)
+
+Out-of-scope items surfaced while doing the migration. Tracked here so they
+aren't lost; address opportunistically or fold into the relevant phase. None
+block the migration.
+
+- **`STATICFILES_STORAGE` is a silent no-op (Django 5.1).** `oracle-rex/settings.py`
+  still sets `STATICFILES_STORAGE = 'whitenoise…CompressedManifestStaticFilesStorage'`,
+  but Django 5.1 removed that setting (use the `STORAGES` dict). Result: in
+  production there is no `staticfiles.json`, no WhiteNoise compression, and no
+  manifest hashing. Phase 0 works regardless because Vite already content-hashes
+  its bundles. Fix = migrate to `STORAGES`, re-run `collectstatic`, and confirm
+  the django-vite asset URLs still resolve (ManifestStaticFilesStorage keeps the
+  original unhashed copies, which WhiteNoise serves). **Testable now** (see §11);
+  spawned as task `task_4b213925`.
+- **`core/urls.py` is included twice.** `oracle-rex/urls.py` mounts `core.urls`
+  under both `''` and `api/`, so every route also exists under `/api/…` — e.g.
+  the new SPA route yields a harmless `/api/app/`, and `/api/` renders the
+  frontend. Pre-existing pattern; not introduced by M5. Consider tidying the URL
+  config (e.g. a dedicated frontend urlconf vs the API urlconf) during the
+  Phase 8 cutover, when the frontend routes are being reworked anyway. Low value,
+  low urgency.
+- **`db.sqlite3` churn on every run.** The committed SQLite file is mutated by
+  `reset_database()` at session startup (and by tests), so `runserver`/tests
+  leave the tracked DB dirty and it must be restored by hand. A dev-process
+  annoyance, not an M5 concern — revisit only if it gets in the way (e.g. stop
+  committing the seeded DB, or gate the startup reset more aggressively).
+- **Admin-session CSRF edge case (caveat, not a fix).** The AI POST endpoints
+  rely on DRF `SessionAuthentication`, which only enforces CSRF for an
+  authenticated session. The public app has no login, so the SPA's same-origin
+  POSTs need no CSRF token — but if you're logged into `/admin` in the same
+  browser, those POSTs will fail CSRF. This is pre-existing (the legacy JS
+  behaves identically) and only affects the owner while testing. Document it;
+  only add explicit CSRF handling if it becomes a real problem.
+
+## 11. What's testable right now (before Phase 1)
+
+The only cleanup item that is independently actionable and end-to-end verifiable
+today (it doesn't depend on any later phase) is the **`STORAGES` migration**:
+
+1. Replace `STATICFILES_STORAGE` with the `STORAGES` dict (`staticfiles` →
+   `whitenoise.storage.CompressedManifestStaticFilesStorage`).
+2. `python manage.py collectstatic --noinput` → confirm `staticfiles/staticfiles.json`
+   now exists and content-hashed copies are produced.
+3. `python manage.py test core.tests` → expect **100 passing**.
+4. Serve in production mode (`DEBUG` off, `DJANGO_VITE_DEV_MODE` unset) and `curl`
+   `/app/`, the referenced JS/CSS bundle, and `/api/demo/catalog/` → all `200`,
+   confirming the React/Vite assets still resolve under manifest storage.
+
+Everything else in §10 is either a caveat to document or a low-value tidy best
+done during its natural phase.

@@ -16,7 +16,7 @@ from .views import (
 
     # Front end
 
-    frontend_view,
+    frontend_view, spa_view,
 )
 
 urlpatterns = [
@@ -44,5 +44,7 @@ urlpatterns = [
     path('demo/run/', demo_job_create, name='demo_job_create'),
 
     ### FRONTEND
+    # Temporary React SPA mount during Milestone 5; legacy stays at '/'.
+    path('app/', spa_view, name='spa'),
     path('', frontend_view, name='frontend'),
 ]
