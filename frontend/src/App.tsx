@@ -4,6 +4,7 @@ import { TabNav, type TabDescriptor } from './components/TabNav/TabNav'
 import { BattleCalculator } from './features/battleCalculator/BattleCalculator'
 import { RulesPanel } from './features/rulesChat/RulesPanel'
 import { SettingsPanel } from './features/settings/SettingsPanel'
+import { StrategyPanel } from './features/strategicPlan/StrategyPanel'
 import { useDemoConfig } from './hooks/useDemoConfig'
 import styles from './App.module.css'
 
@@ -24,8 +25,7 @@ const TABS: ReadonlyArray<TabDescriptor<TabId>> = [
   { id: 'tactical', label: 'Tactical Calculator' },
 ]
 
-const COMING_SOON: Record<'strategy' | 'fleet' | 'move', string> = {
-  strategy: 'The Strategy Suggester arrives in Phase 5.',
+const COMING_SOON: Record<'fleet' | 'move', string> = {
   fleet: 'The Fleet Manager arrives in Phase 7.',
   move: 'The Move Suggester arrives in Phase 6.',
 }
@@ -52,8 +52,9 @@ function App() {
       <main role="tabpanel">
         {activeTab === 'settings' && <SettingsPanel />}
         {activeTab === 'rules' && <RulesPanel />}
+        {activeTab === 'strategy' && <StrategyPanel />}
         {activeTab === 'tactical' && <BattleCalculator />}
-        {activeTab !== 'settings' && activeTab !== 'rules' && activeTab !== 'tactical' && (
+        {(activeTab === 'fleet' || activeTab === 'move') && (
           <p className={styles.placeholder}>{COMING_SOON[activeTab]}</p>
         )}
       </main>

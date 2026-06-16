@@ -1,0 +1,90 @@
+/* Ported from templates/strategy.html + the demo-box / tts-input-container
+   styles in static/css/style.css. */
+
+.intro {
+  color: #444;
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+.demoBox {
+  background: #f0f6ff;
+  border: 1px solid #b8d4ff;
+  border-left: 4px solid #007bff;
+  border-radius: 5px;
+  padding: 12px 16px;
+  margin: 0 0 20px;
+}
+
+.demoBox h4 {
+  margin: 0 0 8px;
+  color: #0056b3;
+}
+
+.demoDesc {
+  margin: 0 0 12px;
+  color: #444;
+  line-height: 1.5;
+}
+
+.demoButton {
+  background: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.demoButton:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.demoButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.byok {
+  color: #444;
+  margin: 0 0 8px;
+}
+
+.ttsRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.ttsInput {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.generate,
+.getStrategy {
+  background: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.generate:hover:not(:disabled),
+.getStrategy:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.generate:disabled,
+.getStrategy:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.results {
+  margin-top: 20px;
+}

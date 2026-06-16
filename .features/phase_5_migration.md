@@ -222,7 +222,7 @@ question copied into the input; `App.test.tsx` rules tab mounts the panel).
 Reuses the Phase 1 `AdvisorCard`/`rulesCard` unchanged. Live + demo paths covered
 via MSW; not yet exercised against a real provider.
 
-### Phase 5 — Board rendering + Strategy Suggester
+### Phase 5 — Board rendering + Strategy Suggester ✅ **Complete**
 **Goal:** The hex board component + first board-driven feature.
 
 - **`Board` component**: 37 fixed hex positions, tile images by `tile_id` (Mecatol
@@ -234,6 +234,30 @@ via MSW; not yet exercised against a real provider.
 - Demo: "Load Sample Milty Draft Board" → build board, auto-select suggested
   faction, show saved strategy.
 - **Verify:** board renders correctly vs legacy; live + demo strategy work.
+
+**Done:** `components/Board/Board.tsx` + `boardPositions.ts` (37 fixed positions
+in ring order; positions split into their own module for the Fast-Refresh lint
+rule) + `Board.module.css` (the `:root` hex vars, `.hexGrid`/`.hex`/ring classes,
+and all 37 `[data-position]` rules **ported verbatim** from `static/css/style.css`
+— class names localized, attribute selectors + `:root` pass through CSS Modules);
+tile images derived from the `game` prop (port of `setBoard`, Mecatol 0-0 → tile
+18, empty built slot → tile 0, no game → bare grid). `components/FactionSelect/`
+(controlled dropdown from `game.players`, replaces the space-in-id
+`"faction-select strategy"`; reused by Move in Phase 6). `features/strategicPlan/
+StrategyPanel.tsx` (port of generateGame/suggestStrategy/loadDemoBoardScenario):
+TTS input → `buildGameFromTts` via a TanStack `useMutation` → board + faction in
+component state (no `window.strategyGameData`); `useAiJob('strategy')` submit via
+`getCredentials('strategy')` rendering the `StrategicPlan` card through the shared
+`JobResultView` (`strategyCard`, reused unchanged); demo "Load Sample Milty Draft
+Board" builds the board, auto-selects `suggested_faction`, and runs the saved
+strategy. Wired into `App.tsx` (strategy tab live; COMING_SOON now only
+fleet/move). Verified: lint + `tsc -b` clean, `npm run build` succeeds, 53 tests
+pass (`Board.test.tsx` 37-hex render + tile-image + Mecatol fallback;
+`StrategyPanel.test.tsx` generate→board→live strategy capturing game_json+faction,
+demo board+auto-faction+saved strategy; `App.test.tsx` strategy tab mounts the
+panel). Hex layout ported byte-for-byte (same vars/position math); live visual
+diff vs legacy deferred. Live + demo paths covered via MSW; not yet against a real
+provider.
 
 ### Phase 6 — Move Suggester (reuses Board)
 **Goal:** Move feature, reusing the Board + faction-select from Phase 5.

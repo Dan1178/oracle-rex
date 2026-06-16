@@ -40,8 +40,8 @@ describe('App shell (Phase 2)', () => {
 
   it('switches tabs and shows a placeholder for unbuilt features', () => {
     renderApp()
-    fireEvent.click(screen.getByRole('tab', { name: /strategy suggester/i }))
-    expect(screen.getByText(/arrives in phase 5/i)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('tab', { name: /move suggester/i }))
+    expect(screen.getByText(/arrives in phase 6/i)).toBeInTheDocument()
     // The Settings content is no longer mounted.
     expect(screen.queryByText(/three ways to use oracle rex/i)).not.toBeInTheDocument()
 
@@ -62,6 +62,13 @@ describe('App shell (Phase 2)', () => {
     fireEvent.click(screen.getByRole('tab', { name: /rules q&a/i }))
     expect(screen.getByRole('heading', { name: /rules q&a/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /ask oracle rex/i })).toBeInTheDocument()
+  })
+
+  it('renders the Strategy Suggester (with the board) on the Strategy tab', () => {
+    renderApp()
+    fireEvent.click(screen.getByRole('tab', { name: /strategy suggester/i }))
+    expect(screen.getByRole('heading', { name: /strategy suggester/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /load sample milty draft board/i })).toBeInTheDocument()
   })
 
   it('marks the active tab with aria-selected', () => {
