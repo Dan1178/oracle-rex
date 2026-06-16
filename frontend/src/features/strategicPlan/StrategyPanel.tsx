@@ -1,104 +1,34 @@
 import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
 
 import { Board } from '../../components/Board/Board'
 import { ErrorState } from '../../components/ErrorState/ErrorState'
 import { FactionSelect } from '../../components/FactionSelect/FactionSelect'
 import { JobResultView } from '../../components/JobResultView/JobResultView'
 import { LoadingState } from '../../components/LoadingState/LoadingState'
-import { ApiError, buildGameFromTts } from '../../api/oracleRexApi'
-import { useAiJob } from '../../hooks/useAiJob'
 import { useDemoConfig } from '../../hooks/useDemoConfig'
-import { useSettings } from '../../store/settingsContext'
-import type { Game } from '../../types/game'
+import { useBoardSuggester } from '../boardSuggester/useBoardSuggester'
 import styles from './StrategyPanel.module.css'
 
 // Strategy Suggester — TTS string → board → faction-specific opening plan.
-// Ports static/js/app.js generateGame/setBoard/suggestStrategy and the
-// loadDemoBoardScenario demo flow. Board state lives in component state keyed to
-// this feature (no more window.strategyGameData / space-in-id DOM hacks).
+// Ports app.js generateGame/setBoard/suggestStrategy + loadDemoBoardScenario;
+// the shared board/faction/job flow lives in useBoardSuggester, this component
+// adds the TTS-input UI and strategy-specific copy.
 
 const LOADING_MESSAGE = 'Analyzing board state…'
-const GAME_NAME = 'strategy'
 
 export function StrategyPanel() {
   const [ttsInput, setTtsInput] = useState('')
-  const [game, setGame] = useState<Game>()
-  const [faction, setFaction] = useState('')
-  const [credentialError, setCredentialError] = useState<string>()
-  const [lastMode, setLastMode] = useState<'live' | 'demo'>('live')
-  const [lastDemoKey, setLastDemoKey] = useState<string>()
-
-  const { getCredentials } = useSettings()
   const { catalog } = useDemoConfig()
-  const job = useAiJob('strategy')
+  const board = useBoardSuggester('strategy')
+  const { game, faction, setFaction, credentialError, buildError, busy, job } = board
 
   const demoScenario = catalog?.scenarios.strategy
   const demoReady = Boolean(demoScenario?.key && demoScenario.tts_string)
 
-  const buildMutation = useMutation({
-    mutationFn: (tts: string) => buildGameFromTts(tts, GAME_NAME),
-  })
-
-  const buildError =
-    buildMutation.error instanceof ApiError
-      ? buildMutation.error.message
-      : buildMutation.error
-        ? 'Could not build the board from that TTS string.'
-        : undefined
-
-  const handleGenerate = async () => {
-    const tts = ttsInput.trim()
-    if (!tts) return
-    setCredentialError(undefined)
-    job.reset()
-    try {
-      const built = await buildMutation.mutateAsync(tts)
-      setGame(built)
-      setFaction('')
-    } catch {
-      // Failure is surfaced via buildMutation.error (buildError above).
-    }
+  const handleDemo = () => {
+    setTtsInput(demoScenario?.tts_string ?? '')
+    void board.loadDemo(demoScenario)
   }
-
-  const handleDemo = async () => {
-    if (!demoScenario?.key || !demoScenario.tts_string) return
-    setCredentialError(undefined)
-    setTtsInput(demoScenario.tts_string)
-    try {
-      const built = await buildMutation.mutateAsync(demoScenario.tts_string)
-      setGame(built)
-      setFaction(demoScenario.suggested_faction ?? '')
-      setLastMode('demo')
-      setLastDemoKey(demoScenario.key)
-      job.runDemoScenario(demoScenario.key)
-    } catch {
-      // Build failure surfaced via buildMutation.error.
-    }
-  }
-
-  const handleStrategy = () => {
-    if (!game || !faction) return
-    setCredentialError(undefined)
-    setLastMode('live')
-    const result = getCredentials('strategy')
-    if (!result.creds) {
-      job.reset()
-      setCredentialError(result.error)
-      return
-    }
-    job.submit({ game_json: game, player_faction: faction }, result.creds)
-  }
-
-  const retry = () => {
-    if (lastMode === 'demo' && lastDemoKey) {
-      job.runDemoScenario(lastDemoKey)
-    } else {
-      handleStrategy()
-    }
-  }
-
-  const busy = job.isLoading || buildMutation.isPending
 
   return (
     <section aria-labelledby="strategy-heading">
@@ -142,25 +72,20 @@ export function StrategyPanel() {
         <button
           type="button"
           className={styles.generate}
-          onClick={handleGenerate}
+          onClick={() => void board.generate(ttsInput)}
           disabled={busy || ttsInput.trim() === ''}
         >
           Generate
         </button>
       </div>
 
-      {buildError && <ErrorState message={buildError} onRetry={handleGenerate} />}
+      {buildError && <ErrorState message={buildError} onRetry={() => void board.generate(ttsInput)} />}
 
-      <FactionSelect
-        players={game?.players ?? []}
-        value={faction}
-        onChange={setFaction}
-        disabled={!game}
-      />
+      <FactionSelect players={game?.players ?? []} value={faction} onChange={setFaction} disabled={!game} />
       <button
         type="button"
         className={styles.getStrategy}
-        onClick={handleStrategy}
+        onClick={board.suggest}
         disabled={!game || !faction || busy}
       >
         Get Strategy
@@ -170,11 +95,11 @@ export function StrategyPanel() {
 
       <div className={styles.results}>
         {credentialError ? (
-          <ErrorState message={credentialError} onRetry={handleStrategy} />
+          <ErrorState message={credentialError} onRetry={board.suggest} />
         ) : job.isLoading ? (
           <LoadingState message={LOADING_MESSAGE} />
         ) : job.phase === 'error' && job.error ? (
-          <ErrorState message={job.error} onRetry={retry} />
+          <ErrorState message={job.error} onRetry={board.retry} />
         ) : job.phase === 'success' && job.result ? (
           <JobResultView feature="strategy" result={job.result} />
         ) : null}

@@ -40,8 +40,8 @@ describe('App shell (Phase 2)', () => {
 
   it('switches tabs and shows a placeholder for unbuilt features', () => {
     renderApp()
-    fireEvent.click(screen.getByRole('tab', { name: /move suggester/i }))
-    expect(screen.getByText(/arrives in phase 6/i)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('tab', { name: /fleet manager/i }))
+    expect(screen.getByText(/arrives in phase 7/i)).toBeInTheDocument()
     // The Settings content is no longer mounted.
     expect(screen.queryByText(/three ways to use oracle rex/i)).not.toBeInTheDocument()
 
@@ -69,6 +69,13 @@ describe('App shell (Phase 2)', () => {
     fireEvent.click(screen.getByRole('tab', { name: /strategy suggester/i }))
     expect(screen.getByRole('heading', { name: /strategy suggester/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /load sample milty draft board/i })).toBeInTheDocument()
+  })
+
+  it('renders the Move Suggester on the Move tab', () => {
+    renderApp()
+    fireEvent.click(screen.getByRole('tab', { name: /move suggester/i }))
+    expect(screen.getByRole('heading', { name: /move suggester/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /load tactical puzzle/i })).toBeInTheDocument()
   })
 
   it('marks the active tab with aria-selected', () => {

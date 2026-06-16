@@ -259,12 +259,30 @@ panel). Hex layout ported byte-for-byte (same vars/position math); live visual
 diff vs legacy deferred. Live + demo paths covered via MSW; not yet against a real
 provider.
 
-### Phase 6 — Move Suggester (reuses Board)
+### Phase 6 — Move Suggester (reuses Board) ✅ **Complete**
 **Goal:** Move feature, reusing the Board + faction-select from Phase 5.
 
 - `useAiJob('move')`; render `TacticalMove` structured card.
 - Demo: "Load Tactical Puzzle".
 - **Verify:** live + demo work; board reuse confirmed.
+
+**Done:** `features/tacticalMove/MovePanel.tsx` (port of move.html +
+suggestStrategy('move') + loadDemoBoardScenario('move')): reuses the Phase 5
+`Board`, `FactionSelect`, and `JobResultView` (`moveCard` → `TacticalMove` card,
+unchanged); `useAiJob('move')` submit via `getCredentials('move')`; demo "Load
+Tactical Puzzle" builds the board, auto-selects `suggested_faction` (Ul), and
+shows the saved recommendation. **No TTS input** — faithful to the legacy Move
+tab, whose board comes from the Fleet Manager export (Phase 7) or the demo; added
+a `disabledPlaceholder` prop to `FactionSelect` so its empty state reads
+correctly for Move. **Refactor:** the shared board→faction→job→demo flow was
+extracted into `features/boardSuggester/useBoardSuggester.ts`, and `StrategyPanel`
+was moved onto it too (its tests stayed green, proving the refactor). Wired into
+`App.tsx` (move tab live; COMING_SOON now only fleet). Verified: lint + `tsc -b`
+clean, `npm run build` succeeds, 56 tests pass (`MovePanel.test.tsx`: demo loads
+board + auto-faction + saved move with label; live Suggest Move on the
+demo-loaded board capturing game_json + faction; `App.test.tsx` move tab mounts
+the panel; Strategy tests unchanged and still green). Live + demo via MSW; not yet
+against a real provider.
 
 ### Phase 7 — Fleet Manager (most complex — reuses Board)
 **Goal:** Port the interactive fleet/ground editor and game-state I/O.

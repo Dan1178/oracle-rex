@@ -13,6 +13,8 @@ export interface FactionSelectProps {
   disabled?: boolean
   /** Accessible label / id-free association for the select. */
   label?: string
+  /** Placeholder option text shown while disabled (no board loaded yet). */
+  disabledPlaceholder?: string
 }
 
 export function FactionSelect({
@@ -21,6 +23,7 @@ export function FactionSelect({
   onChange,
   disabled = false,
   label = 'Faction',
+  disabledPlaceholder = 'Enter a TTS String to load a board state',
 }: FactionSelectProps) {
   // Only players with an assigned faction are selectable (matches legacy).
   const factions = players.filter((p) => p.faction)
@@ -33,7 +36,7 @@ export function FactionSelect({
       disabled={disabled}
       onChange={(e) => onChange(e.target.value)}
     >
-      <option value="">{disabled ? 'Enter a TTS String to load a board state' : 'Select Faction'}</option>
+      <option value="">{disabled ? disabledPlaceholder : 'Select Faction'}</option>
       {factions.map((player, i) => (
         <option key={player.faction} value={player.faction as string}>
           {player.faction} (Player {i + 1})
