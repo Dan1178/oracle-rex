@@ -1,15 +1,70 @@
-/* Minimal base styles for Phase 0. The legacy stylesheets
-   (static/css/style.css et al.) are ported into the React app in later
-   Milestone 5 phases. */
+/* App-wide base styles ported from static/css/style.css: the web fonts (served
+   by Django from /static/fonts/), the page background, and the base typography.
+   Component-specific styles live in CSS Modules alongside each component. The
+   hex-grid layout is ported with the Board component in Phase 5. */
+
+@font-face {
+  font-family: 'Azonix';
+  src: url('/static/fonts/azonix/Azonix.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Orbitron';
+  src: url('/static/fonts/orbitron/Orbitron-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Orbitron-Bold';
+  src: url('/static/fonts/orbitron/Orbitron-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Orbitron-ExtraBold';
+  src: url('/static/fonts/orbitron/Orbitron-ExtraBold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'OCR-A';
+  src: url('/static/fonts/ocr-a/OCR-a___.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
 :root {
-  color-scheme: light dark;
-  font:
-    16px/1.5 system-ui,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
+  color-scheme: light;
 }
 
 body {
+  font-family: Arial, sans-serif;
   margin: 0;
+  padding: 20px;
+  background-color: black;
+}
+
+h2 {
+  font-family: 'Orbitron-Bold', sans-serif;
+}
+
+h3,
+h4,
+button {
+  font-family: 'Orbitron', sans-serif;
+}
+
+input,
+textarea,
+select,
+label,
+p,
+span {
+  font-family: 'OCR-A', sans-serif;
+  font-weight: 600;
 }

@@ -1,66 +1,62 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
-// Phase 0 placeholder app. Its only job is to prove the React/TS/Vite build is
-// wired into Django end-to-end: it renders, and it can reach the real API on the
-// same host (no CORS) by fetching the demo catalog. Real features arrive in the
-// later Milestone 5 phases.
+import { TabNav, type TabDescriptor } from './components/TabNav/TabNav'
+import { SettingsPanel } from './features/settings/SettingsPanel'
+import { useDemoConfig } from './hooks/useDemoConfig'
+import styles from './App.module.css'
 
-interface DemoCatalog {
-  label: string
-  scenarios: Record<string, unknown>
+// The SPA shell: the app header, the 6-tab navigation, and the active tab's
+// panel. Settings is live (Phase 2); the remaining feature tabs land in later
+// Milestone 5 phases and show a short placeholder until then. The legacy
+// plain-JS app stays reachable at /legacy until the Phase 8 cutover.
+
+type TabId = 'settings' | 'rules' | 'strategy' | 'fleet' | 'move' | 'tactical'
+
+// Order mirrors the legacy tab bar (base.html).
+const TABS: ReadonlyArray<TabDescriptor<TabId>> = [
+  { id: 'settings', label: 'Settings' },
+  { id: 'rules', label: 'Rules Q&A' },
+  { id: 'strategy', label: 'Strategy Suggester' },
+  { id: 'fleet', label: 'Fleet Manager' },
+  { id: 'move', label: 'Move Suggester' },
+  { id: 'tactical', label: 'Tactical Calculator' },
+]
+
+const COMING_SOON: Record<Exclude<TabId, 'settings'>, string> = {
+  rules: 'Rules Q&A arrives in Phase 4.',
+  strategy: 'The Strategy Suggester arrives in Phase 5.',
+  fleet: 'The Fleet Manager arrives in Phase 7.',
+  move: 'The Move Suggester arrives in Phase 6.',
+  tactical: 'The Tactical / Battle Calculator arrives in Phase 3.',
 }
 
-type FetchState =
-  | { status: 'loading' }
-  | { status: 'ok'; catalog: DemoCatalog }
-  | { status: 'error'; message: string }
-
 function App() {
-  const [state, setState] = useState<FetchState>({ status: 'loading' })
+  const [activeTab, setActiveTab] = useState<TabId>('settings')
 
-  useEffect(() => {
-    let cancelled = false
-    fetch('/api/demo/catalog/')
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        return res.json() as Promise<DemoCatalog>
-      })
-      .then((catalog) => {
-        if (!cancelled) setState({ status: 'ok', catalog })
-      })
-      .catch((err: unknown) => {
-        if (!cancelled) {
-          setState({
-            status: 'error',
-            message: err instanceof Error ? err.message : String(err),
-          })
-        }
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  // Bootstrap the demo catalog + live-demo status on mount so each feature tab
+  // can render its one-click sample without a per-tab fetch. Failures are
+  // non-fatal here; the demo buttons simply stay unavailable.
+  useDemoConfig()
 
   return (
-    <main style={{ fontFamily: 'sans-serif', padding: '2rem' }}>
-      <h1>Oracle Rex — React migration</h1>
-      <p>Milestone 5 · Phase 0 — build integration verified.</p>
-      <section>
-        <h2>API connectivity</h2>
-        {state.status === 'loading' && <p>Contacting the API…</p>}
-        {state.status === 'error' && (
-          <p style={{ color: 'crimson' }}>
-            Could not reach <code>/api/demo/catalog/</code>: {state.message}
-          </p>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Oracle Rex — Twilight Imperium Companion</h1>
+      <p className={styles.tagline}>
+        An AI strategy assistant for Twilight Imperium: it parses board states, renders game maps,
+        estimates combat odds, and generates faction-specific strategy. Every feature has a
+        one-click <strong>Demo</strong> — no API key needed.
+      </p>
+
+      <TabNav tabs={TABS} activeTab={activeTab} onSelect={setActiveTab} />
+
+      <main role="tabpanel">
+        {activeTab === 'settings' ? (
+          <SettingsPanel />
+        ) : (
+          <p className={styles.placeholder}>{COMING_SOON[activeTab]}</p>
         )}
-        {state.status === 'ok' && (
-          <p style={{ color: 'green' }}>
-            Connected. Demo catalog “{state.catalog.label}” lists{' '}
-            {Object.keys(state.catalog.scenarios).length} scenario(s).
-          </p>
-        )}
-      </section>
-    </main>
+      </main>
+    </div>
   )
 }
 

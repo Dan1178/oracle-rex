@@ -113,7 +113,7 @@ Each phase ends with the app **still working** (legacy stays at `/legacy` until
 Phase 8). Order is dependency-driven: infra → simplest feature → board-dependent
 features → most complex (fleet) → cutover.
 
-### Phase 0 — Tooling & build integration
+### Phase 0 — Tooling & build integration ✅ **Complete**
 **Goal:** A React/TS/Vite app that builds into Django's static pipeline and is
 served on the same single Render web service, hitting one real API endpoint.
 
@@ -127,7 +127,7 @@ served on the same single Render web service, hitting one real API endpoint.
 - **Verify:** empty React page renders locally *and* from a Django prod build
   (`collectstatic`), and successfully fetches `/api/demo/catalog/`.
 
-### Phase 1 — Typed API layer & shared infrastructure
+### Phase 1 — Typed API layer & shared infrastructure ✅ **Complete**
 **Goal:** Fully typed, tested client + the async-job hook. No feature UI yet.
 
 - `types/`: `game.ts` (board, players, system, planet, fleet, ground_forces),
@@ -145,7 +145,7 @@ served on the same single Render web service, hitting one real API endpoint.
 - **Verify:** unit tests for client + `useAiJob` (MSW-mocked create→poll→complete,
   and failure/timeout paths).
 
-### Phase 2 — App shell, tab routing & Settings
+### Phase 2 — App shell, tab routing & Settings ✅ **Complete**
 **Goal:** SPA shell with the 6-tab layout and a working Settings tab.
 
 - Tab nav matching current tabs (Settings, Rules Q&A, Strategy, Fleet Manager,
@@ -156,6 +156,19 @@ served on the same single Render web service, hitting one real API endpoint.
 - Bootstrap demo config (catalog + status) on mount.
 - **Verify:** tab switching works; model/key selection drives credential building;
   demo catalog loads.
+
+**Done:** `components/TabNav/` (React-driven active tab, `role="tablist"`);
+`features/settings/SettingsPanel.tsx` (modes blurb, access-code + 3 BYOK key
+inputs, per-feature model radio groups mirroring `templates/settings.html`,
+corrected in-memory key warning); `store/models.ts` (per-feature model catalog +
+`apiMakeFor`), `store/settings.tsx` + `store/settingsContext.ts` (Context store:
+keys, model-per-feature, access code, `getCredentials(feature)` wiring the
+Phase-1 `buildLiveCredentials`); `hooks/useDemoConfig.ts` (catalog + status
+bootstrap, non-fatal on error); `App.tsx` shell with the 6 tabs (unbuilt features
+show a phase placeholder) + base CSS/font port (`index.css`, `App.module.css`).
+Verified: lint + `tsc -b` clean, `npm run build` succeeds, 33 tests pass
+(`App.test.tsx`, `SettingsPanel.test.tsx`, `settings.test.tsx`,
+`useDemoConfig.test.tsx`).
 
 ### Phase 3 — Tactical / Battle Calculator (first feature — validates the pipeline)
 **Goal:** Simplest feature fully on React; proves create→poll→render end-to-end.
