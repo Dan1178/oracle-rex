@@ -1,0 +1,24 @@
+.root {
+  margin-top: 20px;
+  padding: 15px;
+  background: #fff5f5;
+  border: 1px solid #f0b8b8;
+  border-radius: 5px;
+  color: #a12020;
+  white-space: pre-wrap;
+}
+
+.retry {
+  margin-top: 10px;
+  padding: 6px 14px;
+  border: 1px solid #a12020;
+  border-radius: 4px;
+  background: white;
+  color: #a12020;
+  cursor: pointer;
+}
+
+.retry:hover {
+  background: #a12020;
+  color: white;
+}

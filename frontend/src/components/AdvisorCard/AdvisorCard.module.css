@@ -1,0 +1,47 @@
+.root {
+  margin-top: 20px;
+  padding: 18px 20px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.heading {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.lead {
+  margin: 0 0 12px;
+  white-space: pre-wrap;
+}
+
+.section {
+  margin-top: 14px;
+}
+
+.sectionLabel {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #555;
+}
+
+.sectionText {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.sectionList {
+  margin: 0;
+  padding-left: 20px;
+}
+
+/* Plain-text fallback (tac_calc results, or an unstructured response). */
+.textResult {
+  margin: 0;
+  white-space: pre-wrap;
+  font-family: 'OCR-A', monospace;
+}

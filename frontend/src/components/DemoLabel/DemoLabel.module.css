@@ -1,0 +1,10 @@
+/* Ported from .demo-label in static/css/style.css — distinguishes a saved demo
+   answer from a live one. */
+.root {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px dashed #b8d4ff;
+  color: #0056b3;
+  font-size: 13px;
+  font-style: italic;
+}
