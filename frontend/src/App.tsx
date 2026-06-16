@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { TabNav, type TabDescriptor } from './components/TabNav/TabNav'
+import { BattleCalculator } from './features/battleCalculator/BattleCalculator'
 import { SettingsPanel } from './features/settings/SettingsPanel'
 import { useDemoConfig } from './hooks/useDemoConfig'
 import styles from './App.module.css'
@@ -22,12 +23,11 @@ const TABS: ReadonlyArray<TabDescriptor<TabId>> = [
   { id: 'tactical', label: 'Tactical Calculator' },
 ]
 
-const COMING_SOON: Record<Exclude<TabId, 'settings'>, string> = {
+const COMING_SOON: Record<'rules' | 'strategy' | 'fleet' | 'move', string> = {
   rules: 'Rules Q&A arrives in Phase 4.',
   strategy: 'The Strategy Suggester arrives in Phase 5.',
   fleet: 'The Fleet Manager arrives in Phase 7.',
   move: 'The Move Suggester arrives in Phase 6.',
-  tactical: 'The Tactical / Battle Calculator arrives in Phase 3.',
 }
 
 function App() {
@@ -50,9 +50,9 @@ function App() {
       <TabNav tabs={TABS} activeTab={activeTab} onSelect={setActiveTab} />
 
       <main role="tabpanel">
-        {activeTab === 'settings' ? (
-          <SettingsPanel />
-        ) : (
+        {activeTab === 'settings' && <SettingsPanel />}
+        {activeTab === 'tactical' && <BattleCalculator />}
+        {activeTab !== 'settings' && activeTab !== 'tactical' && (
           <p className={styles.placeholder}>{COMING_SOON[activeTab]}</p>
         )}
       </main>

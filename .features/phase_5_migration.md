@@ -170,7 +170,7 @@ Verified: lint + `tsc -b` clean, `npm run build` succeeds, 33 tests pass
 (`App.test.tsx`, `SettingsPanel.test.tsx`, `settings.test.tsx`,
 `useDemoConfig.test.tsx`).
 
-### Phase 3 — Tactical / Battle Calculator (first feature — validates the pipeline)
+### Phase 3 — Tactical / Battle Calculator (first feature — validates the pipeline) ✅ **Complete**
 **Goal:** Simplest feature fully on React; proves create→poll→render end-to-end.
 
 - Unit-counter components (friendly/enemy fleet, ground, structures); build the
@@ -178,6 +178,24 @@ Verified: lint + `tsc -b` clean, `npm run build` succeeds, 33 tests pass
 - `useAiJob('tactical')`; render plain-text `calc_results`.
 - Demo: "Load Example Battle" applies `unit_counts` and runs the demo job.
 - **Verify:** live (BYOK/access code) and demo both work and render.
+
+**Done:** `features/battleCalculator/units.ts` (unit catalog + `buildForceData`
+port of `getForceCounts`, incl. the legacy `mech`→`mechs` payload-key mapping and
+zero-omission; flat `"<side>-<unit>"` counts keyed exactly like the demo
+scenario's `unit_counts`); `components/UnitCounter/` (controlled icon + ▲/▼
+steppers + count, friendly/enemy tint filters ported verbatim);
+`features/battleCalculator/BattleCalculator.tsx` (friendly/enemy fleet + ground +
+structure sections, `useAiJob('tactical')` submit via the settings
+`getCredentials('tactical')`, plain-text `calc_results` rendered through the
+shared `JobResultView` with `feature="tac_calc"`, loading/error/retry states,
+"Load Example Battle" demo applying `unit_counts` + running the pre-completed
+demo job through the same UI). Wired into `App.tsx` (tactical tab now live).
+Verified: lint + `tsc -b` clean, `npm run build` succeeds, 42 tests pass
+(`units.test.ts` force_data parity; `BattleCalculator.test.tsx` no-credentials
+guard, live calculate capturing the force_data body + render, demo round-trip
+with label; `App.test.tsx` tactical tab mounts the calculator). The live + demo
+create→poll→render paths are covered against the contract via MSW; not yet
+exercised against a real provider.
 
 ### Phase 4 — Rules Q&A
 **Goal:** Rules feature on React, incl. structured card + demo chips.
