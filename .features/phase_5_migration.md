@@ -197,13 +197,30 @@ with label; `App.test.tsx` tactical tab mounts the calculator). The live + demo
 create→poll→render paths are covered against the contract via MSW; not yet
 exercised against a real provider.
 
-### Phase 4 — Rules Q&A
+### Phase 4 — Rules Q&A ✅ **Complete**
 **Goal:** Rules feature on React, incl. structured card + demo chips.
 
 - Question input → `useAiJob('rules')`; render `RulesAnswer` as a structured card
   (answer + rule basis / assumptions / caveats).
 - Demo prompt chips (from catalog) → `runDemo` with the chip's saved answer.
 - **Verify:** live + demo + chips render with the demo label.
+
+**Done:** `features/rulesChat/RulesPanel.tsx` (port of static/js/rules.js —
+`askRules` + `renderRulesChips` + `askDemoRules`): a free-text question textarea
+→ `useAiJob('rules')` submit via the settings `getCredentials('rules')`; demo
+prompt chips read from `catalog.scenarios.rules.chips`, each filling the input
+with its question and running its saved answer via `runDemoScenario(chip.key)`;
+results render through the shared `JobResultView` with `feature="rules"` (the
+existing `rulesCard` → `AdvisorCard`: answer lead + rule basis / assumptions /
+caveats sections), with the demo label on demo results; loading/error/retry
+states (retry re-runs the same live ask or demo chip). Wired into `App.tsx`
+(rules tab live; COMING_SOON now only strategy/fleet/move). Verified: lint +
+`tsc -b` clean, `npm run build` succeeds, 47 tests pass (`RulesPanel.test.tsx`:
+no-credentials guard, Ask-disabled-until-typed, live ask submitting the trimmed
+question + rendering the structured card, demo chip round-trip with label +
+question copied into the input; `App.test.tsx` rules tab mounts the panel).
+Reuses the Phase 1 `AdvisorCard`/`rulesCard` unchanged. Live + demo paths covered
+via MSW; not yet exercised against a real provider.
 
 ### Phase 5 — Board rendering + Strategy Suggester
 **Goal:** The hex board component + first board-driven feature.

@@ -40,8 +40,8 @@ describe('App shell (Phase 2)', () => {
 
   it('switches tabs and shows a placeholder for unbuilt features', () => {
     renderApp()
-    fireEvent.click(screen.getByRole('tab', { name: /rules q&a/i }))
-    expect(screen.getByText(/arrives in phase 4/i)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('tab', { name: /strategy suggester/i }))
+    expect(screen.getByText(/arrives in phase 5/i)).toBeInTheDocument()
     // The Settings content is no longer mounted.
     expect(screen.queryByText(/three ways to use oracle rex/i)).not.toBeInTheDocument()
 
@@ -55,6 +55,13 @@ describe('App shell (Phase 2)', () => {
     fireEvent.click(screen.getByRole('tab', { name: /tactical calculator/i }))
     expect(screen.getByRole('heading', { name: /tactical calculator/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /load example battle/i })).toBeInTheDocument()
+  })
+
+  it('renders the Rules Q&A panel on the Rules tab', () => {
+    renderApp()
+    fireEvent.click(screen.getByRole('tab', { name: /rules q&a/i }))
+    expect(screen.getByRole('heading', { name: /rules q&a/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /ask oracle rex/i })).toBeInTheDocument()
   })
 
   it('marks the active tab with aria-selected', () => {
