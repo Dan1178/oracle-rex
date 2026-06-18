@@ -934,6 +934,62 @@ Optimized combat calculator workflows with reusable simulation logic, probabilit
 
 ---
 
+# Milestone 10 — TI Game-Feature Depth (Techs & Game State)
+
+## Objective
+
+Add real Twilight Imperium game depth — starting with faction technologies — so
+the AI features reason about authoritative game data instead of relying on model
+recall. **Post-core:** only after M1–M9 (the modernization) are done; this is
+feature expansion, kept inside the plan's "manageable subset" boundary (see
+Explicit Non-Goals — _"Full TI card/rule database unless already available and
+manageable"_).
+
+## Data source of truth (resolved 2026-06-17)
+
+A structured, vendorable source exists — no rulebook scraping required:
+
+- **Primary: [AsyncTI4 / TI4_map_generator_bot](https://github.com/AsyncTI4/TI4_map_generator_bot)**
+  — the engine behind asyncti4.com, very actively maintained, with dedicated
+  `technologies/`, `factions/`, `units/`, `abilities/` (+ leaders, relics,
+  objectives, agendas, combat modifiers) data directories covering PoK +
+  Discordant Stars. **Licensed under The Unlicense** (public-domain dedication;
+  free use, no attribution required) — but the dedication covers **software/data,
+  not art assets**, and the underlying game IP is Asmodee's, so: use **mechanical
+  facts only (not flavor text)**, exclude images, and **attribute the source**
+  (as done for Milty Draft in M4).
+- Cross-check / alternates: TwilightImperiumUltimate (incl. Discordant Stars), the
+  TI4 Wiki Faction Technologies page (human-readable verification), the LRR PDF
+  for rules text if grounded rules citations are ever wanted.
+- **Ingestion reuses the M4 pipeline:** `core/data/source/` → normalized →
+  `core/data/validators.py` → `manage.py validate_data`.
+
+## Tiered approach (smallest first)
+
+1. **Tier 1 — Faction-tech context in the Strategy Suggester (simple; no schema
+   change).** Static, faction-keyed reference data injected into the strategy
+   prompt for the selected faction. Highest value-to-effort: faction-specific
+   techs/abilities are exactly where the LLM hallucinates. Pure prompt enrichment
+   — no DB model, no UI, no game-state changes. Coordinate payload size with M6/6B.
+2. **Tier 2 — Researched techs as game state.** Track what a player has actually
+   researched (e.g. `Player.techs`), add a UI picker, feed it into strategy/move
+   prompts. Real feature expansion (new state + UI).
+3. **Tier 3 — Unit-upgrade techs into the combat simulator.** Cruiser II / Fighter
+   II / etc. modify the base stats in the M6/6C deterministic simulator —
+   **closes the "tech upgrades not modeled" caveat** in
+   `phase_6_implementation.md`. Depends on Tier 2.
+
+## Acceptance Criteria
+
+- A vendored, validated faction-tech dataset exists under `core/data/source/`,
+  attributed, covered by `validate_data`.
+- The strategy suggester reasons about the selected faction's real techs/abilities
+  (Tier 1).
+- Tiers 2–3 are scoped but explicitly optional / sequenced after Tier 1.
+- Detailed plan: `.features/milestone_10_game_features.md`.
+
+---
+
 # Optional Enhancements
 
 Do these only after the core modernization is complete.
