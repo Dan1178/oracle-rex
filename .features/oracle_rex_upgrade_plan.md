@@ -652,7 +652,64 @@ Recommended order:
 
 ---
 
-# Milestone 6 — UX and Visual Theme Polish
+# Milestone 6 — Performance Improvements
+
+## Objective
+
+Improve runtime performance where it materially affects UX.
+
+## Focus Areas
+
+### 1. Battle Calculator
+
+Investigate current algorithm and identify bottlenecks.
+
+Possible improvements:
+
+- memoization for repeated fleet states
+- cache common calculations
+- reduce unnecessary repeated simulations
+- bound fleet recommendation search space
+- move expensive calculations to backend job if needed
+- show progress/loading for expensive recommendations
+
+### 2. Board Rendering
+
+Investigate:
+
+- repeated DOM/render work
+- large image assets
+- inefficient tile redraws
+- unnecessary reparsing of TTS strings
+
+Possible improvements:
+
+- cache parsed board state
+- memoize tile components in React
+- optimize image loading
+- lazy load non-critical assets
+
+### 3. AI Request Payloads
+
+Reduce unnecessary prompt size.
+
+Tasks:
+
+- send structured board state instead of verbose raw text where possible
+- exclude irrelevant game data from prompts
+- cap prompt length
+- summarize large inputs before final AI call if needed
+
+## Acceptance Criteria
+
+- Battle calculator feels responsive for normal scenarios.
+- Board rendering is smooth enough for demo use.
+- AI prompts do not include unnecessary large payloads.
+- Any remaining slow operations have clear loading states.
+
+---
+
+# Milestone 7 — UX and Visual Theme Polish
 
 ## Objective
 
@@ -739,63 +796,6 @@ Use Live AI Mode
 - A new visitor can understand the app within 30 seconds.
 - All tabs have sample/demo entry points.
 - AI responses are easy to scan.
-
----
-
-# Milestone 7 — Performance Improvements
-
-## Objective
-
-Improve runtime performance where it materially affects UX.
-
-## Focus Areas
-
-### 1. Battle Calculator
-
-Investigate current algorithm and identify bottlenecks.
-
-Possible improvements:
-
-- memoization for repeated fleet states
-- cache common calculations
-- reduce unnecessary repeated simulations
-- bound fleet recommendation search space
-- move expensive calculations to backend job if needed
-- show progress/loading for expensive recommendations
-
-### 2. Board Rendering
-
-Investigate:
-
-- repeated DOM/render work
-- large image assets
-- inefficient tile redraws
-- unnecessary reparsing of TTS strings
-
-Possible improvements:
-
-- cache parsed board state
-- memoize tile components in React
-- optimize image loading
-- lazy load non-critical assets
-
-### 3. AI Request Payloads
-
-Reduce unnecessary prompt size.
-
-Tasks:
-
-- send structured board state instead of verbose raw text where possible
-- exclude irrelevant game data from prompts
-- cap prompt length
-- summarize large inputs before final AI call if needed
-
-## Acceptance Criteria
-
-- Battle calculator feels responsive for normal scenarios.
-- Board rendering is smooth enough for demo use.
-- AI prompts do not include unnecessary large payloads.
-- Any remaining slow operations have clear loading states.
 
 ---
 
@@ -1001,6 +1001,10 @@ Recommended attack has an estimated 68% win chance based on current fleet inputs
 
 This creates a strong hybrid deterministic simulation + LLM explanation story.
 
+## Implement More Game Features
+
+Add technologies, public objectives, secret objectives, etc.
+
 ---
 
 # Explicit Non-Goals for This Upgrade
@@ -1029,8 +1033,8 @@ Use this order when working through the project:
 7. Add validation scripts/tests for data and parser correctness.
 8. Create React/TypeScript frontend shell.
 9. Migrate each feature into React one at a time.
-10. Improve UX/theme and advisor result cards.
-11. Optimize calculator/board rendering performance where needed.
+10. Optimize calculator/board rendering performance where needed.
+11. Improve UX/theme and advisor result cards.
 12. Add screenshots, README updates, and portfolio packaging.
 
 ---
