@@ -652,7 +652,64 @@ Recommended order:
 
 ---
 
-# Milestone 6 — UX and Visual Theme Polish
+# Milestone 6 — Performance Improvements
+
+## Objective
+
+Improve runtime performance where it materially affects UX.
+
+## Focus Areas
+
+### 1. Battle Calculator
+
+Investigate current algorithm and identify bottlenecks.
+
+Possible improvements:
+
+- memoization for repeated fleet states
+- cache common calculations
+- reduce unnecessary repeated simulations
+- bound fleet recommendation search space
+- move expensive calculations to backend job if needed
+- show progress/loading for expensive recommendations
+
+### 2. Board Rendering
+
+Investigate:
+
+- repeated DOM/render work
+- large image assets
+- inefficient tile redraws
+- unnecessary reparsing of TTS strings
+
+Possible improvements:
+
+- cache parsed board state
+- memoize tile components in React
+- optimize image loading
+- lazy load non-critical assets
+
+### 3. AI Request Payloads
+
+Reduce unnecessary prompt size.
+
+Tasks:
+
+- send structured board state instead of verbose raw text where possible
+- exclude irrelevant game data from prompts
+- cap prompt length
+- summarize large inputs before final AI call if needed
+
+## Acceptance Criteria
+
+- Battle calculator feels responsive for normal scenarios.
+- Board rendering is smooth enough for demo use.
+- AI prompts do not include unnecessary large payloads.
+- Any remaining slow operations have clear loading states.
+
+---
+
+# Milestone 7 — UX and Visual Theme Polish
 
 ## Objective
 
@@ -739,63 +796,6 @@ Use Live AI Mode
 - A new visitor can understand the app within 30 seconds.
 - All tabs have sample/demo entry points.
 - AI responses are easy to scan.
-
----
-
-# Milestone 7 — Performance Improvements
-
-## Objective
-
-Improve runtime performance where it materially affects UX.
-
-## Focus Areas
-
-### 1. Battle Calculator
-
-Investigate current algorithm and identify bottlenecks.
-
-Possible improvements:
-
-- memoization for repeated fleet states
-- cache common calculations
-- reduce unnecessary repeated simulations
-- bound fleet recommendation search space
-- move expensive calculations to backend job if needed
-- show progress/loading for expensive recommendations
-
-### 2. Board Rendering
-
-Investigate:
-
-- repeated DOM/render work
-- large image assets
-- inefficient tile redraws
-- unnecessary reparsing of TTS strings
-
-Possible improvements:
-
-- cache parsed board state
-- memoize tile components in React
-- optimize image loading
-- lazy load non-critical assets
-
-### 3. AI Request Payloads
-
-Reduce unnecessary prompt size.
-
-Tasks:
-
-- send structured board state instead of verbose raw text where possible
-- exclude irrelevant game data from prompts
-- cap prompt length
-- summarize large inputs before final AI call if needed
-
-## Acceptance Criteria
-
-- Battle calculator feels responsive for normal scenarios.
-- Board rendering is smooth enough for demo use.
-- AI prompts do not include unnecessary large payloads.
-- Any remaining slow operations have clear loading states.
 
 ---
 
@@ -934,6 +934,62 @@ Optimized combat calculator workflows with reusable simulation logic, probabilit
 
 ---
 
+# Milestone 10 — TI Game-Feature Depth (Techs & Game State)
+
+## Objective
+
+Add real Twilight Imperium game depth — starting with faction technologies — so
+the AI features reason about authoritative game data instead of relying on model
+recall. **Post-core:** only after M1–M9 (the modernization) are done; this is
+feature expansion, kept inside the plan's "manageable subset" boundary (see
+Explicit Non-Goals — _"Full TI card/rule database unless already available and
+manageable"_).
+
+## Data source of truth (resolved 2026-06-17)
+
+A structured, vendorable source exists — no rulebook scraping required:
+
+- **Primary: [AsyncTI4 / TI4_map_generator_bot](https://github.com/AsyncTI4/TI4_map_generator_bot)**
+  — the engine behind asyncti4.com, very actively maintained, with dedicated
+  `technologies/`, `factions/`, `units/`, `abilities/` (+ leaders, relics,
+  objectives, agendas, combat modifiers) data directories covering PoK +
+  Discordant Stars. **Licensed under The Unlicense** (public-domain dedication;
+  free use, no attribution required) — but the dedication covers **software/data,
+  not art assets**, and the underlying game IP is Asmodee's, so: use **mechanical
+  facts only (not flavor text)**, exclude images, and **attribute the source**
+  (as done for Milty Draft in M4).
+- Cross-check / alternates: TwilightImperiumUltimate (incl. Discordant Stars), the
+  TI4 Wiki Faction Technologies page (human-readable verification), the LRR PDF
+  for rules text if grounded rules citations are ever wanted.
+- **Ingestion reuses the M4 pipeline:** `core/data/source/` → normalized →
+  `core/data/validators.py` → `manage.py validate_data`.
+
+## Tiered approach (smallest first)
+
+1. **Tier 1 — Faction-tech context in the Strategy Suggester (simple; no schema
+   change).** Static, faction-keyed reference data injected into the strategy
+   prompt for the selected faction. Highest value-to-effort: faction-specific
+   techs/abilities are exactly where the LLM hallucinates. Pure prompt enrichment
+   — no DB model, no UI, no game-state changes. Coordinate payload size with M6/6B.
+2. **Tier 2 — Researched techs as game state.** Track what a player has actually
+   researched (e.g. `Player.techs`), add a UI picker, feed it into strategy/move
+   prompts. Real feature expansion (new state + UI).
+3. **Tier 3 — Unit-upgrade techs into the combat simulator.** Cruiser II / Fighter
+   II / etc. modify the base stats in the M6/6C deterministic simulator —
+   **closes the "tech upgrades not modeled" caveat** in
+   `phase_6_implementation.md`. Depends on Tier 2.
+
+## Acceptance Criteria
+
+- A vendored, validated faction-tech dataset exists under `core/data/source/`,
+  attributed, covered by `validate_data`.
+- The strategy suggester reasons about the selected faction's real techs/abilities
+  (Tier 1).
+- Tiers 2–3 are scoped but explicitly optional / sequenced after Tier 1.
+- Detailed plan: `.features/milestone_10_game_features.md`.
+
+---
+
 # Optional Enhancements
 
 Do these only after the core modernization is complete.
@@ -1001,6 +1057,10 @@ Recommended attack has an estimated 68% win chance based on current fleet inputs
 
 This creates a strong hybrid deterministic simulation + LLM explanation story.
 
+## Implement More Game Features
+
+Add technologies, public objectives, secret objectives, etc.
+
 ---
 
 # Explicit Non-Goals for This Upgrade
@@ -1029,8 +1089,8 @@ Use this order when working through the project:
 7. Add validation scripts/tests for data and parser correctness.
 8. Create React/TypeScript frontend shell.
 9. Migrate each feature into React one at a time.
-10. Improve UX/theme and advisor result cards.
-11. Optimize calculator/board rendering performance where needed.
+10. Optimize calculator/board rendering performance where needed.
+11. Improve UX/theme and advisor result cards.
 12. Add screenshots, README updates, and portfolio packaging.
 
 ---
