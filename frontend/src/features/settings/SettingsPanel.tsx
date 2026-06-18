@@ -25,7 +25,8 @@ const API_KEY_FIELDS: ApiKeyField[] = [
 ]
 
 export function SettingsPanel() {
-  const { accessCode, apiKeys, models, setAccessCode, setApiKey, setModel } = useSettings()
+  const { accessCode, apiKeys, models, setAccessCode, setApiKey, setModel } =
+    useSettings()
 
   return (
     <section className={styles.settings} aria-labelledby="settings-heading">
@@ -37,17 +38,18 @@ export function SettingsPanel() {
         <h4>Three ways to use Oracle Rex</h4>
         <ul className={styles.modesList}>
           <li>
-            <strong>Demo mode</strong> — the fastest way to explore. Every feature has a one-click
-            sample (look for the <em>Demo</em> boxes in each tab) backed by saved AI responses. No
-            API key required.
+            <strong>Demo mode</strong> — the fastest way to explore. Every feature has a
+            one-click sample (look for the <em>Demo</em> boxes in each tab) backed by
+            saved AI responses. No API key required.
           </li>
           <li>
-            <strong>Live AI (BYOK)</strong> — paste your own provider API key below to generate
-            fresh responses. Keys stay in this browser tab and are used only for your requests.
+            <strong>Live AI (BYOK)</strong> — paste your own provider API key below to
+            generate fresh responses. Keys stay in this browser tab and are used only
+            for your requests.
           </li>
           <li>
-            <strong>Private live demo</strong> — if you were given an access code, enter it below to
-            run live AI on a controlled, owner-provided key.
+            <strong>Private live demo</strong> — if you were given an access code, enter
+            it below to run live AI on a controlled, owner-provided key.
           </li>
         </ul>
       </div>
@@ -57,12 +59,14 @@ export function SettingsPanel() {
           Live AI Credentials
         </h3>
         <p className={styles.info}>
-          Demo mode needs no key. To use Live AI, add at least one API key below, or enter a private
-          live-demo access code.
+          Demo mode needs no key. To use Live AI, add at least one API key below, or
+          enter a private live-demo access code.
         </p>
 
         <div className={styles.field}>
-          <label htmlFor="live-demo-access-code">Live Demo Access Code (optional)</label>
+          <label htmlFor="live-demo-access-code">
+            Live Demo Access Code (optional)
+          </label>
           <input
             type="text"
             id="live-demo-access-code"
@@ -71,8 +75,9 @@ export function SettingsPanel() {
             placeholder="Enter an access code to use the controlled live demo"
           />
           <small className={styles.hint}>
-            When set, live AI requests use the owner&rsquo;s controlled key (cheap model, capped
-            usage) instead of your own. Leave blank to use your own keys below.
+            When set, live AI requests use the owner&rsquo;s controlled key (cheap
+            model, capped usage) instead of your own. Leave blank to use your own keys
+            below.
           </small>
         </div>
 
@@ -93,8 +98,8 @@ export function SettingsPanel() {
         </div>
 
         <p className={styles.warning}>
-          Keys are kept in memory for this browser tab only — they are not saved to disk or local
-          storage, and are cleared when you close or reload the tab.
+          Keys are kept in memory for this browser tab only — they are not saved to disk
+          or local storage, and are cleared when you close or reload the tab.
         </p>
       </section>
 
@@ -103,14 +108,15 @@ export function SettingsPanel() {
           Model Selection
         </h3>
         <p className={styles.info}>
-          Recommended models are selected. Be sure you have a corresponding API key for every AI
-          type selected.
+          Recommended models are selected. Be sure you have a corresponding API key for
+          every AI type selected.
         </p>
         <p className={styles.modelWarn}>
-          These are reasoning (&ldquo;thinking&rdquo;) models — they deliberate before answering,
-          which improves quality but adds latency. The heaviest models (GPT-5.5, Grok 4.20) give the
-          strongest answers but may occasionally time out on the hosted demo; the lighter models
-          (GPT-5.4 mini/nano, Grok 4.3) respond faster.
+          These are reasoning (&ldquo;thinking&rdquo;) models — they deliberate before
+          answering, which improves quality but adds latency. The heaviest models
+          (GPT-5.5, Grok 4.20) give the strongest answers but may occasionally time out
+          on the hosted demo; the lighter models (GPT-5.4 mini/nano, Grok 4.3) respond
+          faster.
         </p>
 
         {FEATURE_MODEL_GROUPS.map((group) => (

@@ -87,7 +87,11 @@ export const sampleCatalog: DemoCatalog = {
       title: 'Sample Rules Questions',
       description: 'One-click rules questions.',
       chips: [
-        { key: 'rules_retreat', question: 'Can I retreat?', response_key: 'sample_rules_retreat' },
+        {
+          key: 'rules_retreat',
+          question: 'Can I retreat?',
+          response_key: 'sample_rules_retreat',
+        },
       ],
     },
   },

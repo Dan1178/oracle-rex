@@ -43,8 +43,12 @@ describe('StrategyPanel', () => {
   beforeEach(() => {
     server.use(
       http.get('/api/demo/catalog/', () => HttpResponse.json(sampleCatalog)),
-      http.get('/api/demo/status/', () => HttpResponse.json({ live_demo_enabled: false })),
-      http.post('/api/build-game-from-tts/', () => HttpResponse.json({ game: sampleGame })),
+      http.get('/api/demo/status/', () =>
+        HttpResponse.json({ live_demo_enabled: false }),
+      ),
+      http.post('/api/build-game-from-tts/', () =>
+        HttpResponse.json({ game: sampleGame }),
+      ),
     )
   })
 
@@ -74,18 +78,24 @@ describe('StrategyPanel', () => {
     const faction = screen.getByLabelText('Faction')
     expect(faction).toBeDisabled()
 
-    fireEvent.change(screen.getByLabelText(/tts string/i), { target: { value: '78 40 42' } })
+    fireEvent.change(screen.getByLabelText(/tts string/i), {
+      target: { value: '78 40 42' },
+    })
     fireEvent.click(screen.getByRole('button', { name: /^generate$/i }))
 
     // Board built → faction select enabled with the parsed factions.
     await waitFor(() => expect(faction).toBeEnabled())
-    expect(screen.getByRole('option', { name: /sol \(player 1\)/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('option', { name: /sol \(player 1\)/i }),
+    ).toBeInTheDocument()
 
     fireEvent.change(faction, { target: { value: 'sol' } })
     fireEvent.click(screen.getByRole('button', { name: /get strategy/i }))
 
     await waitFor(() =>
-      expect(screen.getByRole('heading', { name: /strategic plan/i })).toBeInTheDocument(),
+      expect(
+        screen.getByRole('heading', { name: /strategic plan/i }),
+      ).toBeInTheDocument(),
     )
     expect(screen.getByText(/grab both home-adjacent planets/i)).toBeInTheDocument()
     expect(captured?.player_faction).toBe('sol')
@@ -115,12 +125,16 @@ describe('StrategyPanel', () => {
     )
 
     renderPanel()
-    const demoButton = await screen.findByRole('button', { name: /load sample milty draft board/i })
+    const demoButton = await screen.findByRole('button', {
+      name: /load sample milty draft board/i,
+    })
     await waitFor(() => expect(demoButton).toBeEnabled())
     fireEvent.click(demoButton)
 
     await waitFor(() =>
-      expect(screen.getByRole('heading', { name: /strategic plan/i })).toBeInTheDocument(),
+      expect(
+        screen.getByRole('heading', { name: /strategic plan/i }),
+      ).toBeInTheDocument(),
     )
     expect(screen.getByText(/saved scenario/i)).toBeInTheDocument()
     // The suggested faction was auto-selected.

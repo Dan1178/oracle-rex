@@ -34,7 +34,11 @@ describe('useAiJob', () => {
         polls += 1
         if (polls < 2) return HttpResponse.json(jobDict({ status: 'running' }))
         return HttpResponse.json(
-          jobDict({ status: 'completed', is_terminal: true, result: completedRulesResult }),
+          jobDict({
+            status: 'completed',
+            is_terminal: true,
+            result: completedRulesResult,
+          }),
         )
       }),
     )
@@ -42,7 +46,12 @@ describe('useAiJob', () => {
     const { result } = renderHook(() => useAiJob('rules'), { wrapper })
     expect(result.current.phase).toBe('idle')
 
-    act(() => result.current.submit({ question: 'Can I retreat?' }, { api_key: 'k', model: 'gpt-4' }))
+    act(() =>
+      result.current.submit(
+        { question: 'Can I retreat?' },
+        { api_key: 'k', model: 'gpt-4' },
+      ),
+    )
 
     await waitFor(() => expect(result.current.phase).toBe('polling'), { timeout: 3000 })
     await waitFor(() => expect(result.current.phase).toBe('success'), { timeout: 4000 })
@@ -84,13 +93,19 @@ describe('useAiJob', () => {
       ),
       http.get('*/api/jobs/:id/', () =>
         HttpResponse.json(
-          jobDict({ status: 'failed', is_terminal: true, error: 'The provider rejected the key.' }),
+          jobDict({
+            status: 'failed',
+            is_terminal: true,
+            error: 'The provider rejected the key.',
+          }),
         ),
       ),
     )
 
     const { result } = renderHook(() => useAiJob('rules'), { wrapper })
-    act(() => result.current.submit({ question: 'q' }, { api_key: 'k', model: 'gpt-4' }))
+    act(() =>
+      result.current.submit({ question: 'q' }, { api_key: 'k', model: 'gpt-4' }),
+    )
 
     await waitFor(() => expect(result.current.phase).toBe('error'), { timeout: 3000 })
     expect(result.current.error).toBe('The provider rejected the key.')
@@ -119,7 +134,9 @@ describe('useAiJob', () => {
     )
 
     const { result } = renderHook(() => useAiJob('rules'), { wrapper })
-    act(() => result.current.submit({ question: 'q' }, { api_key: 'k', model: 'gpt-4' }))
+    act(() =>
+      result.current.submit({ question: 'q' }, { api_key: 'k', model: 'gpt-4' }),
+    )
 
     await waitFor(() => expect(result.current.phase).toBe('error'), { timeout: 3000 })
     expect(result.current.error).toBe(JOB_POLL_ERROR_MESSAGE)
@@ -131,11 +148,15 @@ describe('useAiJob', () => {
       http.post('*/api/jobs/rules/', () =>
         HttpResponse.json({ job_id: 'job-1', status: 'queued' }, { status: 202 }),
       ),
-      http.get('*/api/jobs/:id/', () => HttpResponse.json(jobDict({ status: 'running' }))),
+      http.get('*/api/jobs/:id/', () =>
+        HttpResponse.json(jobDict({ status: 'running' })),
+      ),
     )
 
     const { result } = renderHook(() => useAiJob('rules'), { wrapper })
-    act(() => result.current.submit({ question: 'q' }, { api_key: 'k', model: 'gpt-4' }))
+    act(() =>
+      result.current.submit({ question: 'q' }, { api_key: 'k', model: 'gpt-4' }),
+    )
 
     // Flush the create mutation and the first poll, then jump past the cap.
     await act(async () => {

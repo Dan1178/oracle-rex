@@ -23,14 +23,26 @@ function tintClass(side: Side | undefined): string | undefined {
   return undefined
 }
 
-export function UnitCounter({ label, icon, side, count, onIncrement, onDecrement }: UnitCounterProps) {
+export function UnitCounter({
+  label,
+  icon,
+  side,
+  count,
+  onIncrement,
+  onDecrement,
+}: UnitCounterProps) {
   return (
     <div className={styles.root} role="group" aria-label={label}>
       <span className={styles.icon} title={label}>
         <img src={icon} alt={label} className={tintClass(side)} />
       </span>
       <div className={styles.arrows}>
-        <button type="button" className={styles.arrow} aria-label={`Increase ${label}`} onClick={onIncrement}>
+        <button
+          type="button"
+          className={styles.arrow}
+          aria-label={`Increase ${label}`}
+          onClick={onIncrement}
+        >
           ▲
         </button>
         <button

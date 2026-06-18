@@ -28,13 +28,19 @@ const catalogWithMove = {
 }
 
 const demoMove = {
-  structured: { recommended_move: 'Kill the over-extended carrier', reasoning: 'Free trade.' },
+  structured: {
+    recommended_move: 'Kill the over-extended carrier',
+    reasoning: 'Free trade.',
+  },
   demo: true,
   demo_label: 'Demo response generated from a saved scenario.',
 }
 
 const liveMove = {
-  structured: { recommended_move: 'Claim the Beta wormhole', reasoning: 'Keeps the fleet intact.' },
+  structured: {
+    recommended_move: 'Claim the Beta wormhole',
+    reasoning: 'Keeps the fleet intact.',
+  },
 }
 
 function SeedKey() {
@@ -62,8 +68,12 @@ describe('MovePanel', () => {
   beforeEach(() => {
     server.use(
       http.get('/api/demo/catalog/', () => HttpResponse.json(catalogWithMove)),
-      http.get('/api/demo/status/', () => HttpResponse.json({ live_demo_enabled: false })),
-      http.post('/api/build-game-from-tts/', () => HttpResponse.json({ game: sampleGame })),
+      http.get('/api/demo/status/', () =>
+        HttpResponse.json({ live_demo_enabled: false }),
+      ),
+      http.post('/api/build-game-from-tts/', () =>
+        HttpResponse.json({ game: sampleGame }),
+      ),
     )
   })
 
@@ -86,12 +96,16 @@ describe('MovePanel', () => {
     )
 
     renderPanel()
-    const demoButton = await screen.findByRole('button', { name: /load tactical puzzle/i })
+    const demoButton = await screen.findByRole('button', {
+      name: /load tactical puzzle/i,
+    })
     await waitFor(() => expect(demoButton).toBeEnabled())
     fireEvent.click(demoButton)
 
     await waitFor(() =>
-      expect(screen.getByRole('heading', { name: /recommended move/i })).toBeInTheDocument(),
+      expect(
+        screen.getByRole('heading', { name: /recommended move/i }),
+      ).toBeInTheDocument(),
     )
     expect(screen.getByText(/kill the over-extended carrier/i)).toBeInTheDocument()
     expect(screen.getByText(/saved scenario/i)).toBeInTheDocument()
@@ -106,7 +120,13 @@ describe('MovePanel', () => {
       ),
       http.get('/api/jobs/demo-1/', () =>
         HttpResponse.json(
-          jobDict({ id: 'demo-1', feature_type: 'move', status: 'completed', is_terminal: true, result: demoMove }),
+          jobDict({
+            id: 'demo-1',
+            feature_type: 'move',
+            status: 'completed',
+            is_terminal: true,
+            result: demoMove,
+          }),
         ),
       ),
       http.post('/api/jobs/move/', async ({ request }) => {
@@ -115,7 +135,13 @@ describe('MovePanel', () => {
       }),
       http.get('/api/jobs/job-1/', () =>
         HttpResponse.json(
-          jobDict({ id: 'job-1', feature_type: 'move', status: 'completed', is_terminal: true, result: liveMove }),
+          jobDict({
+            id: 'job-1',
+            feature_type: 'move',
+            status: 'completed',
+            is_terminal: true,
+            result: liveMove,
+          }),
         ),
       ),
     )
@@ -124,7 +150,9 @@ describe('MovePanel', () => {
     fireEvent.click(screen.getByRole('button', { name: 'seed-key' }))
 
     // Load the board via the demo (Move has no TTS input of its own in Phase 6).
-    const demoButton = await screen.findByRole('button', { name: /load tactical puzzle/i })
+    const demoButton = await screen.findByRole('button', {
+      name: /load tactical puzzle/i,
+    })
     await waitFor(() => expect(demoButton).toBeEnabled())
     fireEvent.click(demoButton)
     // Wait for the demo to finish (board built, faction selected, job settled)
@@ -136,7 +164,9 @@ describe('MovePanel', () => {
 
     // Now run a live suggestion against that board.
     fireEvent.click(screen.getByRole('button', { name: /suggest move/i }))
-    await waitFor(() => expect(screen.getByText(/claim the beta wormhole/i)).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByText(/claim the beta wormhole/i)).toBeInTheDocument(),
+    )
     expect(captured?.player_faction).toBe('ul')
     expect(captured).toHaveProperty('game_json')
   })

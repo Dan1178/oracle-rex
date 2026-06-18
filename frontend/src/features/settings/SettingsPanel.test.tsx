@@ -32,7 +32,9 @@ describe('SettingsPanel', () => {
   it('lets the user change a feature model selection', () => {
     renderPanel()
     const strategyGroup = screen.getByRole('group', { name: 'Strategy Suggester' })
-    const claude = within(strategyGroup).getByRole('radio', { name: 'Claude Sonnet 4.6' })
+    const claude = within(strategyGroup).getByRole('radio', {
+      name: 'Claude Sonnet 4.6',
+    })
     expect(claude).not.toBeChecked()
     fireEvent.click(claude)
     expect(claude).toBeChecked()
@@ -52,6 +54,8 @@ describe('SettingsPanel', () => {
   it('does not claim keys are persisted to local storage', () => {
     renderPanel()
     // The legacy copy wrongly warned about local storage; keys are in-memory.
-    expect(screen.getByText(/kept in memory for this browser tab only/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/kept in memory for this browser tab only/i),
+    ).toBeInTheDocument()
   })
 })

@@ -18,20 +18,28 @@ describe('useDemoConfig', () => {
   it('loads the demo catalog and live-demo status', async () => {
     server.use(
       http.get('/api/demo/catalog/', () => HttpResponse.json(sampleCatalog)),
-      http.get('/api/demo/status/', () => HttpResponse.json({ live_demo_enabled: true })),
+      http.get('/api/demo/status/', () =>
+        HttpResponse.json({ live_demo_enabled: true }),
+      ),
     )
 
     const { result } = renderHook(() => useDemoConfig(), { wrapper })
 
     await waitFor(() => expect(result.current.catalog).toBeDefined())
-    expect(result.current.catalog?.scenarios.strategy.title).toBe('Load Sample Milty Draft Board')
+    expect(result.current.catalog?.scenarios.strategy.title).toBe(
+      'Load Sample Milty Draft Board',
+    )
     await waitFor(() => expect(result.current.liveDemoEnabled).toBe(true))
   })
 
   it('treats a failed catalog fetch as non-fatal (no catalog, demo disabled)', async () => {
     server.use(
-      http.get('/api/demo/catalog/', () => HttpResponse.json({ error: 'boom' }, { status: 500 })),
-      http.get('/api/demo/status/', () => HttpResponse.json({ error: 'boom' }, { status: 500 })),
+      http.get('/api/demo/catalog/', () =>
+        HttpResponse.json({ error: 'boom' }, { status: 500 }),
+      ),
+      http.get('/api/demo/status/', () =>
+        HttpResponse.json({ error: 'boom' }, { status: 500 }),
+      ),
     )
 
     const { result } = renderHook(() => useDemoConfig(), { wrapper })

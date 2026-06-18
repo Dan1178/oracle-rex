@@ -41,7 +41,8 @@ export function BattleCalculator() {
   const demoReady = Boolean(demoScenario?.key)
 
   const increment = (id: string) => setCounts((c) => ({ ...c, [id]: (c[id] ?? 0) + 1 }))
-  const decrement = (id: string) => setCounts((c) => ({ ...c, [id]: Math.max(0, (c[id] ?? 0) - 1) }))
+  const decrement = (id: string) =>
+    setCounts((c) => ({ ...c, [id]: Math.max(0, (c[id] ?? 0) - 1) }))
 
   const handleCalculate = () => {
     setCredentialError(undefined)
@@ -91,14 +92,16 @@ export function BattleCalculator() {
     <section aria-labelledby="tactical-heading">
       <h2 id="tactical-heading">Tactical Calculator</h2>
       <p className={styles.intro}>
-        Estimate your odds of winning a space battle and get recommended fleet compositions. New
-        here? Click <strong>Load Example Battle</strong> to preload a scenario with no setup.
+        Estimate your odds of winning a space battle and get recommended fleet
+        compositions. New here? Click <strong>Load Example Battle</strong> to preload a
+        scenario with no setup.
       </p>
 
       <div className={styles.demoBox}>
         <h4>Demo — no API key needed</h4>
         <p className={styles.demoDesc}>
-          {demoScenario?.description ?? 'Preloads both fleets and shows a saved combat-odds result.'}
+          {demoScenario?.description ??
+            'Preloads both fleets and shows a saved combat-odds result.'}
         </p>
         <button
           type="button"
@@ -118,12 +121,16 @@ export function BattleCalculator() {
 
       <h3>Ground Forces</h3>
       <p className={styles.groundNote}>
-        Adding ground forces to the enemy side changes the victory condition to eliminating the
-        enemy fleet <em>and</em> successfully taking the planet.
+        Adding ground forces to the enemy side changes the victory condition to
+        eliminating the enemy fleet <em>and</em> successfully taking the planet.
       </p>
       <div className={styles.fleets}>
         {renderSection('Friendly Ground Forces', 'friendly', FRIENDLY_GROUND_UNITS)}
-        {renderSection('Enemy Ground Forces and Structures', 'enemy', ENEMY_GROUND_UNITS)}
+        {renderSection(
+          'Enemy Ground Forces and Structures',
+          'enemy',
+          ENEMY_GROUND_UNITS,
+        )}
       </div>
 
       <button
@@ -146,8 +153,8 @@ export function BattleCalculator() {
           <JobResultView feature="tac_calc" result={job.result} />
         ) : (
           <p className={styles.hint}>
-            Odds of Victory: not yet calculated. Set your fleets and click Calculate, or load the
-            example battle.
+            Odds of Victory: not yet calculated. Set your fleets and click Calculate, or
+            load the example battle.
           </p>
         )}
       </div>

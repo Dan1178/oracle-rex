@@ -36,7 +36,9 @@ describe('RulesPanel', () => {
     // sampleCatalog carries a rules scenario with one chip (rules_retreat).
     server.use(
       http.get('/api/demo/catalog/', () => HttpResponse.json(sampleCatalog)),
-      http.get('/api/demo/status/', () => HttpResponse.json({ live_demo_enabled: false })),
+      http.get('/api/demo/status/', () =>
+        HttpResponse.json({ live_demo_enabled: false }),
+      ),
     )
   })
 
@@ -53,7 +55,9 @@ describe('RulesPanel', () => {
     renderPanel()
     const ask = screen.getByRole('button', { name: /ask oracle rex/i })
     expect(ask).toBeDisabled()
-    fireEvent.change(screen.getByLabelText(/rules question/i), { target: { value: 'Hi' } })
+    fireEvent.change(screen.getByLabelText(/rules question/i), {
+      target: { value: 'Hi' },
+    })
     expect(ask).toBeEnabled()
   })
 
@@ -66,7 +70,12 @@ describe('RulesPanel', () => {
       }),
       http.get('/api/jobs/job-1/', () =>
         HttpResponse.json(
-          jobDict({ id: 'job-1', status: 'completed', is_terminal: true, result: completedRulesResult }),
+          jobDict({
+            id: 'job-1',
+            status: 'completed',
+            is_terminal: true,
+            result: completedRulesResult,
+          }),
         ),
       ),
     )
@@ -79,7 +88,9 @@ describe('RulesPanel', () => {
     fireEvent.click(screen.getByRole('button', { name: /ask oracle rex/i }))
 
     await waitFor(() =>
-      expect(screen.getByRole('heading', { name: /rules answer/i })).toBeInTheDocument(),
+      expect(
+        screen.getByRole('heading', { name: /rules answer/i }),
+      ).toBeInTheDocument(),
     )
     expect(screen.getByText(/Space combat — Retreat step/)).toBeInTheDocument()
     // Question is trimmed before submission.
@@ -113,7 +124,9 @@ describe('RulesPanel', () => {
     fireEvent.click(chip)
 
     await waitFor(() =>
-      expect(screen.getByRole('heading', { name: /rules answer/i })).toBeInTheDocument(),
+      expect(
+        screen.getByRole('heading', { name: /rules answer/i }),
+      ).toBeInTheDocument(),
     )
     expect(screen.getByText(/saved scenario/i)).toBeInTheDocument()
     // The chip's question was copied into the input.

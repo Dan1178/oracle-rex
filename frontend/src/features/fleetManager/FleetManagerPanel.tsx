@@ -34,7 +34,9 @@ export function FleetManagerPanel({ onExport }: FleetManagerPanelProps) {
   const [ttsInput, setTtsInput] = useState('')
   const [game, setGame] = useState<Game>()
   const [activeDesignation, setActiveDesignation] = useState<string | null>(null)
-  const [message, setMessage] = useState<{ text: string; tone: MessageTone } | null>(null)
+  const [message, setMessage] = useState<{ text: string; tone: MessageTone } | null>(
+    null,
+  )
 
   const buildMutation = useMutation({
     mutationFn: (tts: string) => buildGameFromTts(tts, 'fleet'),
@@ -82,7 +84,9 @@ export function FleetManagerPanel({ onExport }: FleetManagerPanelProps) {
 
   const groundDelta = (planetIndex: number, unit: string, delta: number) => {
     if (!activeDesignation) return
-    setGame((g) => (g ? adjustGroundCount(g, activeDesignation, planetIndex, unit, delta) : g))
+    setGame((g) =>
+      g ? adjustGroundCount(g, activeDesignation, planetIndex, unit, delta) : g,
+    )
   }
 
   const planetOwnerChange = (planetIndex: number, owner: string) => {
@@ -131,7 +135,10 @@ export function FleetManagerPanel({ onExport }: FleetManagerPanelProps) {
         setActiveDesignation(null)
         setMessage({ text: 'Game state loaded!', tone: 'ok' })
       } catch {
-        setMessage({ text: 'Error loading game state: invalid game JSON.', tone: 'error' })
+        setMessage({
+          text: 'Error loading game state: invalid game JSON.',
+          tone: 'error',
+        })
       }
     }
     reader.onerror = () => setMessage({ text: 'Error reading file.', tone: 'error' })
@@ -152,9 +159,9 @@ export function FleetManagerPanel({ onExport }: FleetManagerPanelProps) {
     <section aria-labelledby="fleet-heading">
       <h2 id="fleet-heading">Fleet Manager</h2>
       <p className={styles.intro}>
-        Build a board from a TTS string, then click any system hex to place ships, ground forces,
-        and structures. Export the result to the Move Suggester, or save / load / copy the game
-        state as JSON.
+        Build a board from a TTS string, then click any system hex to place ships,
+        ground forces, and structures. Export the result to the Move Suggester, or save
+        / load / copy the game state as JSON.
       </p>
 
       <p className={styles.byok}>
@@ -181,20 +188,40 @@ export function FleetManagerPanel({ onExport }: FleetManagerPanelProps) {
         >
           Generate
         </button>
-        <button type="button" className={styles.button} onClick={handleExport} disabled={!game}>
+        <button
+          type="button"
+          className={styles.button}
+          onClick={handleExport}
+          disabled={!game}
+        >
           Export to Move Suggester
         </button>
       </div>
 
       <div className={styles.ioRow}>
-        <button type="button" className={styles.button} onClick={handleSave} disabled={!game}>
+        <button
+          type="button"
+          className={styles.button}
+          onClick={handleSave}
+          disabled={!game}
+        >
           Save Game State
         </button>
         <label className={styles.fileLabel}>
           Load Game State
-          <input type="file" accept=".json" onChange={handleLoad} className={styles.fileInput} />
+          <input
+            type="file"
+            accept=".json"
+            onChange={handleLoad}
+            className={styles.fileInput}
+          />
         </label>
-        <button type="button" className={styles.button} onClick={handleCopy} disabled={!game}>
+        <button
+          type="button"
+          className={styles.button}
+          onClick={handleCopy}
+          disabled={!game}
+        >
           Copy to Clipboard
         </button>
       </div>
@@ -205,7 +232,9 @@ export function FleetManagerPanel({ onExport }: FleetManagerPanelProps) {
         </p>
       )}
 
-      {buildError && <ErrorState message={buildError} onRetry={() => void generate()} />}
+      {buildError && (
+        <ErrorState message={buildError} onRetry={() => void generate()} />
+      )}
 
       <Board
         game={game}

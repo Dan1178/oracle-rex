@@ -1,7 +1,12 @@
 import { useCallback, useMemo, useState, type ReactNode } from 'react'
 
 import { buildLiveCredentials, type CredentialResult } from './credentials'
-import { apiMakeFor, DEFAULT_MODELS, type ApiMake, type SettingsFeature } from './models'
+import {
+  apiMakeFor,
+  DEFAULT_MODELS,
+  type ApiMake,
+  type SettingsFeature,
+} from './models'
 import {
   SettingsContext,
   type ApiKeys,
@@ -42,7 +47,15 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   )
 
   const value = useMemo<SettingsContextValue>(
-    () => ({ accessCode, apiKeys, models, setAccessCode, setApiKey, setModel, getCredentials }),
+    () => ({
+      accessCode,
+      apiKeys,
+      models,
+      setAccessCode,
+      setApiKey,
+      setModel,
+      getCredentials,
+    }),
     [accessCode, apiKeys, models, setApiKey, setModel, getCredentials],
   )
 

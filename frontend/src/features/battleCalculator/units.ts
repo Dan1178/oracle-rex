@@ -40,15 +40,35 @@ export const FLEET_UNITS: UnitDef[] = [
 ]
 
 export const FRIENDLY_GROUND_UNITS: UnitDef[] = [
-  { unit: 'infantry', label: 'Infantry', icon: '/static/images/ground/infantry_icon.png', payloadKey: 'infantry' },
-  { unit: 'mech', label: 'Mech', icon: '/static/images/ground/mech_icon.png', payloadKey: 'mechs' },
+  {
+    unit: 'infantry',
+    label: 'Infantry',
+    icon: '/static/images/ground/infantry_icon.png',
+    payloadKey: 'infantry',
+  },
+  {
+    unit: 'mech',
+    label: 'Mech',
+    icon: '/static/images/ground/mech_icon.png',
+    payloadKey: 'mechs',
+  },
 ]
 
 // The enemy side also holds defensive structures (PDS, space dock).
 export const ENEMY_GROUND_UNITS: UnitDef[] = [
   ...FRIENDLY_GROUND_UNITS,
-  { unit: 'pds', label: 'PDS', icon: '/static/images/structures/pds_icon.png', payloadKey: 'pds' },
-  { unit: 'space_dock', label: 'Space Dock', icon: '/static/images/structures/space_dock_icon.png', payloadKey: 'space_dock' },
+  {
+    unit: 'pds',
+    label: 'PDS',
+    icon: '/static/images/structures/pds_icon.png',
+    payloadKey: 'pds',
+  },
+  {
+    unit: 'space_dock',
+    label: 'Space Dock',
+    icon: '/static/images/structures/space_dock_icon.png',
+    payloadKey: 'space_dock',
+  },
 ]
 
 /** Build the `"<side>-<unit>"` counter id used as a state key and DOM id. */
@@ -82,7 +102,11 @@ export function countsFrom(partial: Record<string, number>): UnitCounts {
   return counts
 }
 
-function collectSide(counts: UnitCounts, side: Side, defs: UnitDef[]): Record<string, number> {
+function collectSide(
+  counts: UnitCounts,
+  side: Side,
+  defs: UnitDef[],
+): Record<string, number> {
   const out: Record<string, number> = {}
   for (const def of defs) {
     const count = counts[counterId(side, def.unit)] ?? 0
@@ -100,6 +124,10 @@ export function buildForceData(counts: UnitCounts): ForceData {
     friendly_fleet: collectSide(counts, 'friendly', FLEET_UNITS),
     enemy_fleet: collectSide(counts, 'enemy', FLEET_UNITS),
     friendly_ground_forces: collectSide(counts, 'friendly', FRIENDLY_GROUND_UNITS),
-    enemy_ground_forces_and_structures: collectSide(counts, 'enemy', ENEMY_GROUND_UNITS),
+    enemy_ground_forces_and_structures: collectSide(
+      counts,
+      'enemy',
+      ENEMY_GROUND_UNITS,
+    ),
   }
 }

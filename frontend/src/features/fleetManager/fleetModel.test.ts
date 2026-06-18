@@ -53,7 +53,10 @@ describe('fleetModel', () => {
   describe('adjustShipCount', () => {
     it('creates the fleet (default owner) on first increment', () => {
       const next = adjustShipCount(makeGame(), '1', 'cruiser', 1)
-      expect(fleetOf(next, '1')).toEqual({ owner: DEFAULT_FLEET_OWNER, ships: { cruiser: 1 } })
+      expect(fleetOf(next, '1')).toEqual({
+        owner: DEFAULT_FLEET_OWNER,
+        ships: { cruiser: 1 },
+      })
     })
 
     it('clamps at zero and deletes the key when it reaches zero', () => {
@@ -111,7 +114,11 @@ describe('fleetModel', () => {
   describe('setPlanetOwner', () => {
     it('sets the planet owner, creating empty ground forces if absent', () => {
       const next = setPlanetOwner(makeGame(), '1', 0, 'Player 1')
-      expect(groundOf(next, '1', 0)).toEqual({ owner: 'Player 1', units: {}, structures: {} })
+      expect(groundOf(next, '1', 0)).toEqual({
+        owner: 'Player 1',
+        units: {},
+        structures: {},
+      })
     })
   })
 

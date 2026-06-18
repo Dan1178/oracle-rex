@@ -28,7 +28,12 @@ function hasContent(section: AdvisorSection): boolean {
   return Boolean(section.items && section.items.length > 0)
 }
 
-export function AdvisorCard({ heading, lead, sections = [], demoLabel }: AdvisorCardProps) {
+export function AdvisorCard({
+  heading,
+  lead,
+  sections = [],
+  demoLabel,
+}: AdvisorCardProps) {
   const visibleSections = sections.filter(hasContent)
   return (
     <div className={styles.root}>

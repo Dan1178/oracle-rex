@@ -2,7 +2,14 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 
 import { ApiError, createJob, getJobStatus, runDemo } from '../api/oracleRexApi'
-import type { JobCreated, JobFeature, JobInput, JobResult, JobStatus, LiveCredentials } from '../types/ai'
+import type {
+  JobCreated,
+  JobFeature,
+  JobInput,
+  JobResult,
+  JobStatus,
+  LiveCredentials,
+} from '../types/ai'
 
 // The async-AI-job lifecycle as a single hook: POST to create the job, then
 // poll `GET /api/jobs/<id>/` on an interval until the job is terminal. This
@@ -23,8 +30,7 @@ export const JOB_FAILED_MESSAGE =
   'The AI request failed. You can retry, switch to demo mode, or provide your own API key in Live AI Mode.'
 export const JOB_TIMEOUT_MESSAGE =
   'The AI request is taking longer than expected. Try a smaller scenario, a faster model, or retry.'
-export const JOB_POLL_ERROR_MESSAGE =
-  'Could not check the AI job status. Please retry.'
+export const JOB_POLL_ERROR_MESSAGE = 'Could not check the AI job status. Please retry.'
 
 export type AiJobPhase = 'idle' | 'submitting' | 'polling' | 'success' | 'error'
 
@@ -175,9 +181,19 @@ function deriveState(args: {
   const base = { jobId, status: pollData }
   if (pollData?.is_terminal) {
     if (pollData.status === 'completed') {
-      return { ...base, phase: 'success', isLoading: false, result: pollData.result ?? undefined }
+      return {
+        ...base,
+        phase: 'success',
+        isLoading: false,
+        result: pollData.result ?? undefined,
+      }
     }
-    return { ...base, phase: 'error', isLoading: false, error: pollData.error || JOB_FAILED_MESSAGE }
+    return {
+      ...base,
+      phase: 'error',
+      isLoading: false,
+      error: pollData.error || JOB_FAILED_MESSAGE,
+    }
   }
   if (timedOut) {
     return { ...base, phase: 'error', isLoading: false, error: JOB_TIMEOUT_MESSAGE }

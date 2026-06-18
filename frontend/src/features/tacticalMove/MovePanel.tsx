@@ -18,7 +18,8 @@ import styles from './MovePanel.module.css'
 // it reuses the same Board / FactionSelect / useBoardSuggester as Strategy.
 
 const LOADING_MESSAGE = 'Evaluating tactical options'
-const FACTION_PLACEHOLDER = 'Load the tactical puzzle below (or build a board in the Fleet Manager)'
+const FACTION_PLACEHOLDER =
+  'Load the tactical puzzle below (or build a board in the Fleet Manager)'
 
 export interface MovePanelProps {
   /** A board exported from the Fleet Manager; seeds the Move board on arrival. */

@@ -53,7 +53,9 @@ describe('BattleCalculator', () => {
   beforeEach(() => {
     server.use(
       http.get('/api/demo/catalog/', () => HttpResponse.json(catalogWithBattle)),
-      http.get('/api/demo/status/', () => HttpResponse.json({ live_demo_enabled: false })),
+      http.get('/api/demo/status/', () =>
+        HttpResponse.json({ live_demo_enabled: false }),
+      ),
     )
   })
 
@@ -89,15 +91,21 @@ describe('BattleCalculator', () => {
     // Friendly fleet: +3 fighters; enemy fleet: +1 cruiser.
     const friendlyFleet = screen.getByRole('group', { name: 'Friendly Fleet' })
     const enemyFleet = screen.getByRole('group', { name: 'Enemy Fleet' })
-    const incFighter = within(friendlyFleet).getByRole('button', { name: /increase fighter/i })
+    const incFighter = within(friendlyFleet).getByRole('button', {
+      name: /increase fighter/i,
+    })
     fireEvent.click(incFighter)
     fireEvent.click(incFighter)
     fireEvent.click(incFighter)
-    fireEvent.click(within(enemyFleet).getByRole('button', { name: /increase cruiser/i }))
+    fireEvent.click(
+      within(enemyFleet).getByRole('button', { name: /increase cruiser/i }),
+    )
 
     fireEvent.click(screen.getByRole('button', { name: /^calculate$/i }))
 
-    await waitFor(() => expect(screen.getByText(/odds of victory: 64%/i)).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByText(/odds of victory: 64%/i)).toBeInTheDocument(),
+    )
     expect(captured?.force_data).toEqual({
       friendly_fleet: { fighter: 3 },
       enemy_fleet: { cruiser: 1 },
@@ -131,15 +139,21 @@ describe('BattleCalculator', () => {
     )
 
     renderCalculator()
-    const demoButton = await screen.findByRole('button', { name: /load example battle/i })
+    const demoButton = await screen.findByRole('button', {
+      name: /load example battle/i,
+    })
     await waitFor(() => expect(demoButton).toBeEnabled())
     fireEvent.click(demoButton)
 
-    await waitFor(() => expect(screen.getByText(/odds of victory: 71%/i)).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByText(/odds of victory: 71%/i)).toBeInTheDocument(),
+    )
     expect(screen.getByText(/saved scenario/i)).toBeInTheDocument()
     // The scenario's counts were applied to the board.
     const friendlyFleet = screen.getByRole('group', { name: 'Friendly Fleet' })
-    const dreadnought = within(friendlyFleet).getByRole('group', { name: 'Dreadnought' })
+    const dreadnought = within(friendlyFleet).getByRole('group', {
+      name: 'Dreadnought',
+    })
     expect(within(dreadnought).getByText('1')).toBeInTheDocument()
   })
 })

@@ -22,11 +22,13 @@
 
 /* Tint friendly icons blue, enemy icons red (verbatim filters from legacy). */
 .friendly {
-  filter: invert(16%) sepia(26%) saturate(7375%) hue-rotate(232deg) brightness(81%) contrast(145%);
+  filter: invert(16%) sepia(26%) saturate(7375%) hue-rotate(232deg) brightness(81%)
+    contrast(145%);
 }
 
 .enemy {
-  filter: invert(22%) sepia(98%) saturate(6867%) hue-rotate(357deg) brightness(97%) contrast(118%);
+  filter: invert(22%) sepia(98%) saturate(6867%) hue-rotate(357deg) brightness(97%)
+    contrast(118%);
 }
 
 .arrows {

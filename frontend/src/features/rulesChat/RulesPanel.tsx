@@ -62,8 +62,8 @@ export function RulesPanel() {
     <section aria-labelledby="rules-heading">
       <h2 id="rules-heading">Rules Q&amp;A</h2>
       <p className={styles.intro}>
-        Ask a Twilight Imperium rules question. Try a sample question below (no API key needed), or
-        type your own and click Ask.
+        Ask a Twilight Imperium rules question. Try a sample question below (no API key
+        needed), or type your own and click Ask.
       </p>
 
       {chips.length > 0 && (

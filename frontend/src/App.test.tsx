@@ -26,22 +26,30 @@ describe('App shell (Phase 2)', () => {
     // strict unhandled-request guard stays happy.
     server.use(
       http.get('/api/demo/catalog/', () => HttpResponse.json(sampleCatalog)),
-      http.get('/api/demo/status/', () => HttpResponse.json({ live_demo_enabled: false })),
+      http.get('/api/demo/status/', () =>
+        HttpResponse.json({ live_demo_enabled: false }),
+      ),
     )
   })
 
   it('renders the header and the Settings tab by default', () => {
     renderApp()
-    expect(screen.getByRole('heading', { name: /oracle rex/i, level: 1 })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: /oracle rex/i, level: 1 }),
+    ).toBeInTheDocument()
     expect(screen.getByText(/three ways to use oracle rex/i)).toBeInTheDocument()
     // Each feature's model radio group renders.
-    expect(screen.getByRole('radio', { name: /grok 4\.20 \(math\/logic\)/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('radio', { name: /grok 4\.20 \(math\/logic\)/i }),
+    ).toBeInTheDocument()
   })
 
   it('switches tabs, keeping inactive panels mounted but hidden', () => {
     renderApp()
     fireEvent.click(screen.getByRole('tab', { name: /fleet manager/i }))
-    expect(screen.getByRole('heading', { name: /fleet manager/i, level: 2 })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: /fleet manager/i, level: 2 }),
+    ).toBeInTheDocument()
     // The Settings content is still mounted (state preserved) but not visible.
     expect(screen.getByText(/three ways to use oracle rex/i)).not.toBeVisible()
 
@@ -67,7 +75,9 @@ describe('App shell (Phase 2)', () => {
   it('renders the Fleet Manager on the Fleet tab', () => {
     renderApp()
     fireEvent.click(screen.getByRole('tab', { name: /fleet manager/i }))
-    expect(screen.getByRole('heading', { name: /fleet manager/i, level: 2 })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: /fleet manager/i, level: 2 }),
+    ).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: /export to move suggester/i }),
     ).toBeInTheDocument()
@@ -76,8 +86,12 @@ describe('App shell (Phase 2)', () => {
   it('renders the Battle Calculator on the Tactical tab', () => {
     renderApp()
     fireEvent.click(screen.getByRole('tab', { name: /tactical calculator/i }))
-    expect(screen.getByRole('heading', { name: /tactical calculator/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /load example battle/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: /tactical calculator/i }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /load example battle/i }),
+    ).toBeInTheDocument()
   })
 
   it('renders the Rules Q&A panel on the Rules tab', () => {
@@ -90,15 +104,21 @@ describe('App shell (Phase 2)', () => {
   it('renders the Strategy Suggester (with the board) on the Strategy tab', () => {
     renderApp()
     fireEvent.click(screen.getByRole('tab', { name: /strategy suggester/i }))
-    expect(screen.getByRole('heading', { name: /strategy suggester/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /load sample milty draft board/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: /strategy suggester/i }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /load sample milty draft board/i }),
+    ).toBeInTheDocument()
   })
 
   it('renders the Move Suggester on the Move tab', () => {
     renderApp()
     fireEvent.click(screen.getByRole('tab', { name: /move suggester/i }))
     expect(screen.getByRole('heading', { name: /move suggester/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /load tactical puzzle/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /load tactical puzzle/i }),
+    ).toBeInTheDocument()
   })
 
   it('marks the active tab with aria-selected', () => {

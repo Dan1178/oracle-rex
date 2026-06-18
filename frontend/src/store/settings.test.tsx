@@ -23,7 +23,9 @@ describe('settings store', () => {
 
   it('errors when no credential is entered', () => {
     const { result } = renderHook(() => useSettings(), { wrapper })
-    expect(result.current.getCredentials('strategy')).toEqual({ error: NO_CREDENTIALS_MESSAGE })
+    expect(result.current.getCredentials('strategy')).toEqual({
+      error: NO_CREDENTIALS_MESSAGE,
+    })
   })
 
   it('sends the BYOK key matching the selected model provider', () => {
@@ -37,7 +39,9 @@ describe('settings store', () => {
 
     // Switching strategy to a Claude model should now require the Anthropic key.
     act(() => result.current.setModel('strategy', 'claude-sonnet-4-6'))
-    expect(result.current.getCredentials('strategy')).toEqual({ error: NO_CREDENTIALS_MESSAGE })
+    expect(result.current.getCredentials('strategy')).toEqual({
+      error: NO_CREDENTIALS_MESSAGE,
+    })
 
     act(() => result.current.setApiKey('anthropic', 'sk-anthropic'))
     expect(result.current.getCredentials('strategy')).toEqual({
@@ -51,6 +55,8 @@ describe('settings store', () => {
       result.current.setApiKey('openai', 'sk-openai')
       result.current.setAccessCode(' let-me-in ')
     })
-    expect(result.current.getCredentials('rules')).toEqual({ creds: { access_code: 'let-me-in' } })
+    expect(result.current.getCredentials('rules')).toEqual({
+      creds: { access_code: 'let-me-in' },
+    })
   })
 })

@@ -20,7 +20,9 @@ function renderPanel(onExport?: (game: Game) => void) {
 
 // sampleGame places a system (Mecatol Rex, one planet, no fleet) at hex 0-0.
 async function generateBoard() {
-  fireEvent.change(screen.getByLabelText('TTS string'), { target: { value: '78 40 42' } })
+  fireEvent.change(screen.getByLabelText('TTS string'), {
+    target: { value: '78 40 42' },
+  })
   fireEvent.click(screen.getByRole('button', { name: /^generate$/i }))
   // Hexes become clickable buttons only once the board has built.
   return waitFor(() => screen.getByRole('button', { name: '0-0' }))
@@ -29,7 +31,9 @@ async function generateBoard() {
 describe('FleetManagerPanel', () => {
   beforeEach(() => {
     server.use(
-      http.post('/api/build-game-from-tts/', () => HttpResponse.json({ game: sampleGame })),
+      http.post('/api/build-game-from-tts/', () =>
+        HttpResponse.json({ game: sampleGame }),
+      ),
     )
   })
 
@@ -38,10 +42,14 @@ describe('FleetManagerPanel', () => {
     const hex = await generateBoard()
 
     // No popover until a system hex is clicked.
-    expect(screen.queryByRole('dialog', { name: /fleet management/i })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('dialog', { name: /fleet management/i }),
+    ).not.toBeInTheDocument()
 
     fireEvent.click(hex)
-    expect(screen.getByRole('dialog', { name: /fleet management/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('dialog', { name: /fleet management/i }),
+    ).toBeInTheDocument()
     expect(screen.getByText('Mecatol Rex')).toBeInTheDocument()
 
     // Increment the (initially zero) fighter count.
@@ -51,14 +59,18 @@ describe('FleetManagerPanel', () => {
 
     // Close dismisses the popover.
     fireEvent.click(screen.getByRole('button', { name: /^close$/i }))
-    expect(screen.queryByRole('dialog', { name: /fleet management/i })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('dialog', { name: /fleet management/i }),
+    ).not.toBeInTheDocument()
   })
 
   it('exports the current board to the Move Suggester', async () => {
     const onExport = vi.fn()
     renderPanel(onExport)
 
-    const exportButton = screen.getByRole('button', { name: /export to move suggester/i })
+    const exportButton = screen.getByRole('button', {
+      name: /export to move suggester/i,
+    })
     expect(exportButton).toBeDisabled()
 
     await generateBoard()
@@ -77,7 +89,9 @@ describe('FleetManagerPanel', () => {
 
     // Add a PDS to the planet (a structure) and infantry (a unit).
     fireEvent.click(screen.getByRole('button', { name: /increase mecatol rex pds/i }))
-    fireEvent.click(screen.getByRole('button', { name: /increase mecatol rex infantry/i }))
+    fireEvent.click(
+      screen.getByRole('button', { name: /increase mecatol rex infantry/i }),
+    )
     expect(screen.getByLabelText('Mecatol Rex PDS count')).toHaveTextContent('1')
     expect(screen.getByLabelText('Mecatol Rex Infantry count')).toHaveTextContent('1')
   })

@@ -5,7 +5,13 @@ import { jobCreatedSchema, jobStatusSchema } from '../schemas/ai.zod'
 import { demoCatalogSchema, demoStatusSchema } from '../schemas/demo.zod'
 import type { DemoCatalog, DemoStatus } from '../types/demo'
 import type { Game } from '../types/game'
-import type { JobCreated, JobFeature, JobInput, JobStatus, LiveCredentials } from '../types/ai'
+import type {
+  JobCreated,
+  JobFeature,
+  JobInput,
+  JobStatus,
+  LiveCredentials,
+} from '../types/ai'
 
 // Typed client for the stable Milestone 1–4 backend contract. Every response is
 // validated against its zod schema so malformed data fails here, as a friendly
@@ -135,7 +141,10 @@ export async function createJob(
 }
 
 /** Poll a job's status until it is terminal (see useAiJob). */
-export async function getJobStatus(jobId: string, signal?: AbortSignal): Promise<JobStatus> {
+export async function getJobStatus(
+  jobId: string,
+  signal?: AbortSignal,
+): Promise<JobStatus> {
   return request(`/jobs/${jobId}/`, jobStatusSchema, 'job-status', { signal })
 }
 
@@ -155,7 +164,10 @@ export async function getDemoStatus(signal?: AbortSignal): Promise<DemoStatus> {
  * Run a saved demo scenario. The backend returns a pre-completed job, so the
  * resulting job id is polled through the same {@link getJobStatus} path.
  */
-export async function runDemo(scenarioKey: string, signal?: AbortSignal): Promise<JobCreated> {
+export async function runDemo(
+  scenarioKey: string,
+  signal?: AbortSignal,
+): Promise<JobCreated> {
   return request('/demo/run/', jobCreatedSchema, 'demo-run', {
     method: 'POST',
     body: { scenario_key: scenarioKey },

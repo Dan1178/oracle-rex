@@ -14,7 +14,11 @@ interface TabNavProps<Id extends string> {
   onSelect: (id: Id) => void
 }
 
-export function TabNav<Id extends string>({ tabs, activeTab, onSelect }: TabNavProps<Id>) {
+export function TabNav<Id extends string>({
+  tabs,
+  activeTab,
+  onSelect,
+}: TabNavProps<Id>) {
   return (
     <div className={styles.tabNav} role="tablist" aria-label="Oracle Rex features">
       {tabs.map((tab) => {

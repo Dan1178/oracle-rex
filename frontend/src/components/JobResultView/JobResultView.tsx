@@ -1,6 +1,11 @@
 import { AdvisorCard } from '../AdvisorCard/AdvisorCard'
 import cardStyles from '../AdvisorCard/AdvisorCard.module.css'
-import { moveCard, parseStructured, rulesCard, strategyCard } from '../AdvisorCard/advisorSections'
+import {
+  moveCard,
+  parseStructured,
+  rulesCard,
+  strategyCard,
+} from '../AdvisorCard/advisorSections'
 import { DemoLabel } from '../DemoLabel/DemoLabel'
 import type { FeatureType, JobResult } from '../../types/ai'
 

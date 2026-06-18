@@ -76,13 +76,14 @@ export const FEATURE_MODEL_GROUPS: FeatureModelGroup[] = [
 ]
 
 /** Default model selection per feature, derived from the catalog. */
-export const DEFAULT_MODELS: Record<SettingsFeature, string> = FEATURE_MODEL_GROUPS.reduce(
-  (acc, group) => {
-    acc[group.feature] = group.defaultValue
-    return acc
-  },
-  {} as Record<SettingsFeature, string>,
-)
+export const DEFAULT_MODELS: Record<SettingsFeature, string> =
+  FEATURE_MODEL_GROUPS.reduce(
+    (acc, group) => {
+      acc[group.feature] = group.defaultValue
+      return acc
+    },
+    {} as Record<SettingsFeature, string>,
+  )
 
 /** Look up which provider key a feature's selected model bills against. */
 export function apiMakeFor(feature: SettingsFeature, model: string): ApiMake {

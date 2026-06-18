@@ -24,23 +24,47 @@ export interface FleetUnit {
 // all stored in system.fleet.ships.
 export const FLEET_UNITS: FleetUnit[] = [
   { unit: 'fighter', label: 'Fighter', icon: '/static/images/ships/fighter_icon.png' },
-  { unit: 'destroyer', label: 'Destroyer', icon: '/static/images/ships/destroyer_icon.png' },
+  {
+    unit: 'destroyer',
+    label: 'Destroyer',
+    icon: '/static/images/ships/destroyer_icon.png',
+  },
   { unit: 'cruiser', label: 'Cruiser', icon: '/static/images/ships/cruiser_icon.png' },
   { unit: 'carrier', label: 'Carrier', icon: '/static/images/ships/carrier_icon.png' },
-  { unit: 'dreadnought', label: 'Dreadnought', icon: '/static/images/ships/dread_icon.png' },
+  {
+    unit: 'dreadnought',
+    label: 'Dreadnought',
+    icon: '/static/images/ships/dread_icon.png',
+  },
   { unit: 'war_sun', label: 'War Sun', icon: '/static/images/ships/war_sun_icon.png' },
-  { unit: 'flagship', label: 'Flagship', icon: '/static/images/ships/flagship_icon.png' },
-  { unit: 'infantry', label: 'Infantry', icon: '/static/images/ground/infantry_icon.png' },
+  {
+    unit: 'flagship',
+    label: 'Flagship',
+    icon: '/static/images/ships/flagship_icon.png',
+  },
+  {
+    unit: 'infantry',
+    label: 'Infantry',
+    icon: '/static/images/ground/infantry_icon.png',
+  },
   { unit: 'mech', label: 'Mech', icon: '/static/images/ground/mech_icon.png' },
 ]
 
 // A planet's ground forces: infantry/mech go into ground_forces.units, PDS and
 // space dock into ground_forces.structures.
 export const PLANET_UNITS: FleetUnit[] = [
-  { unit: 'infantry', label: 'Infantry', icon: '/static/images/ground/infantry_icon.png' },
+  {
+    unit: 'infantry',
+    label: 'Infantry',
+    icon: '/static/images/ground/infantry_icon.png',
+  },
   { unit: 'mech', label: 'Mech', icon: '/static/images/ground/mech_icon.png' },
   { unit: 'pds', label: 'PDS', icon: '/static/images/structures/pds_icon.png' },
-  { unit: 'space_dock', label: 'Space Dock', icon: '/static/images/structures/space_dock_icon.png' },
+  {
+    unit: 'space_dock',
+    label: 'Space Dock',
+    icon: '/static/images/structures/space_dock_icon.png',
+  },
 ]
 
 const GROUND_UNIT_KEYS = new Set(['infantry', 'mech'])
@@ -60,14 +84,21 @@ export const FLEET_OWNER_OPTIONS = [
 export const PLANET_OWNER_OPTIONS = ['None', ...FLEET_OWNER_OPTIONS]
 
 /** Look up the System placed at a board designation (or null). */
-export function systemAt(game: Game | undefined, designation: string | null): System | null {
+export function systemAt(
+  game: Game | undefined,
+  designation: string | null,
+): System | null {
   if (!game || !designation) return null
   return game.board.find((tile) => tile.designation === designation)?.system ?? null
 }
 
 /** Replace the system at `designation` with `fn(system)`, leaving the rest of
  * the game untouched. Tiles without a system are passed through unchanged. */
-function mapSystem(game: Game, designation: string, fn: (system: System) => System): Game {
+function mapSystem(
+  game: Game,
+  designation: string,
+  fn: (system: System) => System,
+): Game {
   return {
     ...game,
     board: game.board.map((tile) =>
@@ -94,7 +125,11 @@ function mapPlanet(
 /** Apply a ±1 (or any delta) change to a count map, clamping at 0 and dropping
  * keys that reach 0 — the legacy "delete on zero" behavior that keeps the
  * exported JSON free of empty entries. */
-function applyDelta(map: Record<string, number>, key: string, delta: number): Record<string, number> {
+function applyDelta(
+  map: Record<string, number>,
+  key: string,
+  delta: number,
+): Record<string, number> {
   const next = Math.max(0, (map[key] ?? 0) + delta)
   const out = { ...map }
   if (next === 0) delete out[key]
@@ -112,7 +147,10 @@ export function adjustShipCount(
 ): Game {
   return mapSystem(game, designation, (system) => {
     const fleet = system.fleet ?? { owner: DEFAULT_FLEET_OWNER, ships: {} }
-    return { ...system, fleet: { ...fleet, ships: applyDelta(fleet.ships, unit, delta) } }
+    return {
+      ...system,
+      fleet: { ...fleet, ships: applyDelta(fleet.ships, unit, delta) },
+    }
   })
 }
 
@@ -147,7 +185,9 @@ export function adjustGroundCount(
       ground_forces: {
         ...ground,
         units: isUnit ? applyDelta(ground.units, unit, delta) : ground.units,
-        structures: isUnit ? ground.structures : applyDelta(ground.structures, unit, delta),
+        structures: isUnit
+          ? ground.structures
+          : applyDelta(ground.structures, unit, delta),
       },
     }
   })

@@ -1,5 +1,14 @@
-import { rulesAnswerSchema, strategicPlanSchema, tacticalMoveSchema } from '../../schemas/ai.zod'
-import type { FeatureType, RulesAnswer, StrategicPlan, TacticalMove } from '../../types/ai'
+import {
+  rulesAnswerSchema,
+  strategicPlanSchema,
+  tacticalMoveSchema,
+} from '../../schemas/ai.zod'
+import type {
+  FeatureType,
+  RulesAnswer,
+  StrategicPlan,
+  TacticalMove,
+} from '../../types/ai'
 import type { AdvisorCardProps } from './AdvisorCard'
 
 // Map a validated structured payload to AdvisorCard props, and runtime-validate
@@ -10,7 +19,10 @@ import type { AdvisorCardProps } from './AdvisorCard'
  * Returns the typed object, or null if absent/invalid (callers fall back to the
  * plain-text result field).
  */
-export function parseStructured(feature: FeatureType, raw: unknown): RulesAnswer | StrategicPlan | TacticalMove | null {
+export function parseStructured(
+  feature: FeatureType,
+  raw: unknown,
+): RulesAnswer | StrategicPlan | TacticalMove | null {
   if (raw == null) return null
   switch (feature) {
     case 'rules': {

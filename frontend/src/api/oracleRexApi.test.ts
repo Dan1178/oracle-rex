@@ -11,7 +11,12 @@ import {
   runDemo,
 } from './oracleRexApi'
 import { server } from '../test/server'
-import { completedRulesResult, jobDict, sampleCatalog, sampleGame } from '../test/fixtures'
+import {
+  completedRulesResult,
+  jobDict,
+  sampleCatalog,
+  sampleGame,
+} from '../test/fixtures'
 
 describe('oracleRexApi', () => {
   it('builds a game from a TTS string and returns the unwrapped game', async () => {
@@ -39,7 +44,9 @@ describe('oracleRexApi', () => {
     )
 
     await expect(buildGameFromTts('x', 'strategy')).rejects.toBeInstanceOf(ApiError)
-    await expect(buildGameFromTts('x', 'strategy')).rejects.toThrow(/unexpected game response/i)
+    await expect(buildGameFromTts('x', 'strategy')).rejects.toThrow(
+      /unexpected game response/i,
+    )
   })
 
   it('merges input and credentials into the job-create body', async () => {
@@ -51,7 +58,11 @@ describe('oracleRexApi', () => {
       }),
     )
 
-    const created = await createJob('rules', { question: 'Can I retreat?' }, { access_code: 'let-me-in' })
+    const created = await createJob(
+      'rules',
+      { question: 'Can I retreat?' },
+      { access_code: 'let-me-in' },
+    )
     expect(created).toEqual({ job_id: 'job-1', status: 'queued' })
     expect(received).toEqual({ question: 'Can I retreat?', access_code: 'let-me-in' })
   })
@@ -63,9 +74,11 @@ describe('oracleRexApi', () => {
       ),
     )
 
-    const error = await createJob('rules', { question: '' }, { api_key: 'k', model: 'gpt-4' }).catch(
-      (e: unknown) => e,
-    )
+    const error = await createJob(
+      'rules',
+      { question: '' },
+      { api_key: 'k', model: 'gpt-4' },
+    ).catch((e: unknown) => e)
     expect(error).toBeInstanceOf(ApiError)
     expect((error as ApiError).status).toBe(400)
     expect((error as ApiError).message).toBe('No question provided')
@@ -75,7 +88,11 @@ describe('oracleRexApi', () => {
     server.use(
       http.get('*/api/jobs/:id/', () =>
         HttpResponse.json(
-          jobDict({ status: 'completed', is_terminal: true, result: completedRulesResult }),
+          jobDict({
+            status: 'completed',
+            is_terminal: true,
+            result: completedRulesResult,
+          }),
         ),
       ),
     )
@@ -89,7 +106,9 @@ describe('oracleRexApi', () => {
   it('fetches the demo catalog and status', async () => {
     server.use(
       http.get('*/api/demo/catalog/', () => HttpResponse.json(sampleCatalog)),
-      http.get('*/api/demo/status/', () => HttpResponse.json({ live_demo_enabled: true })),
+      http.get('*/api/demo/status/', () =>
+        HttpResponse.json({ live_demo_enabled: true }),
+      ),
     )
 
     const catalog = await getDemoCatalog()
@@ -105,7 +124,10 @@ describe('oracleRexApi', () => {
       http.post('*/api/demo/run/', async ({ request }) => {
         const body = (await request.json()) as { scenario_key: string }
         expect(body.scenario_key).toBe('sample_opening_board')
-        return HttpResponse.json({ job_id: 'demo-1', status: 'completed' }, { status: 202 })
+        return HttpResponse.json(
+          { job_id: 'demo-1', status: 'completed' },
+          { status: 202 },
+        )
       }),
     )
 

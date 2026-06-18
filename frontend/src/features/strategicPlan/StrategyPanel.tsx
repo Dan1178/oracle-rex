@@ -41,8 +41,9 @@ export function StrategyPanel() {
     <section aria-labelledby="strategy-heading">
       <h2 id="strategy-heading">Strategy Suggester</h2>
       <p className={styles.intro}>
-        Get a faction-specific opening strategy from a parsed board state. New here? Click{' '}
-        <strong>Load Sample Milty Draft Board</strong> to see it work with no setup.
+        Get a faction-specific opening strategy from a parsed board state. New here?
+        Click <strong>Load Sample Milty Draft Board</strong> to see it work with no
+        setup.
       </p>
 
       <div className={styles.demoBox}>
@@ -86,9 +87,19 @@ export function StrategyPanel() {
         </button>
       </div>
 
-      {buildError && <ErrorState message={buildError} onRetry={() => void board.generate(ttsInput)} />}
+      {buildError && (
+        <ErrorState
+          message={buildError}
+          onRetry={() => void board.generate(ttsInput)}
+        />
+      )}
 
-      <FactionSelect players={game?.players ?? []} value={faction} onChange={setFaction} disabled={!game} />
+      <FactionSelect
+        players={game?.players ?? []}
+        value={faction}
+        onChange={setFaction}
+        disabled={!game}
+      />
       <button
         type="button"
         className={styles.getStrategy}
