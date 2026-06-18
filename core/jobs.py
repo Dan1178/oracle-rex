@@ -89,8 +89,11 @@ def _run_move(payload, api_key, model):
 
 
 def _run_tac_calc(payload, api_key, model):
+    # As of M6C the deterministic simulator computes the numbers; the LLM only
+    # explains them, so the job is seeded with the simulation result.
     text = service.get_tac_calc_response(
-        payload.get("force_data", {}), api_key, model, _max_tokens(payload)
+        payload.get("force_data", {}), payload.get("simulation", {}),
+        api_key, model, _max_tokens(payload),
     )
     return {"calc_results": text}
 

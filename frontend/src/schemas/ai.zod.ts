@@ -49,6 +49,28 @@ export const tacticalMoveSchema = z.object({
   assumptions: z.array(z.string()).default([]),
 })
 
+// --- Deterministic battle simulation (Milestone 6C) --------------------------
+
+// Response of the synchronous `POST /api/tactical/simulate/`. Fleets are
+// `{ unit: count }` maps (same shape as force_data fleets). Loose so an added
+// breakdown field never fails the call.
+export const battleSimSchema = z
+  .object({
+    win_probability: z.number(),
+    win_percent: z.number(),
+    minimum_fleet: z.record(z.string(), z.number()),
+    recommended_fleet: z.record(z.string(), z.number()),
+    breakdown: z
+      .object({
+        trials: z.number().optional(),
+        planet_invasion_required: z.boolean().optional(),
+        blocked_no_ground: z.boolean().optional(),
+        notes: z.array(z.string()).default([]),
+      })
+      .loose(),
+  })
+  .loose()
+
 // --- Job result envelope -----------------------------------------------------
 
 // Fields present on every result payload tagged as a demo response.

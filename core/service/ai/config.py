@@ -122,7 +122,7 @@ PROMPT_VERSIONS = {
     "rules": "rules_chat_v1",
     "strategy": "strategic_plan_v1",
     "move": "tactical_move_v1",
-    "tac_calc": "tactical_calculator_v1",
+    "tac_calc": "tactical_calculator_v3",
 }
 
 

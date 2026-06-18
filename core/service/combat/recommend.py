@@ -14,6 +14,7 @@ from __future__ import annotations
 from typing import Any, Callable, Dict, List, Tuple
 
 from .simulator import enemy_holds_planet, win_probability, _normalize
+from .units import ALL_UNITS
 
 # Combat-worthy candidates only (fighters need carrier capacity and hit on 9;
 # carriers are pure capacity) — recommendations are about fighting power.
@@ -91,19 +92,26 @@ def recommend_fleets(
     while current < REC_THRESHOLD and total_units() < MAX_UNITS:
         best_unit: str | None = None
         best_is_ground = False
-        best_wp = current
+        best_score = 0.0  # win-probability gain per resource spent
 
         candidates: List[Tuple[str, bool]] = [(u, False) for u in SPACE_CANDIDATES]
         if planet:
             candidates += [(u, True) for u in GROUND_CANDIDATES]
 
+        # Pick the most resource-efficient addition (gain / cost). The evaluator
+        # uses common random numbers (same seed every call), so these marginal
+        # gains are comparable without sampling noise.
         for unit, is_ground in candidates:
             target = ground if is_ground else fleet
             target[unit] = target.get(unit, 0) + 1
             wp = evaluate(fleet, ground)
             target[unit] -= 1
-            if wp > best_wp + _EPSILON:
-                best_wp, best_unit, best_is_ground = wp, unit, is_ground
+            gain = wp - current
+            if gain <= _EPSILON:
+                continue
+            score = gain / ALL_UNITS[unit].cost
+            if score > best_score:
+                best_score, best_unit, best_is_ground = score, unit, is_ground
 
         if best_unit is None:
             # No candidate improved the odds (the all-zero early regime): make

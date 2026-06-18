@@ -299,9 +299,11 @@ def tactical_job_create(request):
     except _CredentialError as exc:
         return JsonResponse({'error': exc.message}, status=exc.status)
 
+    # The LLM explains the numbers the deterministic simulator already produced
+    # (M6C), so the job is seeded with the simulation result the client computed.
     job = _create_ai_job(
         AIJob.FeatureType.TAC_CALC,
-        {'force_data': force_data},
+        {'force_data': force_data, 'simulation': data.get('simulation', {})},
         api_key, model, live_demo,
     )
     return _job_created_response(job)

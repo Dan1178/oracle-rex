@@ -1,0 +1,71 @@
+/* Structured battle-simulation result card (Milestone 6C). */
+
+.card {
+  margin-top: 20px;
+  padding: 16px 20px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.odds {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.oddsLabel {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  color: #444;
+}
+
+.oddsValue {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #0056b3;
+  line-height: 1;
+}
+
+.blocked {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  background: #fff4f4;
+  border: 1px solid #f0b8b8;
+  border-left: 4px solid #d9534f;
+  border-radius: 5px;
+  color: #842029;
+  line-height: 1.5;
+}
+
+.fleets {
+  margin: 0 0 12px;
+}
+
+.fleetRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  padding: 6px 0;
+  border-top: 1px solid #eee;
+}
+
+.fleetRow dt {
+  font-weight: 600;
+  color: #333;
+  min-width: 220px;
+}
+
+.fleetRow dd {
+  margin: 0;
+  color: #444;
+}
+
+.notes {
+  margin: 0;
+  padding-left: 18px;
+  color: #777;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}

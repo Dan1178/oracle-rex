@@ -176,7 +176,9 @@ class TestServiceFlow(TestCase):
         chat = _FakeChat(plain_content="   ")
         with patch.object(service, "get_chat", return_value=chat):
             with self.assertRaises(MalformedResponseError):
-                service.get_tac_calc_response({"friendly": {}}, "key", "gpt-5.4")
+                service.get_tac_calc_response(
+                    {"friendly": {}}, api_key="key", model="gpt-5.4"
+                )
 
     def test_input_validation(self):
         from ...service.ai.errors import InputValidationError

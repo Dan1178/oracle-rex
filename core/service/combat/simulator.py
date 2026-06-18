@@ -29,8 +29,10 @@ MAX_ROUNDS = 100
 DEFAULT_TRIALS = 10_000
 
 # Keys in enemy_ground_forces_and_structures that mean "the enemy holds the
-# planet" (so the attacker must invade to win), even with no ground combatants.
-_PLANET_KEYS = ("infantry", "mechs", "pds", "space_dock")
+# planet", so the attacker must invade to win. A lone PDS is deliberately NOT
+# here: it is a defensive structure (Space Cannon Offense, handled separately),
+# not the planet-control marker — ground units or a space dock are.
+_PLANET_KEYS = ("infantry", "mechs", "space_dock")
 
 
 class _Combatant:
