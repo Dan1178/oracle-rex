@@ -17,16 +17,18 @@ const ringClass: Record<Ring, string | undefined> = {
 
 /**
  * The tile image id for a position. Mirrors the legacy setBoard logic: a placed
- * system uses its tile_id; Mecatol Rex (0-0) with no tile falls back to "18";
- * any other empty slot of a built board falls back to "0". Returns null when no
- * game is loaded yet (the bare grid renders with its CSS ring colors).
+ * system uses its tile_id; Mecatol Rex (0-0) with no tile falls back to "18".
+ * Empty slots of a built board return null — there is no `ST_0` asset, so the
+ * legacy "0" fallback only ever 404'd and fell through to the CSS ring color;
+ * returning null skips that wasted request and renders identically. Also null
+ * when no game is loaded yet (the bare grid renders with its CSS ring colors).
  */
 function tileIdFor(game: Game | undefined, position: string): string | null {
   if (!game) return null
   const tile = game.board.find((t) => t.designation === position)
   if (tile?.system?.tile_id != null) return String(tile.system.tile_id)
   if (position === '0-0') return '18'
-  return '0'
+  return null
 }
 
 export interface BoardProps {
@@ -76,7 +78,7 @@ export function Board({ game, onHexClick, activePosition }: BoardProps) {
                 style={
                   tileId
                     ? {
-                        backgroundImage: `url('/static/images/systems/ST_${tileId}.png')`,
+                        backgroundImage: `url('/static/images/systems/ST_${tileId}.webp')`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',

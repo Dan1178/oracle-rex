@@ -24,9 +24,10 @@ describe('Board', () => {
     const { container } = render(<Board game={sampleGame} />)
     // sampleGame places tile_id 18 at 0-0.
     const mecatol = container.querySelector('[data-position="0-0"]') as HTMLElement
-    expect(mecatol.style.backgroundImage).toContain('/static/images/systems/ST_18.png')
-    // A position with no placed system on a built board falls back to ST_0.
+    expect(mecatol.style.backgroundImage).toContain('/static/images/systems/ST_18.webp')
+    // A position with no placed system on a built board paints no image (there
+    // is no ST_0 asset); it falls through to the hex's CSS ring color.
     const empty = container.querySelector('[data-position="4"]') as HTMLElement
-    expect(empty.style.backgroundImage).toContain('/static/images/systems/ST_0.png')
+    expect(empty.style.backgroundImage).toBe('')
   })
 })
