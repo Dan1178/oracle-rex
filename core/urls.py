@@ -11,6 +11,9 @@ from .views import (
     rules_job_create, strategy_job_create, move_job_create, tactical_job_create,
     ai_job_status,
 
+    # Deterministic battle sim (Milestone 6C)
+    tactical_simulate_api,
+
     # Demo mode (Milestone 3)
     demo_catalog, demo_status, demo_job_create,
 
@@ -37,6 +40,9 @@ urlpatterns = [
     path('jobs/move/', move_job_create, name='move_job_create'),
     path('jobs/tactical/', tactical_job_create, name='tactical_job_create'),
     path('jobs/<uuid:job_id>/', ai_job_status, name='ai_job_status'),
+
+    ### DETERMINISTIC BATTLE SIM (Milestone 6C)
+    path('tactical/simulate/', tactical_simulate_api, name='tactical_simulate'),
 
     ### DEMO MODE (Milestone 3)
     path('demo/catalog/', demo_catalog, name='demo_catalog'),
