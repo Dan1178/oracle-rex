@@ -37,7 +37,7 @@ const simResult = (overrides = {}) => ({
     trials: 10000,
     planet_invasion_required: false,
     blocked_no_ground: false,
-    notes: ['Base unit stats; unit-upgrade techs are not modelled.'],
+    notes: ['Base unit stats; unit-upgrade techs are not modeled.'],
   },
   ...overrides,
 })

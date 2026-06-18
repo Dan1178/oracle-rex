@@ -163,7 +163,7 @@ export function BattleCalculator() {
           checked={explain}
           onChange={(e) => setExplain(e.target.checked)}
         />
-        Get the Oracle&rsquo;s take — a natural-language explanation (uses your API key)
+        Get the Oracle&rsquo;s analysis (uses your API key)
       </label>
 
       <button

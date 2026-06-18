@@ -20,7 +20,7 @@ from .simulator import (
 from .units import FLAGSHIP_IS_GENERIC
 
 # Caveats surfaced so the UI can be honest about the model's limits.
-_BASE_STATS_NOTE = "Base unit stats; unit-upgrade techs are not modelled."
+_BASE_STATS_NOTE = "Base unit stats; unit-upgrade techs are not modeled."
 _FLAGSHIP_NOTE = "Flagship uses generic stats (faction flagships vary)."
 
 
