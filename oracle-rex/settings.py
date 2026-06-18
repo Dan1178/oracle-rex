@@ -214,7 +214,19 @@ LOGGING = {
             'class': 'logging.StreamHandler',
         },
     },
+    # Route unhandled request errors (500s) to the console. Without this, Django's
+    # default `django.request` logger sends them to `mail_admins` only, so with no
+    # email configured the traceback vanishes — invisible in Render's logs.
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
     'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
         'core': {
             'handlers': ['console'],
             'level': 'INFO',
