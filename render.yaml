@@ -26,7 +26,11 @@ services:
     plan: free
     # Build the React/Vite frontend before collectstatic so the hashed bundles
     # in frontend/dist are picked up into staticfiles/ and served by WhiteNoise.
-    buildCommand: "pip install -r requirements.txt && npm --prefix frontend ci && npm --prefix frontend run build && python manage.py collectstatic --noinput && python manage.py migrate --noinput"
+    # `--include=dev` is REQUIRED: the build tools (vite, typescript,
+    # @vitejs/plugin-react) live in devDependencies, so without it a
+    # production/omit-dev install builds a degraded bundle whose manifest is
+    # missing the src/main.tsx entry → django-vite 500s on every page.
+    buildCommand: "pip install -r requirements.txt && npm --prefix frontend ci --include=dev && npm --prefix frontend run build && python manage.py collectstatic --noinput && python manage.py migrate --noinput"
     startCommand: "gunicorn oracle-rex.wsgi:application"
     envVars:
       - key: AI_JOB_BACKEND
@@ -35,6 +39,9 @@ services:
         generateValue: true
       - key: PYTHON_VERSION
         value: 3.13.2
+      # Pin Node so the Vite build matches local (Vite 8 needs >= 22.12).
+      - key: NODE_VERSION
+        value: 22.14.0
       # Durable-worker upgrade: point both services at Postgres by uncommenting
       # the database below and this var, then set AI_JOB_BACKEND=django_q.
       # - key: DATABASE_URL
