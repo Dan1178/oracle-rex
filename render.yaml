@@ -24,7 +24,9 @@ services:
     region: oregon
     branch: main
     plan: free
-    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput"
+    # Build the React/Vite frontend before collectstatic so the hashed bundles
+    # in frontend/dist are picked up into staticfiles/ and served by WhiteNoise.
+    buildCommand: "pip install -r requirements.txt && npm --prefix frontend ci && npm --prefix frontend run build && python manage.py collectstatic --noinput && python manage.py migrate --noinput"
     startCommand: "gunicorn oracle-rex.wsgi:application"
     envVars:
       - key: AI_JOB_BACKEND

@@ -1,0 +1,108 @@
+/* Ported from static/css/fleet_manager.css (the .fleet-management-window box,
+   .player-select rows, and #planets-section layout). The legacy window followed
+   the mouse; here it is a fixed in-viewport panel (positioning polish is M6). */
+
+.window {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  color: #222;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  padding: 15px;
+  width: 500px;
+  max-width: 92vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 3000;
+  font-size: 14px;
+}
+
+.header {
+  text-align: center;
+  font-size: 24px;
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.playerSelect {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.playerSelect label {
+  font-weight: bold;
+}
+
+.playerSelect select {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+.playerSelect select:focus {
+  outline: none;
+  border-color: #666;
+}
+
+/* Stack the counters; UnitCounter rows are flex boxes that wrap if narrow. */
+.units {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.planets {
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.planets h3 {
+  margin: 0 0 10px;
+}
+
+.planetGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.planetCard {
+  flex: 1 1 200px;
+}
+
+.planetHead h4 {
+  font-size: 18px;
+  margin: 0 0 8px;
+}
+
+.planetCard .playerSelect label {
+  color: green;
+}
+
+.close {
+  background: #6c757d;
+  color: white;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.close:hover {
+  background: #565e64;
+}

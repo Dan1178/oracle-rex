@@ -1,0 +1,37 @@
+/* Ported from .response-box / .response-box.loading in static/css/style.css. */
+.root {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  white-space: pre-wrap;
+  font-family: 'OCR-A', monospace;
+  font-weight: 600;
+}
+
+.dots::after {
+  content: '';
+  display: inline-block;
+  width: 1.5em;
+  text-align: left;
+  animation: dots 1.6s steps(1, end) infinite;
+}
+
+/* The three-dot value at 75% has no later keyframe, so it persists from 75% to
+   100% and is actually shown. The previous keyframes put '...' at 100%, which
+   coincides with the loop restart, so the animation topped out at two dots. */
+@keyframes dots {
+  0% {
+    content: '';
+  }
+  25% {
+    content: '.';
+  }
+  50% {
+    content: '..';
+  }
+  75% {
+    content: '...';
+  }
+}

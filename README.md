@@ -217,6 +217,64 @@ These checks are also run as part of the test suite
 (Use `core.tests`, not `core` — the hyphenated project directory breaks bare
 test discovery.)
 
+## Frontend (React/TypeScript)
+
+The frontend is a React + TypeScript single-page app built with **Vite** and
+integrated into Django via **django-vite**. It lives in `frontend/` and is served
+by the same single web service (no separate host, no CORS) — Vite builds hashed
+bundles into `frontend/dist`, `collectstatic` picks them up, and WhiteNoise serves
+them. It is served at `/`; the legacy plain-JS / Django-template UI was removed at
+the Milestone 5 cutover.
+
+**Prerequisites:** Node 22+ and npm 10+.
+
+    cd frontend
+    npm install
+
+**Dev loop (HMR) — one command (Windows/PowerShell):** from the repo root,
+
+    .\dev.ps1
+
+starts the Django API and the Vite dev server together (both logging to the one
+terminal), sets `DJANGO_VITE_DEV_MODE=1` + `DJANGO_DEBUG=1` for you, and uses the
+project `.venv`'s Python. Press **Ctrl+C** once to stop both. Then open
+<http://localhost:8000/>.
+
+**Or run the two processes manually** (e.g. under bash, or to see them
+separately). Set `DJANGO_VITE_DEV_MODE=1` so the SPA loads its modules from Vite
+(with hot reload) while the API stays same-origin on Django:
+
+    # terminal 1 — Django
+    # PowerShell
+    $env:DJANGO_VITE_DEV_MODE = "1"; python manage.py runserver
+    # bash
+    DJANGO_VITE_DEV_MODE=1 python manage.py runserver
+
+    # terminal 2 — Vite dev server
+    cd frontend
+    npm run dev
+
+Then open <http://localhost:8000/> (Django serves the shell; Vite serves the
+React code with HMR). Alternatively, visit the Vite server directly at
+<http://localhost:5173/> — it proxies `/api` to Django on :8000.
+
+**Production build (what Render runs):**
+
+    cd frontend
+    npm run build            # tsc + vite build -> frontend/dist (+ manifest)
+    cd ..
+    python manage.py collectstatic --noinput
+
+With `DJANGO_VITE_DEV_MODE` unset, django-vite resolves assets from the build
+manifest — the same path used in production. Other frontend scripts:
+
+    npm run lint             # ESLint
+    npm run format           # Prettier (use format:check in CI)
+    npm test                 # Vitest
+
+CI (`.github/workflows/django.yml`) runs the frontend lint/format/test/build in a
+dedicated `frontend` job alongside the Django job.
+
 ## Deployment:
 
 This application automatically deploys on Render when a successful build runs on the main branch.

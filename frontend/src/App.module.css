@@ -1,0 +1,26 @@
+/* App shell layout, ported from `.container` / `.app-tagline` in
+   static/css/style.css. */
+
+.container {
+  max-width: 1500px;
+  margin: 0 auto;
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-family: 'Azonix', sans-serif;
+  font-weight: normal;
+  text-align: center;
+  color: #333;
+}
+
+.tagline {
+  text-align: center;
+  color: #555;
+  max-width: 900px;
+  margin: 0 auto 24px;
+  line-height: 1.5;
+}

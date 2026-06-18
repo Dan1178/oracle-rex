@@ -13,3 +13,5 @@ django-q2==1.8.0
 dj-database-url==2.3.0
 psycopg[binary]==3.2.9
 cryptography==45.0.5
+# Milestone 5 — React/TS frontend: reads Vite's manifest to emit hashed asset tags
+django-vite==3.1.0

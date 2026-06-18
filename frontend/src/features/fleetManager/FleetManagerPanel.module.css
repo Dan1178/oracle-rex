@@ -1,0 +1,90 @@
+/* Ported from templates/fleet.html + the tts-input-container / button styles in
+   static/css/style.css. */
+
+.intro {
+  color: #444;
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+.byok {
+  color: #444;
+  margin: 0 0 8px;
+}
+
+.ttsRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ttsInput {
+  flex-grow: 1;
+  min-width: 240px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.ioRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.button {
+  background: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.button:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* The file input is styled as a button-like label (native file inputs are ugly
+   and unstyleable). */
+.fileLabel {
+  background: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.fileLabel:hover {
+  background: #0056b3;
+}
+
+.fileInput {
+  display: none;
+}
+
+.message {
+  margin: 8px 0 0;
+  font-weight: bold;
+}
+
+.message[data-tone='ok'] {
+  color: green;
+}
+
+.message[data-tone='warn'] {
+  color: #b8860b;
+}
+
+.message[data-tone='error'] {
+  color: red;
+}

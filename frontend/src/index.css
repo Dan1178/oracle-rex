@@ -1,0 +1,75 @@
+/* App-wide base styles ported from static/css/style.css: the web fonts (served
+   by Django from /static/fonts/), the page background, and the base typography.
+   Component-specific styles live in CSS Modules alongside each component. The
+   hex-grid layout is ported with the Board component in Phase 5. */
+
+@font-face {
+  font-family: 'Azonix';
+  src: url('/static/fonts/azonix/Azonix.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Orbitron';
+  src: url('/static/fonts/orbitron/Orbitron-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Orbitron-Bold';
+  src: url('/static/fonts/orbitron/Orbitron-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Orbitron-ExtraBold';
+  src: url('/static/fonts/orbitron/Orbitron-ExtraBold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'OCR-A';
+  src: url('/static/fonts/ocr-a/OCR-a___.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+:root {
+  color-scheme: light;
+}
+
+/* OCR-A is the main body font, set on <body> so it's inherited by every element
+   — including <li>, <a>, <div>, etc. The old approach enumerated specific tags
+   (p, span, …) and missed <li>, so bulleted advisor-card sections fell back to
+   the default font. Headings/buttons opt into the display fonts below. */
+body {
+  font-family: 'OCR-A', monospace;
+  font-weight: 600;
+  margin: 0;
+  padding: 20px;
+  background-color: black;
+}
+
+h2 {
+  font-family: 'Orbitron-Bold', sans-serif;
+  font-weight: 700;
+}
+
+h3,
+h4,
+button {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 400;
+}
+
+/* Form controls don't inherit font-family by default — opt them back in so they
+   render in OCR-A like the rest of the body text. */
+input,
+textarea,
+select {
+  font-family: inherit;
+}

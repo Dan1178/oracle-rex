@@ -44,5 +44,7 @@ urlpatterns = [
     path('demo/run/', demo_job_create, name='demo_job_create'),
 
     ### FRONTEND
+    # The React/TS single-page app (served at '/'). Any non-API path renders the
+    # SPA shell; client-side state drives the tabs.
     path('', frontend_view, name='frontend'),
 ]
