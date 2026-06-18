@@ -1,6 +1,7 @@
 import type { z } from 'zod'
 
 import type {
+  battleSimSchema,
   featureTypeSchema,
   jobCreatedSchema,
   jobResultSchema,
@@ -23,6 +24,8 @@ export type JobStatusValue = z.infer<typeof jobStatusValueSchema>
 export type RulesAnswer = z.infer<typeof rulesAnswerSchema>
 export type StrategicPlan = z.infer<typeof strategicPlanSchema>
 export type TacticalMove = z.infer<typeof tacticalMoveSchema>
+
+export type BattleSimResult = z.infer<typeof battleSimSchema>
 
 export type JobResult = z.infer<typeof jobResultSchema>
 export type JobStatus = z.infer<typeof jobStatusSchema>
@@ -59,6 +62,8 @@ export interface SuggestJobInput {
 }
 export interface TacticalJobInput {
   force_data: ForceData
+  /** The deterministic simulation result the LLM explains (M6C); not computed. */
+  simulation?: BattleSimResult
 }
 
 export type JobInput = RulesJobInput | SuggestJobInput | TacticalJobInput

@@ -71,6 +71,20 @@ export const ENEMY_GROUND_UNITS: UnitDef[] = [
   },
 ]
 
+// Display label for each force_data/recommendation key (e.g. "war_sun" -> "War
+// Sun", "mechs" -> "Mech"), derived from the unit defs so it can't drift.
+export const UNIT_LABELS: Record<string, string> = Object.fromEntries(
+  [...FLEET_UNITS, ...ENEMY_GROUND_UNITS].map((u) => [u.payloadKey, u.label]),
+)
+
+/** Render a `{ unit: count }` fleet map as "2 Cruiser, 1 War Sun" (or "—"). */
+export function formatFleet(fleet: Record<string, number>): string {
+  const parts = Object.entries(fleet)
+    .filter(([, n]) => n > 0)
+    .map(([key, n]) => `${n} ${UNIT_LABELS[key] ?? key}`)
+  return parts.length ? parts.join(', ') : '—'
+}
+
 /** Build the `"<side>-<unit>"` counter id used as a state key and DOM id. */
 export const counterId = (side: Side, unit: string): string => `${side}-${unit}`
 

@@ -78,6 +78,16 @@
   line-height: 1.5;
 }
 
+.explainToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  color: #444;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
 .calculate {
   background: #007bff;
   color: white;

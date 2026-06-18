@@ -11,7 +11,7 @@ import { server } from '../../test/server'
 import { BattleCalculator } from './BattleCalculator'
 
 // Catalog with a runnable tac_calc battle scenario (the App fixture only covers
-// strategy/rules), so the demo path has a key + unit_counts to apply.
+// strategy/rules), so the demo path has unit_counts to apply.
 const catalogWithBattle = {
   ...sampleCatalog,
   scenarios: {
@@ -27,7 +27,21 @@ const catalogWithBattle = {
   },
 }
 
-// A small consumer to seed a BYOK key so the live path resolves credentials.
+// A deterministic-sim response matching battleSimSchema.
+const simResult = (overrides = {}) => ({
+  win_probability: 0.64,
+  win_percent: 64,
+  minimum_fleet: { cruiser: 2 },
+  recommended_fleet: { cruiser: 3, dreadnought: 1 },
+  breakdown: {
+    trials: 10000,
+    planet_invasion_required: false,
+    blocked_no_ground: false,
+    notes: ['Base unit stats; unit-upgrade techs are not modeled.'],
+  },
+  ...overrides,
+})
+
 function SeedKey() {
   const { setApiKey } = useSettings()
   return (
@@ -59,17 +73,65 @@ describe('BattleCalculator', () => {
     )
   })
 
-  it('asks the user to add a key when calculating with no credentials', () => {
-    renderCalculator()
-    fireEvent.click(screen.getByRole('button', { name: /^calculate$/i }))
-    expect(screen.getByText(/no api key found/i)).toBeInTheDocument()
-  })
-
-  it('builds force_data from the counters and renders the result', async () => {
+  it('computes the deterministic result with no API key', async () => {
     let captured: Record<string, unknown> | undefined
     server.use(
-      http.post('/api/jobs/tactical/', async ({ request }) => {
+      http.post('/api/tactical/simulate/', async ({ request }) => {
         captured = (await request.json()) as Record<string, unknown>
+        return HttpResponse.json(simResult())
+      }),
+    )
+
+    renderCalculator()
+
+    const friendlyFleet = screen.getByRole('group', { name: 'Friendly Fleet' })
+    const enemyFleet = screen.getByRole('group', { name: 'Enemy Fleet' })
+    const incCruiser = within(friendlyFleet).getByRole('button', {
+      name: /increase cruiser/i,
+    })
+    fireEvent.click(incCruiser)
+    fireEvent.click(incCruiser)
+    fireEvent.click(
+      within(enemyFleet).getByRole('button', { name: /increase cruiser/i }),
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: /^calculate$/i }))
+
+    await waitFor(() => expect(screen.getByText('64%')).toBeInTheDocument())
+    // Recommended fleet rendered.
+    expect(screen.getByText(/3 Cruiser, 1 Dreadnought/i)).toBeInTheDocument()
+    expect(captured?.force_data).toEqual({
+      friendly_fleet: { cruiser: 2 },
+      enemy_fleet: { cruiser: 1 },
+      friendly_ground_forces: {},
+      enemy_ground_forces_and_structures: {},
+    })
+  })
+
+  it('does not call the AI job when the explanation box is unchecked', async () => {
+    let jobCalled = false
+    server.use(
+      http.post('/api/tactical/simulate/', () => HttpResponse.json(simResult())),
+      http.post('/api/jobs/tactical/', () => {
+        jobCalled = true
+        return HttpResponse.json({ job_id: 'x', status: 'queued' }, { status: 202 })
+      }),
+    )
+
+    renderCalculator()
+    fireEvent.click(screen.getByRole('button', { name: 'seed-key' }))
+    fireEvent.click(screen.getByRole('button', { name: /^calculate$/i }))
+
+    await waitFor(() => expect(screen.getByText('64%')).toBeInTheDocument())
+    expect(jobCalled).toBe(false)
+  })
+
+  it('seeds the LLM job with the computed numbers when the box is checked', async () => {
+    let jobBody: Record<string, unknown> | undefined
+    server.use(
+      http.post('/api/tactical/simulate/', () => HttpResponse.json(simResult())),
+      http.post('/api/jobs/tactical/', async ({ request }) => {
+        jobBody = (await request.json()) as Record<string, unknown>
         return HttpResponse.json({ job_id: 'job-1', status: 'queued' }, { status: 202 })
       }),
       http.get('/api/jobs/job-1/', () =>
@@ -79,7 +141,7 @@ describe('BattleCalculator', () => {
             feature_type: 'tac_calc',
             status: 'completed',
             is_terminal: true,
-            result: { calc_results: 'Odds of Victory: 64%' },
+            result: { calc_results: 'The dreadnoughts carry this fight.' },
           }),
         ),
       ),
@@ -87,54 +149,34 @@ describe('BattleCalculator', () => {
 
     renderCalculator()
     fireEvent.click(screen.getByRole('button', { name: 'seed-key' }))
-
-    // Friendly fleet: +3 fighters; enemy fleet: +1 cruiser.
-    const friendlyFleet = screen.getByRole('group', { name: 'Friendly Fleet' })
-    const enemyFleet = screen.getByRole('group', { name: 'Enemy Fleet' })
-    const incFighter = within(friendlyFleet).getByRole('button', {
-      name: /increase fighter/i,
-    })
-    fireEvent.click(incFighter)
-    fireEvent.click(incFighter)
-    fireEvent.click(incFighter)
-    fireEvent.click(
-      within(enemyFleet).getByRole('button', { name: /increase cruiser/i }),
-    )
-
+    fireEvent.click(screen.getByRole('checkbox'))
     fireEvent.click(screen.getByRole('button', { name: /^calculate$/i }))
 
     await waitFor(() =>
-      expect(screen.getByText(/odds of victory: 64%/i)).toBeInTheDocument(),
+      expect(screen.getByText(/dreadnoughts carry this fight/i)).toBeInTheDocument(),
     )
-    expect(captured?.force_data).toEqual({
-      friendly_fleet: { fighter: 3 },
-      enemy_fleet: { cruiser: 1 },
-      friendly_ground_forces: {},
-      enemy_ground_forces_and_structures: {},
-    })
-    expect(captured?.api_key).toBe('sk-test')
-    expect(captured?.model).toBe('gpt-5.4-mini')
+    expect(screen.getByText('64%')).toBeInTheDocument()
+    expect(jobBody?.force_data).toBeTruthy()
+    expect((jobBody?.simulation as { win_percent?: number })?.win_percent).toBe(64)
   })
 
-  it('runs the demo battle through the same poll UI with a demo label', async () => {
+  it('shows credential guidance (but still the result) when checked with no key', async () => {
     server.use(
-      http.post('/api/demo/run/', () =>
-        HttpResponse.json({ job_id: 'demo-1', status: 'completed' }, { status: 202 }),
-      ),
-      http.get('/api/jobs/demo-1/', () =>
-        HttpResponse.json(
-          jobDict({
-            id: 'demo-1',
-            feature_type: 'tac_calc',
-            status: 'completed',
-            is_terminal: true,
-            result: {
-              calc_results: 'Odds of Victory: 71%',
-              demo: true,
-              demo_label: 'Demo response generated from a saved scenario.',
-            },
-          }),
-        ),
+      http.post('/api/tactical/simulate/', () => HttpResponse.json(simResult())),
+    )
+
+    renderCalculator()
+    fireEvent.click(screen.getByRole('checkbox'))
+    fireEvent.click(screen.getByRole('button', { name: /^calculate$/i }))
+
+    await waitFor(() => expect(screen.getByText('64%')).toBeInTheDocument())
+    expect(screen.getByText(/no api key found/i)).toBeInTheDocument()
+  })
+
+  it('loads the example battle and computes it live', async () => {
+    server.use(
+      http.post('/api/tactical/simulate/', () =>
+        HttpResponse.json(simResult({ win_percent: 71 })),
       ),
     )
 
@@ -145,11 +187,8 @@ describe('BattleCalculator', () => {
     await waitFor(() => expect(demoButton).toBeEnabled())
     fireEvent.click(demoButton)
 
-    await waitFor(() =>
-      expect(screen.getByText(/odds of victory: 71%/i)).toBeInTheDocument(),
-    )
-    expect(screen.getByText(/saved scenario/i)).toBeInTheDocument()
-    // The scenario's counts were applied to the board.
+    await waitFor(() => expect(screen.getByText('71%')).toBeInTheDocument())
+    // The scenario's counts were applied.
     const friendlyFleet = screen.getByRole('group', { name: 'Friendly Fleet' })
     const dreadnought = within(friendlyFleet).getByRole('group', {
       name: 'Dreadnought',

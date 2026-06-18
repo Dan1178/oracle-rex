@@ -16,6 +16,7 @@ from .models import AIJob, Faction, Player, System, Tile
 from .serializers import FactionSerializer, PlayerSerializer, SystemSerializer, TileSerializer
 from .service.ai import config
 from .service.ai.crypto import encrypt_key
+from .service.combat import simulate as simulate_battle
 from .service.tts_string_ingest import build_game_from_string
 from .util.utils import reset_database
 
@@ -298,12 +299,42 @@ def tactical_job_create(request):
     except _CredentialError as exc:
         return JsonResponse({'error': exc.message}, status=exc.status)
 
+    # The LLM explains the numbers the deterministic simulator already produced
+    # (M6C), so the job is seeded with the simulation result the client computed.
     job = _create_ai_job(
         AIJob.FeatureType.TAC_CALC,
-        {'force_data': force_data},
+        {'force_data': force_data, 'simulation': data.get('simulation', {})},
         api_key, model, live_demo,
     )
     return _job_created_response(job)
+
+
+###########   DETERMINISTIC BATTLE SIM (Milestone 6C)   ############
+# The win-odds math is fast, pure Python and needs no API key, so it runs
+# *synchronously* in the request — unlike the AI features, which go through the
+# async job queue only because the slow provider call must stay off the request
+# path. The optional natural-language explanation still goes through the
+# tactical AI job, now seeded with these numbers.
+
+@api_view(['POST'])
+def tactical_simulate_api(request):
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+
+    force_data = data.get('force_data', {})
+    if not force_data:
+        return JsonResponse({'error': 'Missing force data'}, status=400)
+
+    try:
+        result = simulate_battle(force_data)
+    except Exception as exc:  # noqa: BLE001 - surface a clean error, log the cause
+        logger.exception("Battle simulation failed: %s", exc)
+        return JsonResponse(
+            {'error': 'The battle could not be simulated from that input.'}, status=400
+        )
+    return JsonResponse(result)
 
 
 ###########         DEMO MODE (Milestone 3)         ################

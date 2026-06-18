@@ -1,8 +1,8 @@
 """Prompt for the Tactical Move suggester."""
 
-import json
-
 from langchain_core.messages import HumanMessage, SystemMessage
+
+from ..serialize import encode_board_payload
 
 PROMPT_VERSION = "tactical_move_v2"
 
@@ -21,5 +21,5 @@ def _system(player_faction: str) -> str:
 def build_messages(game_json, player_faction: str):
     return [
         SystemMessage(content=_system(player_faction)),
-        HumanMessage(content=json.dumps(game_json, indent=2)),
+        HumanMessage(content=encode_board_payload(game_json)),
     ]

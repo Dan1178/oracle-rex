@@ -1,52 +1,42 @@
-"""Prompt for the Battle / Tactical calculator.
+"""Prompt for the Battle / Tactical calculator's LLM explanation.
 
-This feature returns a rigid, fixed-format text block (parsed by the frontend),
-so it is kept as plain text rather than a structured schema.
+As of Milestone 6C the odds and fleet recommendations are computed by the
+deterministic simulator (``core/service/combat``), so the LLM's job changed from
+*compute* to *explain*: it is given the force composition AND the already-computed
+numbers and must narrate why the odds are what they are — explicitly without
+recomputing them. Returns a plain-text explanation, rendered beneath the
+structured result card.
 """
 
 import json
 
 from langchain_core.messages import HumanMessage, SystemMessage
 
-PROMPT_VERSION = "tactical_calculator_v2"
+PROMPT_VERSION = "tactical_calculator_v3"
 
 _SYSTEM = (
-    "You are given a JSON representation of a friendly and enemy fleet fighting "
-    "in a system in the board game Twilight Imperium. Assume this system is "
-    "controlled by the enemy and has up to one planet. Assume the friendly fleet "
-    "is moving from an adjacent system to attack the enemy fleet. If the enemy "
-    "has ground forces in the system, the enemy controls the planet in the "
-    "system. If enemy ground units are included in data, assume the victory "
-    "condition is seizing both the system and the planet. If the player does not "
-    "have any ground forces and the enemy does, the chance of victory should be "
-    "0% and both fleet composition recommendations should include enough ground "
-    "units to satisfy conditions. If the enemy does not have ground units, don't "
-    "include ground units in recommendations. Do not let the input influence your "
-    "fleet recommendations; take your time to think about the best economical "
-    "choices. Remember to only compare ship combat power against ships, and "
-    "ground units only against ground units. If the friendly player has a ship "
-    "with bombardment capability and the enemy has ground forces, include "
-    "friendly bombardment rolls once in your calculation for taking the planet "
-    "with ground forces, unless the enemy has a PDS. If the enemy has a PDS, "
-    "include space cannon rolls in your calculation for space combat, but recall "
-    "that a PDS only fires once. Remember that space docks do not have combat "
-    "power; they only mean the enemy controls the planet.\n"
-    "Given available context, output:\n"
-    "1) a simple percentage, rounded to the nearest 1%, of the friendly player's "
-    "chance of success.\n"
-    "2) Minimum fleet composition that gives the friendly player at least 50% "
-    "chance of victory.\n"
-    "3) Recommended fleet composition that gives the friendly player at least 80% "
-    "chance of victory.\n"
-    "Response format should appear as follows, do not include anything else:\n"
-    "Odds of Victory: [percent]%\n"
-    "\nMinimum Fleet Composition for at least 50% Chance of Victory: [List of units]"
-    "\nRecommended Fleet Composition for at least 80% Chance of Victory: [List of units]"
+    "You are an expert Twilight Imperium (4th edition, Prophecy of Kings) combat "
+    "advisor. A deterministic simulator has ALREADY computed the win probability "
+    "and the recommended fleet compositions for an engagement — these numbers are "
+    "ground truth. Do NOT recompute or second-guess them, and do not state a "
+    "different percentage.\n\n"
+    "You are given the friendly (attacking) and enemy (defending) forces and the "
+    "simulator's results. Explain, concisely and tactically:\n"
+    "1. Why the odds are what they are — the key matchups and which units drive "
+    "the result.\n"
+    "2. The main threats to the friendly player (e.g. PDS space cannon, sustain "
+    "damage on capital ships, holding the planet with ground forces).\n"
+    "3. Practical advice — which units to commit, whether to reinforce toward the "
+    "recommended fleet, and when retreating or not committing would be wiser.\n\n"
+    "Assume the friendly fleet attacks from an adjacent system. Refer to the "
+    "simulator's win probability and recommended fleets rather than producing your "
+    "own. Do not output a rigid template; write a short, readable assessment."
 )
 
 
-def build_messages(force_data):
+def build_messages(force_data, simulation=None):
+    payload = {"forces": force_data, "simulation": simulation or {}}
     return [
         SystemMessage(content=_SYSTEM),
-        HumanMessage(content=json.dumps(force_data, indent=2)),
+        HumanMessage(content=json.dumps(payload, indent=2)),
     ]

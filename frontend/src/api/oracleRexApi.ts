@@ -1,11 +1,13 @@
 import { z } from 'zod'
 
 import { buildGameResponseSchema } from '../schemas/game.zod'
-import { jobCreatedSchema, jobStatusSchema } from '../schemas/ai.zod'
+import { battleSimSchema, jobCreatedSchema, jobStatusSchema } from '../schemas/ai.zod'
 import { demoCatalogSchema, demoStatusSchema } from '../schemas/demo.zod'
 import type { DemoCatalog, DemoStatus } from '../types/demo'
 import type { Game } from '../types/game'
 import type {
+  BattleSimResult,
+  ForceData,
   JobCreated,
   JobFeature,
   JobInput,
@@ -118,6 +120,23 @@ export async function buildGameFromTts(
     signal,
   })
   return data.game
+}
+
+// --- Deterministic battle simulation (Milestone 6C) ------------------------
+
+/**
+ * Run the deterministic combat simulation. Synchronous and key-free — returns
+ * win odds + fleet recommendations directly (no job to poll).
+ */
+export async function simulateBattle(
+  forceData: ForceData,
+  signal?: AbortSignal,
+): Promise<BattleSimResult> {
+  return request('/tactical/simulate/', battleSimSchema, 'battle-sim', {
+    method: 'POST',
+    body: { force_data: forceData },
+    signal,
+  })
 }
 
 // --- AI jobs ---------------------------------------------------------------

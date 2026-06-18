@@ -174,8 +174,8 @@ def get_move_response(
 
 
 def get_tac_calc_response(
-    force_data: Dict[str, Any], api_key: str = None, model: str = None,
-    max_tokens: int = None,
+    force_data: Dict[str, Any], simulation: Dict[str, Any] = None,
+    api_key: str = None, model: str = None, max_tokens: int = None,
 ) -> str:
     _require(bool(force_data), "No fleet data was provided.")
     chat = get_chat(
@@ -183,7 +183,7 @@ def get_tac_calc_response(
         _token_budget(config.TAC_CALC_MAX_TOKENS, max_tokens),
         config.TAC_CALC_REASONING_EFFORT,
     )
-    messages = tactical_calculator.build_messages(force_data)
+    messages = tactical_calculator.build_messages(force_data, simulation)
     return _invoke_plain(chat, messages, "tac_calc")
 
 
