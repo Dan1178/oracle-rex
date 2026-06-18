@@ -2,17 +2,19 @@ import { useState } from 'react'
 
 import { TabNav, type TabDescriptor } from './components/TabNav/TabNav'
 import { BattleCalculator } from './features/battleCalculator/BattleCalculator'
+import { FleetManagerPanel } from './features/fleetManager/FleetManagerPanel'
 import { RulesPanel } from './features/rulesChat/RulesPanel'
 import { SettingsPanel } from './features/settings/SettingsPanel'
 import { StrategyPanel } from './features/strategicPlan/StrategyPanel'
 import { MovePanel } from './features/tacticalMove/MovePanel'
 import { useDemoConfig } from './hooks/useDemoConfig'
+import type { Game } from './types/game'
 import styles from './App.module.css'
 
-// The SPA shell: the app header, the 6-tab navigation, and the active tab's
-// panel. Settings is live (Phase 2); the remaining feature tabs land in later
-// Milestone 5 phases and show a short placeholder until then. The legacy
-// plain-JS app stays reachable at /legacy until the Phase 8 cutover.
+// The SPA shell: the app header, the 6-tab navigation, and the feature panels.
+// All six panels stay mounted; the inactive ones are hidden (display:none via
+// the `hidden` attribute) rather than unmounted, so each tab keeps its state
+// (board, inputs, results) when you switch away and back.
 
 type TabId = 'settings' | 'rules' | 'strategy' | 'fleet' | 'move' | 'tactical'
 
@@ -26,17 +28,20 @@ const TABS: ReadonlyArray<TabDescriptor<TabId>> = [
   { id: 'tactical', label: 'Tactical Calculator' },
 ]
 
-const COMING_SOON: Record<'fleet', string> = {
-  fleet: 'The Fleet Manager arrives in Phase 7.',
-}
-
 function App() {
   const [activeTab, setActiveTab] = useState<TabId>('settings')
+  // A board exported from the Fleet Manager, handed to the Move Suggester.
+  const [moveSeed, setMoveSeed] = useState<Game>()
 
   // Bootstrap the demo catalog + live-demo status on mount so each feature tab
   // can render its one-click sample without a per-tab fetch. Failures are
   // non-fatal here; the demo buttons simply stay unavailable.
   useDemoConfig()
+
+  const exportToMove = (game: Game) => {
+    setMoveSeed(game)
+    setActiveTab('move')
+  }
 
   return (
     <div className={styles.container}>
@@ -49,13 +54,25 @@ function App() {
 
       <TabNav tabs={TABS} activeTab={activeTab} onSelect={setActiveTab} />
 
-      <main role="tabpanel">
-        {activeTab === 'settings' && <SettingsPanel />}
-        {activeTab === 'rules' && <RulesPanel />}
-        {activeTab === 'strategy' && <StrategyPanel />}
-        {activeTab === 'move' && <MovePanel />}
-        {activeTab === 'tactical' && <BattleCalculator />}
-        {activeTab === 'fleet' && <p className={styles.placeholder}>{COMING_SOON[activeTab]}</p>}
+      <main>
+        <div role="tabpanel" hidden={activeTab !== 'settings'}>
+          <SettingsPanel />
+        </div>
+        <div role="tabpanel" hidden={activeTab !== 'rules'}>
+          <RulesPanel />
+        </div>
+        <div role="tabpanel" hidden={activeTab !== 'strategy'}>
+          <StrategyPanel />
+        </div>
+        <div role="tabpanel" hidden={activeTab !== 'fleet'}>
+          <FleetManagerPanel onExport={exportToMove} />
+        </div>
+        <div role="tabpanel" hidden={activeTab !== 'move'}>
+          <MovePanel seed={moveSeed} />
+        </div>
+        <div role="tabpanel" hidden={activeTab !== 'tactical'}>
+          <BattleCalculator />
+        </div>
       </main>
     </div>
   )

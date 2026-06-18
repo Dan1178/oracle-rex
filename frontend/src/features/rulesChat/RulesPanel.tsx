@@ -14,7 +14,7 @@ import styles from './RulesPanel.module.css'
 // static/js/rules.js (askRules + renderRulesChips + askDemoRules): each demo
 // chip is a saved question whose cached answer runs through the same poll UI.
 
-const LOADING_MESSAGE = 'Consulting rules advisor…'
+const LOADING_MESSAGE = 'Consulting rules advisor'
 
 export function RulesPanel() {
   const [question, setQuestion] = useState('')

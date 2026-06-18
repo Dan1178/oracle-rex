@@ -31,21 +31,48 @@ function tileIdFor(game: Game | undefined, position: string): string | null {
 
 export interface BoardProps {
   game?: Game
+  /** When provided, each hex becomes clickable (used by the Fleet Manager). */
+  onHexClick?: (position: string) => void
+  /** The hex to render in the enlarged "active" state (the open popover). */
+  activePosition?: string | null
 }
 
-export function Board({ game }: BoardProps) {
+export function Board({ game, onHexClick, activePosition }: BoardProps) {
+  const interactive = Boolean(onHexClick)
   return (
     <div className={styles.boardPreview}>
       <div className={styles.gridWrapper}>
         <div className={styles.hexGrid}>
           {BOARD_POSITIONS.map(({ position, ring }) => {
             const tileId = tileIdFor(game, position)
-            const className = [styles.hex, ringClass[ring]].filter(Boolean).join(' ')
+            const isActive = activePosition === position
+            const className = [
+              styles.hex,
+              ringClass[ring],
+              isActive && styles.active,
+              interactive && styles.clickable,
+            ]
+              .filter(Boolean)
+              .join(' ')
             return (
               <div
                 key={position}
                 className={className}
                 data-position={position}
+                role={interactive ? 'button' : undefined}
+                tabIndex={interactive ? 0 : undefined}
+                aria-pressed={interactive ? isActive : undefined}
+                onClick={onHexClick ? () => onHexClick(position) : undefined}
+                onKeyDown={
+                  onHexClick
+                    ? (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault()
+                          onHexClick(position)
+                        }
+                      }
+                    : undefined
+                }
                 style={
                   tileId
                     ? {

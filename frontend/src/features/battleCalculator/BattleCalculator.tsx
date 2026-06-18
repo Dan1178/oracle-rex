@@ -26,7 +26,7 @@ import styles from './BattleCalculator.module.css'
 // via useAiJob('tactical'); the "Load Example Battle" demo applies a saved set
 // of counts and runs the pre-completed demo job through the same UI.
 
-const LOADING_MESSAGE = 'Calculating combat odds…'
+const LOADING_MESSAGE = 'Calculating combat odds'
 
 export function BattleCalculator() {
   const [counts, setCounts] = useState(emptyCounts)

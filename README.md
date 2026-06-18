@@ -217,25 +217,32 @@ These checks are also run as part of the test suite
 (Use `core.tests`, not `core` — the hyphenated project directory breaks bare
 test discovery.)
 
-## Frontend (React/TypeScript) — Milestone 5
+## Frontend (React/TypeScript)
 
-The frontend is being migrated from the legacy plain-JS / Django-template UI to a
-React + TypeScript single-page app built with **Vite** and integrated into
-Django via **django-vite**. The app lives in `frontend/` and is served by the
-same single web service (no separate host, no CORS) — Vite builds hashed bundles
-into `frontend/dist`, `collectstatic` picks them up, and WhiteNoise serves them.
-
-During the migration the React SPA is mounted at a **temporary `/app` route**;
-the legacy UI stays at `/` until the final cutover.
+The frontend is a React + TypeScript single-page app built with **Vite** and
+integrated into Django via **django-vite**. It lives in `frontend/` and is served
+by the same single web service (no separate host, no CORS) — Vite builds hashed
+bundles into `frontend/dist`, `collectstatic` picks them up, and WhiteNoise serves
+them. It is served at `/`; the legacy plain-JS / Django-template UI was removed at
+the Milestone 5 cutover.
 
 **Prerequisites:** Node 22+ and npm 10+.
 
     cd frontend
     npm install
 
-**Dev loop (HMR):** run Django and the Vite dev server side by side, and set
-`DJANGO_VITE_DEV_MODE=1` so the SPA loads its modules from Vite (with hot reload)
-while the API stays same-origin on Django:
+**Dev loop (HMR) — one command (Windows/PowerShell):** from the repo root,
+
+    .\dev.ps1
+
+starts the Django API and the Vite dev server together (both logging to the one
+terminal), sets `DJANGO_VITE_DEV_MODE=1` + `DJANGO_DEBUG=1` for you, and uses the
+project `.venv`'s Python. Press **Ctrl+C** once to stop both. Then open
+<http://localhost:8000/>.
+
+**Or run the two processes manually** (e.g. under bash, or to see them
+separately). Set `DJANGO_VITE_DEV_MODE=1` so the SPA loads its modules from Vite
+(with hot reload) while the API stays same-origin on Django:
 
     # terminal 1 — Django
     # PowerShell
@@ -247,7 +254,7 @@ while the API stays same-origin on Django:
     cd frontend
     npm run dev
 
-Then open <http://localhost:8000/app/> (Django serves the shell; Vite serves the
+Then open <http://localhost:8000/> (Django serves the shell; Vite serves the
 React code with HMR). Alternatively, visit the Vite server directly at
 <http://localhost:5173/> — it proxies `/api` to Django on :8000.
 

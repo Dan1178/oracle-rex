@@ -56,6 +56,17 @@
   z-index: 1000 !important;
 }
 
+/* Fleet Manager: clickable hexes + the enlarged active (open-popover) hex.
+   Ported from static/css/fleet_manager.css. */
+.clickable {
+  cursor: pointer;
+}
+
+.hex.active {
+  transform: scale(1.5);
+  z-index: 2000 !important;
+}
+
 .hex.mecatol {
   background: #aaa;
 }

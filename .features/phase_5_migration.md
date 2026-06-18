@@ -284,7 +284,7 @@ demo-loaded board capturing game_json + faction; `App.test.tsx` move tab mounts
 the panel; Strategy tests unchanged and still green). Live + demo via MSW; not yet
 against a real provider.
 
-### Phase 7 — Fleet Manager (most complex — reuses Board)
+### Phase 7 — Fleet Manager (most complex — reuses Board) ✅ **Complete**
 **Goal:** Port the interactive fleet/ground editor and game-state I/O.
 
 - Hex-click → fleet-management popover; ship counters mutating `system.fleet`,
@@ -295,8 +295,64 @@ against a real provider.
   clipboard).
 - **Verify:** counts persist per system/planet; export + save/load/copy round-trip.
 
-### Phase 8 — Cutover, cleanup, retire legacy
+**Done:** `features/fleetManager/fleetModel.ts` (unit catalogs FLEET_UNITS [7
+ships + infantry + mech, all → `fleet.ships`] / PLANET_UNITS [infantry/mech →
+`ground_forces.units`, pds/space_dock → `ground_forces.structures`], owner option
+lists + defaults, and pure immutable transforms `adjustShipCount` /
+`setFleetOwner` / `adjustGroundCount` / `setPlanetOwner` / `systemAt` — port of
+the legacy DOM-mutating `updateShipCount`/`updateUnitCount`/owner handlers, incl.
+the clamp-at-0-and-delete-key behavior; **no `mech`→`mechs` remap** here, unlike
+the Battle Calculator's force_data). `features/fleetManager/FleetPopover.tsx` +
+`.module.css` (port of `fleet_mgmt.html` — fleet section with owner select + 9
+counters, planets section with up-to-3 planet cards each with owner + 4 counters;
+rendered as a controlled `role="dialog"` panel for the active system).
+`FleetManagerPanel.tsx` + `.module.css` (port of `fleet.html` +
+`fleet_manager.js`): TTS input → `buildGameFromTts(_, 'fleet')` via TanStack
+`useMutation` → board in component state; click a **system** hex → popover
+(empty/Mecatol-blank slots are a no-op, matching the legacy `hasImage` guard);
+Save (Blob download), Load (file → `gameSchema.parse` → state, more robust than
+the legacy unvalidated parse), Copy (clipboard), and Export to Move Suggester.
+**Board** gained optional `onHexClick` + `activePosition` (clickable hexes +
+`.active` scale, ported from `fleet_manager.css`); **UnitCounter** `side` is now
+optional (Fleet uses untinted icons); **MovePanel** gained an optional `seed`
+prop (seeds its board from a Fleet export via an effect, since panels unmount on
+tab switch). Export wiring lives in `App.tsx`: a `moveSeed` state + `exportToMove`
+that seeds Move and **switches to the Move tab** (a small UX nicety beyond the
+legacy, which only populated the hidden board). COMING_SOON removed — all six
+tabs now live. Verified: lint + `tsc -b` clean, `npm run build` succeeds (CSS
+~16.8 → 19.9 kB), 70 tests pass (`fleetModel.test.ts` create/clamp/delete/route/
+owner/immutability; `FleetManagerPanel.test.tsx` build→hex-click→popover→ship
+edit + close, export-calls-onExport, planet PDS/infantry edits; `App.test.tsx`
+fleet tab mounts the panel). Save/Load/Copy use browser APIs
+(URL.createObjectURL / FileReader / clipboard) not exercised in jsdom — covered by
+the model + interaction tests, verified by reading. Only Phase 8 (cutover/retire
+legacy) remains.
+
+### Phase 8 — Cutover, cleanup, retire legacy ✅ **Complete** (2026-06-16, uncommitted)
 **Goal:** SPA becomes the only frontend; remove the plain-JS app.
+
+**Done:** The seven pre-cutover bug fixes below all landed, then the cutover:
+- **Routing:** `frontend_view` now renders `spa.html` (was `index.html`); `spa_view`
+  and the temporary `path('app/', …)` route were removed. The SPA is served at `/`;
+  `/app/` now 404s.
+- **Legacy removed:** deleted the 9 legacy templates (base/index/settings/rules/
+  strategy/move/fleet/fleet_mgmt/tactical — kept `spa.html`), `static/js/*.js`
+  (app/fleet_manager/rules/tactical_calculator), and `static/css/*.css`
+  (style/fleet_manager/tactical_calculator). Kept `static/fonts` + `static/images`
+  (the SPA references them via `/static/…`).
+- **Tests/docs:** rewrote `core/tests/test_frontend_spa.py` for the new routing
+  (root resolves to `frontend_view`, renders the shell, `/app/` 404s). README
+  Frontend section de-migrated (SPA at `/`, legacy removed); `dev.ps1`/`dev.sh`
+  open `/`. `render.yaml` buildCommand already builds the frontend before
+  collectstatic — no change needed.
+- **Verified:** Django suite **100 pass**; frontend lint/tsc/**71 tests**/build
+  green. Prod-mode local serve (DEBUG off, Vite dev-mode off) after
+  `collectstatic`: `/`→200 with `#root`, the hashed Vite JS/CSS bundles→200 (served
+  by WhiteNoise), `/api/demo/catalog/`→200, `/app/`→404.
+- **Remaining (needs the owner / a real deploy):** push to `main` + the actual
+  Render deploy, and a real BYOK round-trip against a live provider key (incl. the
+  Claude/Anthropic path) — never exercised against a real key. A visual pass on the
+  hosted app is the real confirmation for the CSS-level fixes (#1/#2/#6).
 
 - Point `frontend_view` (route `/`) at the SPA build; remove the temporary route.
 - Delete legacy templates (`base/index/settings/rules/strategy/move/fleet/
@@ -306,6 +362,82 @@ against a real provider.
   build command if needed (`npm ci && npm run build` before `collectstatic`).
 - Final Render deploy verification (demo + a live BYOK round-trip).
 - **Verify:** all M5 acceptance criteria (below) pass; legacy gone.
+
+**Pre-cutover bug fixes (found in review 2026-06-16 — ✅ all resolved 2026-06-16).**
+Triaged with root cause + fix location. (1)/(2)/(3)/(4)/(6) are frontend (React)
+regressions/ports; (5)/(7) touch the backend. Resolutions:
+- **(1) Fixed** — `index.css` now sets the OCR-A body font on `<body>` (inherited
+  by `<li>` etc.) and overrides only headings/buttons + form controls, replacing
+  the per-tag enumeration that missed `<li>`.
+- **(2) Fixed** — `LoadingState.module.css` keyframes hold `'...'` from 75% (no
+  100% keyframe) so the third dot shows; the four `LOADING_MESSAGE` constants
+  dropped their trailing static `…`.
+- **(3) Fixed** — new `hooks/useResultScroll.ts`; Strategy/Move scroll the result
+  region into view on Get Strategy / Suggest Move (jsdom `scrollIntoView` stubbed
+  in `test/setup.ts`).
+- **(4) Fixed** — `App.tsx` keeps all six panels mounted and toggles the inactive
+  ones with the `hidden` attribute, so each tab's state survives a switch (new
+  App test proves it).
+- **(5) Mitigated (unverified, no real key)** — raised `TAC_CALC_MAX_TOKENS`
+  4000→8000 in `config.py`; the empty-output "couldn't understand the response"
+  was almost certainly the lighter default model (gpt-5.4-mini) at "medium"
+  reasoning effort spending the whole 4000-token budget on hidden reasoning. Needs
+  a real-key repro to confirm.
+- **(6) Largely addressed via (1)** — the modes-list `<li>` and body text now
+  render in OCR-A; the rest of `SettingsPanel` is a complete CSS-module port.
+  Best confirmed with a visual pass on the deployed app.
+- **(7) Done** — `langchain_anthropic` (already pinned) installed into the local
+  `.venv`; the Render build installs it via `requirements.txt`. Real end-to-end
+  Claude round-trip still pending a live key.
+
+1. **AI response randomly drops the main font.** `index.css` applies the body
+   font `'OCR-A'` to an *enumerated* tag list (`input, textarea, select, label,
+   p, span`) that **omits `li`** (and `a`, `div`). `AdvisorCard` renders its
+   bulleted sections (assumptions / rule basis / priorities / tech path / risks)
+   as `<ul><li>`, and neither `AdvisorCard.module.css .root` nor `.sectionList`
+   sets a font — so list items inherit `body`'s `Arial` while sibling prose
+   (`<p>`) is OCR-A, making cards look half-rendered. **Fix:** stop enumerating
+   leaf tags — set the inherited default (`body { font-family: 'OCR-A', monospace }`)
+   and override only headings/buttons. File: `frontend/src/index.css`.
+2. **Animated loading ellipsis shows 2 dots, not 3.** `LoadingState.module.css`
+   `@keyframes dots` puts `content:'...'` at the `100%` step with
+   `steps(1, end)`; the final frame coincides with the loop restart, so `'...'`
+   never displays and it tops out at `'..'`. **Fix:** hold the 3-dot state before
+   100% (e.g. `80%,100% { content:'...' }`). Also note the per-feature loading
+   copy already ends with a static `…` glyph ("Analyzing board state…"), so the
+   animated dots double up — drop the trailing `…` from the messages or the
+   animated span. Files: `LoadingState.module.css` (+ the feature `LOADING_MESSAGE`
+   constants).
+3. **"Get Strategy" / "Suggest Move" don't scroll to the result.** Legacy
+   `suggestStrategy` called `answerBox.scrollIntoView({behavior:'smooth'})` on
+   submit; the React port dropped it. **Fix:** add a ref to the results region in
+   `StrategyPanel`/`MovePanel` (or in `useBoardSuggester.suggest`) and
+   `scrollIntoView` (and/or focus) when a job starts.
+4. **Switching tabs destroys the previous tab's state (Move excepted).**
+   `App.tsx` renders panels as `{activeTab === x && <Panel/>}`, so each inactive
+   tab unmounts and loses board/counts/inputs/results. Move only appears to
+   survive because the Fleet→Move `seed` re-seeds its board on remount. **Fix:**
+   keep all panels mounted and toggle visibility (CSS `display:none`) — or lift
+   per-feature state up — so state persists across tab switches. File: `App.tsx`
+   (and verify no double-fetch fallout; per-panel `useAiJob` stays idle).
+5. **Tactical Calculator couldn't parse a gpt-5.4-mini response.** tac_calc
+   returns plain-text `calc_results` (no structured schema). Needs the actual
+   failing output/error captured first (job row `result`/`error`, or server log)
+   before fixing — likely a model-specific formatting/empty-output case in the
+   backend tac_calc path (`core/service/ai/` + the tac_calc prompt) rather than
+   the React render. **Action:** reproduce with gpt-5.4-mini, capture the raw
+   response, then harden parsing/prompt. Backend (M1 AI service), contract-safe.
+6. **Settings page lost a lot of styling.** `SettingsPanel.module.css` is an
+   incomplete port of `templates/settings.html` + the settings rules in
+   `static/css/style.css`. **Fix:** diff the legacy settings markup/CSS and port
+   the missing rules. File: `frontend/src/features/settings/SettingsPanel.module.css`.
+7. **Claude models need `langchain_anthropic` installed.** Already pinned in
+   `requirements.txt` (`langchain_anthropic==0.3.13`) and installed into the local
+   `.venv` on 2026-06-16 (`ChatAnthropic` imports OK; pulled in
+   `typing_extensions` 4.15.0). **Remaining for Phase 8:** confirm the Render
+   build installs it (the buildCommand runs `pip install -r requirements.txt`, so
+   deploy is covered) and run a real end-to-end Claude BYOK round-trip — the
+   private-live/BYOK Anthropic path has never been exercised against a real key.
 
 ---
 

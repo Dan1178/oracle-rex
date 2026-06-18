@@ -6,6 +6,7 @@ import { FactionSelect } from '../../components/FactionSelect/FactionSelect'
 import { JobResultView } from '../../components/JobResultView/JobResultView'
 import { LoadingState } from '../../components/LoadingState/LoadingState'
 import { useDemoConfig } from '../../hooks/useDemoConfig'
+import { useResultScroll } from '../../hooks/useResultScroll'
 import { useBoardSuggester } from '../boardSuggester/useBoardSuggester'
 import styles from './StrategyPanel.module.css'
 
@@ -14,13 +15,19 @@ import styles from './StrategyPanel.module.css'
 // the shared board/faction/job flow lives in useBoardSuggester, this component
 // adds the TTS-input UI and strategy-specific copy.
 
-const LOADING_MESSAGE = 'Analyzing board state…'
+const LOADING_MESSAGE = 'Analyzing board state'
 
 export function StrategyPanel() {
   const [ttsInput, setTtsInput] = useState('')
   const { catalog } = useDemoConfig()
+  const { ref: resultsRef, scrollToResult } = useResultScroll()
   const board = useBoardSuggester('strategy')
   const { game, faction, setFaction, credentialError, buildError, busy, job } = board
+
+  const handleSuggest = () => {
+    board.suggest()
+    scrollToResult()
+  }
 
   const demoScenario = catalog?.scenarios.strategy
   const demoReady = Boolean(demoScenario?.key && demoScenario.tts_string)
@@ -85,7 +92,7 @@ export function StrategyPanel() {
       <button
         type="button"
         className={styles.getStrategy}
-        onClick={board.suggest}
+        onClick={handleSuggest}
         disabled={!game || !faction || busy}
       >
         Get Strategy
@@ -93,7 +100,7 @@ export function StrategyPanel() {
 
       <Board game={game} />
 
-      <div className={styles.results}>
+      <div className={styles.results} ref={resultsRef}>
         {credentialError ? (
           <ErrorState message={credentialError} onRetry={board.suggest} />
         ) : job.isLoading ? (

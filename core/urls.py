@@ -16,7 +16,7 @@ from .views import (
 
     # Front end
 
-    frontend_view, spa_view,
+    frontend_view,
 )
 
 urlpatterns = [
@@ -44,7 +44,7 @@ urlpatterns = [
     path('demo/run/', demo_job_create, name='demo_job_create'),
 
     ### FRONTEND
-    # Temporary React SPA mount during Milestone 5; legacy stays at '/'.
-    path('app/', spa_view, name='spa'),
+    # The React/TS single-page app (served at '/'). Any non-API path renders the
+    # SPA shell; client-side state drives the tabs.
     path('', frontend_view, name='frontend'),
 ]

@@ -1,18 +1,25 @@
-/* Ported from templates/settings.html inline styles + the `.demo-box` /
-   `.modes-list` rules in static/css/style.css. Inline widths and colors from
-   the legacy markup are normalized into reusable classes here. */
+/* Settings layout. Ports the legacy demo-box / modes-list, then adds a more
+   designed structure on top (M5 keeps behavior; this is a light visual pass —
+   titled cards, focus states, pill-style model options — short of the full M6
+   theme). */
 
 .settings {
-  max-width: 900px;
+  max-width: 880px;
 }
 
+.pageTitle {
+  margin: 0 0 16px;
+  font-size: 26px;
+}
+
+/* Intro callout (the "three modes" blurb). */
 .demoBox {
   background: #f0f6ff;
   border: 1px solid #b8d4ff;
   border-left: 4px solid #007bff;
-  border-radius: 5px;
-  padding: 12px 16px;
-  margin: 0 0 20px;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 0 0 24px;
 }
 
 .demoBox h4 {
@@ -24,16 +31,35 @@
   margin: 0;
   padding-left: 20px;
   color: #444;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .modesList li {
   margin-bottom: 6px;
 }
 
+/* Grouping cards: Credentials, Model Selection. */
+.card {
+  background: #fff;
+  border: 1px solid #e3e8ee;
+  border-radius: 10px;
+  padding: 20px 24px 24px;
+  margin: 0 0 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.cardTitle {
+  margin: 0 0 14px;
+  padding-bottom: 10px;
+  font-size: 18px;
+  color: #0056b3;
+  border-bottom: 2px solid #eef3fb;
+}
+
 .info {
-  color: green;
-  margin: 12px 0;
+  color: #1a7f37;
+  margin: 0 0 16px;
+  line-height: 1.5;
 }
 
 .field {
@@ -42,60 +68,101 @@
 
 .field label {
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  font-weight: 700;
+  color: #333;
 }
 
 .field input {
   width: 100%;
-  max-width: 700px;
-  padding: 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  padding: 9px 12px;
+  border: 1px solid #ccd2d8;
+  border-radius: 6px;
   box-sizing: border-box;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
 }
 
 .hint {
   display: block;
-  margin-top: 4px;
-  color: #555;
+  margin-top: 6px;
+  color: #667085;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* The three BYOK keys, set off from the access code above by a hairline. */
+.keyFields {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #eef1f4;
 }
 
 .warning {
   color: #b8860b;
-  margin: 8px 0 20px;
-}
-
-.modelHeader {
-  margin-top: 24px;
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 .modelWarn {
-  color: #b8860b;
+  color: #8a6d1f;
   line-height: 1.5;
+  margin: 0 0 18px;
 }
 
 .modelGroup {
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  margin: 0 0 16px;
-  padding: 8px 16px 16px;
+  border: 1px solid #e3e8ee;
+  border-radius: 8px;
+  margin: 0 0 12px;
+  padding: 10px 18px 16px;
+  background: #fafbfc;
 }
 
 .modelGroup legend {
   font-family: 'Orbitron', sans-serif;
   font-weight: 600;
-  padding: 0 6px;
+  font-size: 14px;
+  color: #0056b3;
+  padding: 0 8px;
 }
 
 .modelOptions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 20px;
+  gap: 8px 10px;
 }
 
+/* Each model option is a pill that highlights when its radio is selected. */
 .radioLabel {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   cursor: pointer;
+  padding: 5px 13px;
+  border: 1px solid #d4dae0;
+  border-radius: 999px;
+  background: #fff;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease;
+}
+
+.radioLabel:hover {
+  border-color: #9bb8e0;
+}
+
+.radioLabel:has(input:checked) {
+  background: #e7f1ff;
+  border-color: #007bff;
+  color: #0056b3;
+  font-weight: 700;
 }

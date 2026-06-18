@@ -24,14 +24,12 @@ logger = logging.getLogger("core.jobs")
 
 ###########         FRONTEND        ################################
 def frontend_view(request):
-    return render(request, 'index.html')
+    """Serve the React/TS single-page app (templates/spa.html).
 
-
-def spa_view(request):
-    """Temporary mount point for the React/TS SPA during the Milestone 5
-    migration. The legacy plain-JS frontend stays at ``/``; the SPA lives at
-    ``/app`` until the Phase 8 cutover, when it takes over ``/`` and this route
-    is removed."""
+    django-vite emits the hashed bundle tags from the Vite build manifest in
+    production, or points at the Vite dev server (HMR) when DJANGO_VITE_DEV_MODE
+    is set. As of the Milestone 5 cutover this is the only frontend — the legacy
+    plain-JS templates were removed."""
     return render(request, 'spa.html')
 
 

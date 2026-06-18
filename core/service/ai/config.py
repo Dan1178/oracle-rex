@@ -63,7 +63,12 @@ def resolve_model(model) -> str:
 RULES_MAX_TOKENS = 4000
 STRATEGY_MAX_TOKENS = 12000
 MOVE_MAX_TOKENS = 12000
-TAC_CALC_MAX_TOKENS = 4000
+# tac_calc pairs a long combat-rules system prompt with "medium" reasoning effort,
+# so a lighter model (the default gpt-5.4-mini) could spend the whole 4000-token
+# budget on hidden reasoning and return empty visible output — which the service
+# layer surfaces as a "couldn't understand the response" MalformedResponseError.
+# Raised to 8000 to leave room for the fixed-format answer after the reasoning.
+TAC_CALC_MAX_TOKENS = 8000
 
 # --- Live-demo output caps (per feature) ----------------------------------
 

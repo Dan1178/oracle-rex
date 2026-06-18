@@ -38,16 +38,39 @@ describe('App shell (Phase 2)', () => {
     expect(screen.getByRole('radio', { name: /grok 4\.20 \(math\/logic\)/i })).toBeInTheDocument()
   })
 
-  it('switches tabs and shows a placeholder for unbuilt features', () => {
+  it('switches tabs, keeping inactive panels mounted but hidden', () => {
     renderApp()
     fireEvent.click(screen.getByRole('tab', { name: /fleet manager/i }))
-    expect(screen.getByText(/arrives in phase 7/i)).toBeInTheDocument()
-    // The Settings content is no longer mounted.
-    expect(screen.queryByText(/three ways to use oracle rex/i)).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /fleet manager/i, level: 2 })).toBeInTheDocument()
+    // The Settings content is still mounted (state preserved) but not visible.
+    expect(screen.getByText(/three ways to use oracle rex/i)).not.toBeVisible()
 
     // And back to Settings.
     fireEvent.click(screen.getByRole('tab', { name: /^settings$/i }))
-    expect(screen.getByText(/three ways to use oracle rex/i)).toBeInTheDocument()
+    expect(screen.getByText(/three ways to use oracle rex/i)).toBeVisible()
+  })
+
+  it('preserves a panel’s state across tab switches', () => {
+    renderApp()
+    // Type a question in the Rules tab.
+    fireEvent.click(screen.getByRole('tab', { name: /rules q&a/i }))
+    fireEvent.change(screen.getByLabelText('Rules question'), {
+      target: { value: 'Can I retreat?' },
+    })
+
+    // Switch away and back; the panel stayed mounted, so the text survives.
+    fireEvent.click(screen.getByRole('tab', { name: /^settings$/i }))
+    fireEvent.click(screen.getByRole('tab', { name: /rules q&a/i }))
+    expect(screen.getByLabelText('Rules question')).toHaveValue('Can I retreat?')
+  })
+
+  it('renders the Fleet Manager on the Fleet tab', () => {
+    renderApp()
+    fireEvent.click(screen.getByRole('tab', { name: /fleet manager/i }))
+    expect(screen.getByRole('heading', { name: /fleet manager/i, level: 2 })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /export to move suggester/i }),
+    ).toBeInTheDocument()
   })
 
   it('renders the Battle Calculator on the Tactical tab', () => {

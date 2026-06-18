@@ -42,8 +42,13 @@
   color-scheme: light;
 }
 
+/* OCR-A is the main body font, set on <body> so it's inherited by every element
+   — including <li>, <a>, <div>, etc. The old approach enumerated specific tags
+   (p, span, …) and missed <li>, so bulleted advisor-card sections fell back to
+   the default font. Headings/buttons opt into the display fonts below. */
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'OCR-A', monospace;
+  font-weight: 600;
   margin: 0;
   padding: 20px;
   background-color: black;
@@ -51,20 +56,20 @@ body {
 
 h2 {
   font-family: 'Orbitron-Bold', sans-serif;
+  font-weight: 700;
 }
 
 h3,
 h4,
 button {
   font-family: 'Orbitron', sans-serif;
+  font-weight: 400;
 }
 
+/* Form controls don't inherit font-family by default — opt them back in so they
+   render in OCR-A like the rest of the body text. */
 input,
 textarea,
-select,
-label,
-p,
-span {
-  font-family: 'OCR-A', sans-serif;
-  font-weight: 600;
+select {
+  font-family: inherit;
 }
