@@ -10,18 +10,24 @@ all of that with ``json.dumps(..., indent=2)`` inflates the two largest prompts
 (strategy, move) — the ``system.py`` TODO ("a different set of to_json methods
 for passing to the LLM") asks for exactly this.
 
-This module is that LLM serializer. It runs in three stacking steps:
+This module is that LLM serializer. It applies two stacking steps:
 
   1. **Prune** — drop redundant / default / null fields from a *copy* of the
      board, keeping everything strategically meaningful (tile_id, anomaly,
      wormhole, planet resources/influence/trait/tech_specialty/legendary, fleets,
      ground forces, adjacency, players).
   2. **Compact** — ``json.dumps`` with no indentation and tight separators.
-  3. **TOON** — an optional token-oriented encoding, selected by env var, gated
-     behind a live-key quality eval (see ``AI_BOARD_PAYLOAD_FORMAT``).
 
-``encode_board_payload`` is the single entry point both prompt builders call, so
-the JSON↔TOON choice is one switch (handy for the eval and for rollback).
+Pruning + compacting cuts the real 37-tile board payload ~62% (6629 → 2504
+o200k_base tokens). A third step — **TOON** encoding — was evaluated and
+**rejected**: on this *nested, non-uniform* board it measured ~9% LARGER than
+the pruned compact JSON (TOON's tabular win needs uniform arrays of flat objects;
+the board's per-tile nested ``system`` + variable ``planets`` force TOON's
+indented fallback, which costs more tokens than compact JSON's zero whitespace).
+The ``AI_BOARD_PAYLOAD_FORMAT`` switch is kept so the decision is explicit and
+reversible, but ``toon`` is a deliberate, documented dead end here.
+
+``encode_board_payload`` is the single entry point both prompt builders call.
 """
 
 from __future__ import annotations
@@ -31,9 +37,9 @@ import os
 from typing import Any, Dict
 
 # Which encoding the LLM board payload uses. ``json`` (pruned + compact) is the
-# safe default and the rollback target. ``toon`` is implemented behind a live-key
-# quality eval gate (a model may parse nested TOON less reliably than JSON on this
-# data) and is not enabled until that eval passes — see Milestone 6B step 3.
+# default and the only format that ships. ``toon`` was measured as a net loss on
+# this board (see module docstring); the switch is retained so the evaluation is
+# reproducible and the choice reversible, not because TOON is recommended.
 BOARD_PAYLOAD_FORMAT = os.environ.get("AI_BOARD_PAYLOAD_FORMAT", "json").lower()
 
 # Field values that carry no information when at their model default, so the
@@ -142,14 +148,16 @@ def _encode_compact_json(payload: Dict[str, Any]) -> str:
 
 
 def _encode_toon(payload: Dict[str, Any]) -> str:
-    # Step 3: replace this with a maintained TOON encoder (e.g. python-toon, or
-    # the official toon-format package when it ships) once the live-key quality
-    # eval confirms output holds on real boards. Until then the json path is the
-    # only supported format, so selecting toon fails loudly rather than silently
-    # shipping an unvetted payload.
+    # Intentionally not implemented. TOON was evaluated with python-toon and
+    # measured ~9% LARGER than the pruned compact JSON on a real board, because
+    # the board is nested + non-uniform and so defeats TOON's tabular advantage
+    # (see module docstring). Left as a loud failure rather than wiring an
+    # encoder that would regress the payload. To re-evaluate (e.g. against the
+    # official toon-format package, or a flattened board schema), install an
+    # encoder and call it here.
     raise NotImplementedError(
-        "TOON board payload is not enabled yet (pending the Milestone 6B live-key "
-        "quality eval). Set AI_BOARD_PAYLOAD_FORMAT=json."
+        "TOON board payload is not enabled: it measured larger than compact JSON "
+        "on this nested board. Use AI_BOARD_PAYLOAD_FORMAT=json (the default)."
     )
 
 
