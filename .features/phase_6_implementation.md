@@ -1,5 +1,12 @@
 # Milestone 6 — Performance Improvements (Implementation Plan)
 
+> **✅ COMPLETE — merged (PR #6) and deployed to Render, verified in production
+> 2026-06-18.** 6A (board tiles → WebP, ~85% smaller) and 6C (deterministic
+> battle simulator + keyless calculator + opt-in LLM explanation) shipped in
+> full. 6B shipped steps 1–2 (prune + compact, ~62% fewer tokens); step 3 (TOON)
+> was evaluated and **rejected** — it measured ~9% *larger* than the pruned
+> compact JSON on this nested board.
+>
 > Companion to `oracle_rex_upgrade_plan.md` → "Milestone 6 — Performance
 > Improvements". Breaks that milestone into three independently shippable
 > workstreams. **Planning only** — no code is written here.
