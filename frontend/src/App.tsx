@@ -52,9 +52,10 @@ function App() {
         <span className={styles.bracketBr} aria-hidden="true" />
         <h1 className={styles.title}>Oracle Rex: Twilight Imperium Companion</h1>
         <p className={styles.tagline}>
-          An AI strategy assistant for Twilight Imperium: it parses board states, renders
-          game maps, estimates combat odds, and generates faction-specific strategy. Every
-          feature has a one-click <strong>Demo</strong>, no API key needed.
+          An AI strategy assistant for Twilight Imperium: it parses board states,
+          renders game maps, estimates combat odds, and generates faction-specific
+          strategy. Every feature has a one-click <strong>Demo</strong>, no API key
+          needed.
         </p>
 
         <div className={styles.ctaBand}>
