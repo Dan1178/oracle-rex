@@ -27,7 +27,7 @@ describe('SettingsPanel', () => {
     // group too, so scope the query to the Strategy fieldset (a11y "group").
     const strategyGroup = screen.getByRole('group', { name: 'Strategy Suggester' })
     expect(
-      within(strategyGroup).getByRole('radio', { name: /Gemini 3\.5 Flash/ }),
+      within(strategyGroup).getByRole('radio', { name: /Gemini 3\.1 Flash-Lite/ }),
     ).toBeChecked()
   })
 

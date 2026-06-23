@@ -38,8 +38,8 @@ export interface FeatureModelGroup {
 // runs on the server-held key, so a user gets live AI with no key of their own.
 // Keep this value identical to GEMINI_MODELS in core/service/ai/config.py.
 const GEMINI: ModelOption = {
-  value: 'gemini-3.5-flash',
-  label: 'Gemini 3.5 Flash (free, no key)',
+  value: 'gemini-3.1-flash-lite',
+  label: 'Gemini 3.1 Flash-Lite',
   apiMake: 'google',
 }
 
@@ -67,7 +67,7 @@ export const FEATURE_MODEL_GROUPS: FeatureModelGroup[] = [
   {
     feature: 'rules',
     heading: 'Rules Q&A',
-    defaultValue: 'gemini-3.5-flash',
+    defaultValue: 'gemini-3.1-flash-lite',
     options: [
       ...FAST_OPTIONS,
       { value: 'gpt-5.4-mini', label: 'GPT-5.4 mini', apiMake: 'openai' },
@@ -77,19 +77,19 @@ export const FEATURE_MODEL_GROUPS: FeatureModelGroup[] = [
   {
     feature: 'strategy',
     heading: 'Strategy Suggester',
-    defaultValue: 'gemini-3.5-flash',
+    defaultValue: 'gemini-3.1-flash-lite',
     options: strategyMoveOptions,
   },
   {
     feature: 'move',
     heading: 'Move Suggester',
-    defaultValue: 'gemini-3.5-flash',
+    defaultValue: 'gemini-3.1-flash-lite',
     options: strategyMoveOptions,
   },
   {
     feature: 'tactical',
     heading: 'Tactical Calculator',
-    defaultValue: 'gemini-3.5-flash',
+    defaultValue: 'gemini-3.1-flash-lite',
     options: [
       ...FAST_OPTIONS,
       { value: 'gpt-5.4-mini', label: 'GPT-5.4 mini', apiMake: 'openai' },

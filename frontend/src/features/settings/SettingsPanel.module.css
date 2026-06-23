@@ -158,6 +158,11 @@
   border-color: var(--accent-cyan-dim);
 }
 
+/* The "rate-limited" note on the free Gemini option. */
+.freeNote {
+  color: var(--accent-amber);
+}
+
 .radioLabel:has(input:checked) {
   background: rgba(95, 208, 255, 0.14);
   border-color: var(--accent-cyan);

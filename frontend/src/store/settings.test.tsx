@@ -14,10 +14,10 @@ describe('settings store', () => {
   it('defaults each feature to its recommended model', () => {
     const { result } = renderHook(() => useSettings(), { wrapper })
     expect(result.current.models).toEqual({
-      rules: 'gemini-3.5-flash',
-      strategy: 'gemini-3.5-flash',
-      move: 'gemini-3.5-flash',
-      tactical: 'gemini-3.5-flash',
+      rules: 'gemini-3.1-flash-lite',
+      strategy: 'gemini-3.1-flash-lite',
+      move: 'gemini-3.1-flash-lite',
+      tactical: 'gemini-3.1-flash-lite',
     })
   })
 
@@ -25,7 +25,7 @@ describe('settings store', () => {
     const { result } = renderHook(() => useSettings(), { wrapper })
     // Strategy defaults to Gemini (server-keyed), so it is ready with no key.
     expect(result.current.getCredentials('strategy')).toEqual({
-      creds: { model: 'gemini-3.5-flash' },
+      creds: { model: 'gemini-3.1-flash-lite' },
     })
   })
 

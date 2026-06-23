@@ -68,6 +68,10 @@ def _classify_and_log(exc: Exception, feature: str) -> AIServiceError:
 
 def _invoke_plain(chat, messages, feature: str) -> str:
     """Invoke a chat model and return its text content, or raise AIServiceError."""
+    # One log line per real provider call, so the count per user action is
+    # visible (e.g. to diagnose quota burn: a structured feature that falls back
+    # logs both a 'structured' and a 'plain' call).
+    logger.info("Provider invoke: feature=%s mode=plain", feature)
     try:
         response = chat.invoke(messages)
     except Exception as exc:  # noqa: BLE001 - re-classified into AIServiceError
@@ -81,6 +85,7 @@ def _invoke_plain(chat, messages, feature: str) -> str:
 
 def _invoke_structured(chat, messages, schema, feature: str):
     """Run a structured-output request, falling back to plain text on failure."""
+    logger.info("Provider invoke: feature=%s mode=structured", feature)
     try:
         structured = chat.with_structured_output(schema)
         result = structured.invoke(messages)

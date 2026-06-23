@@ -43,7 +43,7 @@ ANTHROPIC_MODELS = ["claude-opus-4-8", "claude-sonnet-4-6", "claude-haiku-4-5"]
 # Confirm the exact id against Google AI Studio and keep it identical to the
 # matching option value in frontend/src/store/models.ts (a mismatch makes
 # resolve_model fall back to the OpenAI default, which has no server key).
-GEMINI_MODELS = ["gemini-3.5-flash"]
+GEMINI_MODELS = ["gemini-3.1-flash-lite"]
 
 # Reverse lookup: model id -> provider. Built once at import time.
 PROVIDER_FOR_MODEL = {

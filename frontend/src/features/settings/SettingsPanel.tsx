@@ -137,6 +137,12 @@ export function SettingsPanel() {
                       onChange={() => setModel(group.feature, option.value)}
                     />
                     {option.label}
+                    {option.apiMake === 'google' && (
+                      <>
+                        {' '}
+                        (free, <span className={styles.freeNote}>rate-limited</span>)
+                      </>
+                    )}
                   </label>
                 )
               })}
