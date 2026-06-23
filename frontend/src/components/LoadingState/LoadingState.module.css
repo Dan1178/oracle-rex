@@ -38,8 +38,43 @@
   }
 }
 
+/* Indeterminate sweep bar, ported from the M7 mockup: a cyan glow that slides
+   across the track while the job runs. */
+.barTrack {
+  height: 4px;
+  margin-top: 14px;
+  background: rgba(95, 208, 255, 0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  width: 40%;
+  background: var(--accent-cyan);
+  box-shadow: 0 0 10px var(--accent-cyan);
+  animation: sweep 1.8s ease-in-out infinite;
+}
+
+@keyframes sweep {
+  0% {
+    margin-left: -40%;
+  }
+  100% {
+    margin-left: 100%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .dots::after {
     animation: none;
+  }
+
+  /* No sliding: show a static, dimmed full bar so activity is still indicated. */
+  .barFill {
+    animation: none;
+    margin-left: 0;
+    width: 100%;
+    opacity: 0.5;
   }
 }
