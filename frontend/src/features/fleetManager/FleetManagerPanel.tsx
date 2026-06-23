@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 
 import { Board } from '../../components/Board/Board'
 import { ErrorState } from '../../components/ErrorState/ErrorState'
+import { ResetButton } from '../../components/ResetButton/ResetButton'
 import { ApiError, buildGameFromTts } from '../../api/oracleRexApi'
 import { gameSchema } from '../../schemas/game.zod'
 import type { Game } from '../../types/game'
@@ -155,6 +156,14 @@ export function FleetManagerPanel({ onExport }: FleetManagerPanelProps) {
     }
   }
 
+  const handleReset = () => {
+    setTtsInput('')
+    setGame(undefined)
+    setActiveDesignation(null)
+    setMessage(null)
+    buildMutation.reset()
+  }
+
   return (
     <section aria-labelledby="fleet-heading">
       <h2 id="fleet-heading">Fleet Manager</h2>
@@ -224,6 +233,7 @@ export function FleetManagerPanel({ onExport }: FleetManagerPanelProps) {
         >
           Copy to Clipboard
         </button>
+        <ResetButton onReset={handleReset} what="the board" />
       </div>
 
       {message && (

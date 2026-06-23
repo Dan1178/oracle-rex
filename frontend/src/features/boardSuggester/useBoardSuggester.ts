@@ -36,6 +36,8 @@ export interface UseBoardSuggester {
   suggest: () => void
   /** Re-run the last action (live submit or demo scenario). */
   retry: () => void
+  /** Clear the board, faction, result, and any errors back to the empty state. */
+  reset: () => void
 }
 
 export function useBoardSuggester(feature: BoardFeature): UseBoardSuggester {
@@ -109,6 +111,16 @@ export function useBoardSuggester(feature: BoardFeature): UseBoardSuggester {
     }
   }
 
+  const reset = () => {
+    setGame(undefined)
+    setFaction('')
+    setCredentialError(undefined)
+    setLastMode('live')
+    setLastDemoKey(undefined)
+    buildMutation.reset()
+    job.reset()
+  }
+
   return {
     game,
     setGame,
@@ -122,5 +134,6 @@ export function useBoardSuggester(feature: BoardFeature): UseBoardSuggester {
     loadDemo,
     suggest,
     retry,
+    reset,
   }
 }

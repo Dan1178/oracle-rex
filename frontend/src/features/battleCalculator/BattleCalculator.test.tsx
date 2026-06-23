@@ -115,6 +115,20 @@ describe('BattleCalculator', () => {
     })
   })
 
+  it('caps a limited unit (War Sun) at its per-player component limit', () => {
+    renderCalculator()
+    const friendlyFleet = screen.getByRole('group', { name: 'Friendly Fleet' })
+    const incWarSun = within(friendlyFleet).getByRole('button', {
+      name: /increase war sun/i,
+    })
+    // War Sun is capped at 2: after two clicks the increase control disables and
+    // the count cannot go past the limit.
+    fireEvent.click(incWarSun)
+    fireEvent.click(incWarSun)
+    expect(incWarSun).toBeDisabled()
+    expect(within(friendlyFleet).getByLabelText('War Sun count')).toHaveTextContent('2')
+  })
+
   it('does not call the AI job when the explanation box is unchecked', async () => {
     let jobCalled = false
     server.use(

@@ -9,6 +9,7 @@ import {
 import { FactionSelect } from '../../components/FactionSelect/FactionSelect'
 import { JobResultView } from '../../components/JobResultView/JobResultView'
 import { LoadingState } from '../../components/LoadingState/LoadingState'
+import { ResetButton } from '../../components/ResetButton/ResetButton'
 import { useDemoConfig } from '../../hooks/useDemoConfig'
 import { useResultScroll } from '../../hooks/useResultScroll'
 import type { Game } from '../../types/game'
@@ -39,6 +40,10 @@ export function MovePanel({ seed }: MovePanelProps) {
   const handleSuggest = () => {
     board.suggest()
     scrollToResult()
+  }
+
+  const handleReset = () => {
+    board.reset()
   }
 
   // Seed the board from a Fleet Manager export. Panels unmount on tab switch, so
@@ -93,6 +98,7 @@ export function MovePanel({ seed }: MovePanelProps) {
       >
         Suggest Move
       </button>
+      <ResetButton onReset={handleReset} what="this tab" />
 
       <Board game={game} />
 

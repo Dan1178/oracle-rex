@@ -19,24 +19,33 @@ export interface UnitDef {
    * (preserved from the legacy getForceCounts mapping).
    */
   payloadKey: string
+  /**
+   * Per-player component limit (TI4 PoK reinforcements): the increment control
+   * disables at this count and the count is clamped to it. Omitted for the
+   * token-extendable units (fighters, infantry), which the calculator treats as
+   * uncapped.
+   */
+  max?: number
 }
 
-const ship = (unit: string, label: string, file: string): UnitDef => ({
+const ship = (unit: string, label: string, file: string, max?: number): UnitDef => ({
   unit,
   label,
   icon: `/static/images/ships/${file}`,
   payloadKey: unit,
+  max,
 })
 
-// Both fleets (friendly + enemy) share this ship list.
+// Both fleets (friendly + enemy) share this ship list. Caps are per player, so
+// they apply to each side independently; fighters are uncapped (token-extendable).
 export const FLEET_UNITS: UnitDef[] = [
   ship('fighter', 'Fighter', 'fighter_icon.png'),
-  ship('destroyer', 'Destroyer', 'destroyer_icon.png'),
-  ship('cruiser', 'Cruiser', 'cruiser_icon.png'),
-  ship('carrier', 'Carrier', 'carrier_icon.png'),
-  ship('dreadnought', 'Dreadnought', 'dread_icon.png'),
-  ship('war_sun', 'War Sun', 'war_sun_icon.png'),
-  ship('flagship', 'Flagship', 'flagship_icon.png'),
+  ship('destroyer', 'Destroyer', 'destroyer_icon.png', 8),
+  ship('cruiser', 'Cruiser', 'cruiser_icon.png', 8),
+  ship('carrier', 'Carrier', 'carrier_icon.png', 4),
+  ship('dreadnought', 'Dreadnought', 'dread_icon.png', 5),
+  ship('war_sun', 'War Sun', 'war_sun_icon.png', 2),
+  ship('flagship', 'Flagship', 'flagship_icon.png', 1),
 ]
 
 export const FRIENDLY_GROUND_UNITS: UnitDef[] = [
@@ -51,6 +60,7 @@ export const FRIENDLY_GROUND_UNITS: UnitDef[] = [
     label: 'Mech',
     icon: '/static/images/ground/mech_icon.png',
     payloadKey: 'mechs',
+    max: 4,
   },
 ]
 
@@ -62,12 +72,14 @@ export const ENEMY_GROUND_UNITS: UnitDef[] = [
     label: 'PDS',
     icon: '/static/images/structures/pds_icon.png',
     payloadKey: 'pds',
+    max: 6,
   },
   {
     unit: 'space_dock',
     label: 'Space Dock',
     icon: '/static/images/structures/space_dock_icon.png',
     payloadKey: 'space_dock',
+    max: 3,
   },
 ]
 

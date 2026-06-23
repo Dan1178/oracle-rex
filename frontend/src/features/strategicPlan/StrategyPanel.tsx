@@ -9,6 +9,7 @@ import {
 import { FactionSelect } from '../../components/FactionSelect/FactionSelect'
 import { JobResultView } from '../../components/JobResultView/JobResultView'
 import { LoadingState } from '../../components/LoadingState/LoadingState'
+import { ResetButton } from '../../components/ResetButton/ResetButton'
 import { useDemoConfig } from '../../hooks/useDemoConfig'
 import { useResultScroll } from '../../hooks/useResultScroll'
 import { useBoardSuggester } from '../boardSuggester/useBoardSuggester'
@@ -31,6 +32,11 @@ export function StrategyPanel() {
   const handleSuggest = () => {
     board.suggest()
     scrollToResult()
+  }
+
+  const handleReset = () => {
+    board.reset()
+    setTtsInput('')
   }
 
   const demoScenario = catalog?.scenarios.strategy
@@ -112,6 +118,7 @@ export function StrategyPanel() {
       >
         Get Strategy
       </button>
+      <ResetButton onReset={handleReset} what="this tab" />
 
       <Board game={game} />
 

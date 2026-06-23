@@ -7,6 +7,7 @@ import {
 } from '../../components/ErrorState/ErrorState'
 import { JobResultView } from '../../components/JobResultView/JobResultView'
 import { LoadingState } from '../../components/LoadingState/LoadingState'
+import { ResetButton } from '../../components/ResetButton/ResetButton'
 import { useAiJob } from '../../hooks/useAiJob'
 import { useDemoConfig } from '../../hooks/useDemoConfig'
 import { useSettings } from '../../store/settingsContext'
@@ -62,6 +63,14 @@ export function RulesPanel() {
     }
   }
 
+  const handleReset = () => {
+    setQuestion('')
+    setCredentialError(undefined)
+    setLastMode('live')
+    setLastChipKey(undefined)
+    job.reset()
+  }
+
   return (
     <section aria-labelledby="rules-heading">
       <h2 id="rules-heading">Rules Q&amp;A</h2>
@@ -104,6 +113,7 @@ export function RulesPanel() {
       >
         Ask Oracle Rex
       </button>
+      <ResetButton onReset={handleReset} what="this tab" />
 
       <div className={styles.results}>
         {credentialError ? (

@@ -8,6 +8,7 @@ import {
 } from '../../components/ErrorState/ErrorState'
 import { JobResultView } from '../../components/JobResultView/JobResultView'
 import { LoadingState } from '../../components/LoadingState/LoadingState'
+import { ResetButton } from '../../components/ResetButton/ResetButton'
 import { UnitCounter } from '../../components/UnitCounter/UnitCounter'
 import { ApiError, simulateBattle } from '../../api/oracleRexApi'
 import { useAiJob } from '../../hooks/useAiJob'
@@ -61,7 +62,11 @@ export function BattleCalculator() {
         ? 'The battle could not be simulated.'
         : undefined
 
-  const increment = (id: string) => setCounts((c) => ({ ...c, [id]: (c[id] ?? 0) + 1 }))
+  const increment = (id: string, max?: number) =>
+    setCounts((c) => {
+      const next = (c[id] ?? 0) + 1
+      return { ...c, [id]: max !== undefined ? Math.min(max, next) : next }
+    })
   const decrement = (id: string) =>
     setCounts((c) => ({ ...c, [id]: Math.max(0, (c[id] ?? 0) - 1) }))
 
@@ -82,6 +87,14 @@ export function BattleCalculator() {
 
   const handleCalculate = () => {
     void runCalculation(buildForceData(counts))
+  }
+
+  const handleReset = () => {
+    setCounts(emptyCounts())
+    setExplain(false)
+    setCredentialError(undefined)
+    sim.reset()
+    job.reset()
   }
 
   const handleDemo = () => {
@@ -107,7 +120,8 @@ export function BattleCalculator() {
               icon={unit.icon}
               side={side}
               count={counts[id] ?? 0}
-              onIncrement={() => increment(id)}
+              max={unit.max}
+              onIncrement={() => increment(id, unit.max)}
               onDecrement={() => decrement(id)}
             />
           )
@@ -178,6 +192,7 @@ export function BattleCalculator() {
       >
         Calculate
       </button>
+      <ResetButton onReset={handleReset} what="the calculator" />
 
       <div className={styles.results}>
         {sim.isPending ? (

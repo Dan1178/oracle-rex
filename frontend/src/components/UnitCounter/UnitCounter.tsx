@@ -13,6 +13,8 @@ export interface UnitCounterProps {
   /** Tints the icon blue (friendly) or red (enemy); omit for no tint. */
   side?: Side
   count: number
+  /** Per-player component limit; the increase control disables at this count. */
+  max?: number
   onIncrement: () => void
   onDecrement: () => void
 }
@@ -28,9 +30,11 @@ export function UnitCounter({
   icon,
   side,
   count,
+  max,
   onIncrement,
   onDecrement,
 }: UnitCounterProps) {
+  const atMax = max !== undefined && count >= max
   return (
     <div className={styles.root} role="group" aria-label={label}>
       <span className={styles.icon} title={label}>
@@ -42,6 +46,7 @@ export function UnitCounter({
           className={styles.arrow}
           aria-label={`Increase ${label}`}
           onClick={onIncrement}
+          disabled={atMax}
         >
           ▲
         </button>
