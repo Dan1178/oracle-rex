@@ -17,3 +17,6 @@ env/
 .DS_Store
 .idea/
 .vscode/
+
+# Stray root npm lockfile (the real one lives in frontend/)
+/package-lock.json
