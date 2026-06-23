@@ -38,9 +38,9 @@
 }
 
 .arrow {
-  background: #f0f0f0;
-  color: #333;
-  border: 1px solid #bbb;
+  background: rgba(95, 208, 255, 0.08);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(95, 208, 255, 0.3);
   border-radius: 3px;
   padding: 0 4px;
   font-size: 10px;
@@ -48,7 +48,7 @@
 }
 
 .arrow:hover:not(:disabled) {
-  background: #e0e0e0;
+  background: rgba(95, 208, 255, 0.2);
 }
 
 .arrow:disabled {
@@ -61,6 +61,7 @@
   height: 24px;
   line-height: 24px;
   text-align: center;
-  border: 1px solid #333;
+  border: 1px solid rgba(95, 208, 255, 0.3);
   border-radius: 4px;
+  color: var(--phosphor);
 }

@@ -1,12 +1,10 @@
 import { AdvisorCard } from '../AdvisorCard/AdvisorCard'
-import cardStyles from '../AdvisorCard/AdvisorCard.module.css'
 import {
   moveCard,
   parseStructured,
   rulesCard,
   strategyCard,
 } from '../AdvisorCard/advisorSections'
-import { DemoLabel } from '../DemoLabel/DemoLabel'
 import type { FeatureType, JobResult } from '../../types/ai'
 
 // The shared result renderer: structured payloads (rules / strategy / move)
@@ -51,10 +49,12 @@ export function JobResultView({ feature, result }: JobResultViewProps) {
   }
 
   // Text fallback (tac_calc, or a response missing valid structured data).
+  const statusLabel = feature === 'tac_calc' ? 'COMBAT ODDS' : 'RESPONSE'
   return (
-    <div className={cardStyles.root}>
-      <p className={cardStyles.textResult}>{fallbackText(feature, result)}</p>
-      {demoLabel && <DemoLabel label={demoLabel} />}
-    </div>
+    <AdvisorCard
+      text={fallbackText(feature, result)}
+      statusLabel={statusLabel}
+      demoLabel={demoLabel}
+    />
   )
 }

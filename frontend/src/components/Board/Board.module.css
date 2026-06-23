@@ -47,7 +47,7 @@
   position: absolute;
   width: var(--hex-grid-width);
   height: var(--hex-grid-height);
-  background: #ddd;
+  background: #141b27;
   clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
 }
 
@@ -68,13 +68,13 @@
 }
 
 .hex.mecatol {
-  background: #aaa;
+  background: #2a3547;
 }
 .hex.inner {
-  background: #bbb;
+  background: #1d2738;
 }
 .hex.middle {
-  background: #ccc;
+  background: #18212f;
 }
 
 .designationText {

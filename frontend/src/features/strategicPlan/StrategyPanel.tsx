@@ -1,7 +1,11 @@
 import { useState } from 'react'
 
 import { Board } from '../../components/Board/Board'
-import { ErrorState } from '../../components/ErrorState/ErrorState'
+import {
+  CREDENTIAL_HINT,
+  ErrorState,
+  RETRY_HINT,
+} from '../../components/ErrorState/ErrorState'
 import { FactionSelect } from '../../components/FactionSelect/FactionSelect'
 import { JobResultView } from '../../components/JobResultView/JobResultView'
 import { LoadingState } from '../../components/LoadingState/LoadingState'
@@ -10,7 +14,7 @@ import { useResultScroll } from '../../hooks/useResultScroll'
 import { useBoardSuggester } from '../boardSuggester/useBoardSuggester'
 import styles from './StrategyPanel.module.css'
 
-// Strategy Suggester — TTS string → board → faction-specific opening plan.
+// Strategy Suggester, TTS string → board → faction-specific opening plan.
 // Ports app.js generateGame/setBoard/suggestStrategy + loadDemoBoardScenario;
 // the shared board/faction/job flow lives in useBoardSuggester, this component
 // adds the TTS-input UI and strategy-specific copy.
@@ -47,7 +51,7 @@ export function StrategyPanel() {
       </p>
 
       <div className={styles.demoBox}>
-        <h4>Demo — no API key needed</h4>
+        <h4>Demo: no API key needed</h4>
         <p className={styles.demoDesc}>
           {demoScenario?.description ??
             'Loads a balanced sample board, auto-selects a faction, and shows a saved strategy.'}
@@ -113,14 +117,23 @@ export function StrategyPanel() {
 
       <div className={styles.results} ref={resultsRef}>
         {credentialError ? (
-          <ErrorState message={credentialError} onRetry={board.suggest} />
+          <ErrorState
+            message={credentialError}
+            onRetry={board.suggest}
+            hint={CREDENTIAL_HINT}
+          />
         ) : job.isLoading ? (
           <LoadingState message={LOADING_MESSAGE} />
         ) : job.phase === 'error' && job.error ? (
-          <ErrorState message={job.error} onRetry={board.retry} />
+          <ErrorState message={job.error} onRetry={board.retry} hint={RETRY_HINT} />
         ) : job.phase === 'success' && job.result ? (
           <JobResultView feature="strategy" result={job.result} />
-        ) : null}
+        ) : (
+          <p className={styles.hint}>
+            Your strategy will appear here. Load the sample board above, or paste a TTS
+            string and click Generate, then Get Strategy.
+          </p>
+        )}
       </div>
     </section>
   )

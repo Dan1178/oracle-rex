@@ -1,6 +1,10 @@
 import { useState } from 'react'
 
-import { ErrorState } from '../../components/ErrorState/ErrorState'
+import {
+  CREDENTIAL_HINT,
+  ErrorState,
+  RETRY_HINT,
+} from '../../components/ErrorState/ErrorState'
 import { JobResultView } from '../../components/JobResultView/JobResultView'
 import { LoadingState } from '../../components/LoadingState/LoadingState'
 import { useAiJob } from '../../hooks/useAiJob'
@@ -9,7 +13,7 @@ import { useSettings } from '../../store/settingsContext'
 import type { RulesChip } from '../../types/demo'
 import styles from './RulesPanel.module.css'
 
-// Rules Q&A — a free-text rules question answered as a structured RulesAnswer
+// Rules Q&A, a free-text rules question answered as a structured RulesAnswer
 // card (answer + rule basis / assumptions / caveats). Ported from
 // static/js/rules.js (askRules + renderRulesChips + askDemoRules): each demo
 // chip is a saved question whose cached answer runs through the same poll UI.
@@ -103,11 +107,15 @@ export function RulesPanel() {
 
       <div className={styles.results}>
         {credentialError ? (
-          <ErrorState message={credentialError} onRetry={handleAsk} />
+          <ErrorState
+            message={credentialError}
+            onRetry={handleAsk}
+            hint={CREDENTIAL_HINT}
+          />
         ) : job.isLoading ? (
           <LoadingState message={LOADING_MESSAGE} />
         ) : job.phase === 'error' && job.error ? (
-          <ErrorState message={job.error} onRetry={retry} />
+          <ErrorState message={job.error} onRetry={retry} hint={RETRY_HINT} />
         ) : job.phase === 'success' && job.result ? (
           <JobResultView feature="rules" result={job.result} />
         ) : (

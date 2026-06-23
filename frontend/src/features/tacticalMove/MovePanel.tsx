@@ -1,7 +1,11 @@
 import { useEffect } from 'react'
 
 import { Board } from '../../components/Board/Board'
-import { ErrorState } from '../../components/ErrorState/ErrorState'
+import {
+  CREDENTIAL_HINT,
+  ErrorState,
+  RETRY_HINT,
+} from '../../components/ErrorState/ErrorState'
 import { FactionSelect } from '../../components/FactionSelect/FactionSelect'
 import { JobResultView } from '../../components/JobResultView/JobResultView'
 import { LoadingState } from '../../components/LoadingState/LoadingState'
@@ -11,7 +15,7 @@ import type { Game } from '../../types/game'
 import { useBoardSuggester } from '../boardSuggester/useBoardSuggester'
 import styles from './MovePanel.module.css'
 
-// Move Suggester — recommends the single best next move for a board + faction,
+// Move Suggester, recommends the single best next move for a board + faction,
 // rendered as a TacticalMove card. Ports move.html + suggestStrategy('move') +
 // loadDemoBoardScenario('move'). Unlike Strategy, the Move tab has no TTS input:
 // its board comes from the demo or a Fleet Manager export (the `seed` prop), so
@@ -59,7 +63,7 @@ export function MovePanel({ seed }: MovePanelProps) {
       </p>
 
       <div className={styles.demoBox}>
-        <h4>Demo — no API key needed</h4>
+        <h4>Demo: no API key needed</h4>
         <p className={styles.demoDesc}>
           {demoScenario?.description ??
             'Loads a sample board, selects a faction, and shows a saved move recommendation.'}
@@ -94,14 +98,23 @@ export function MovePanel({ seed }: MovePanelProps) {
 
       <div className={styles.results} ref={resultsRef}>
         {credentialError ? (
-          <ErrorState message={credentialError} onRetry={board.suggest} />
+          <ErrorState
+            message={credentialError}
+            onRetry={board.suggest}
+            hint={CREDENTIAL_HINT}
+          />
         ) : job.isLoading ? (
           <LoadingState message={LOADING_MESSAGE} />
         ) : job.phase === 'error' && job.error ? (
-          <ErrorState message={job.error} onRetry={board.retry} />
+          <ErrorState message={job.error} onRetry={board.retry} hint={RETRY_HINT} />
         ) : job.phase === 'success' && job.result ? (
           <JobResultView feature="move" result={job.result} />
-        ) : null}
+        ) : (
+          <p className={styles.hint}>
+            Your recommended move will appear here. Load the tactical puzzle above, or
+            export a board from the Fleet Manager, then pick a faction and Suggest Move.
+          </p>
+        )}
       </div>
     </section>
   )

@@ -1,22 +1,21 @@
-/* Settings layout. Ports the legacy demo-box / modes-list, then adds a more
-   designed structure on top (M5 keeps behavior; this is a light visual pass —
-   titled cards, focus states, pill-style model options — short of the full M6
-   theme). */
+/* Settings layout. Console theme (Milestone 7): titled sub-panels, cyan focus
+   states, pill-style model options on the dark console surface. */
 
 .settings {
-  max-width: 880px;
+  width: 100%;
 }
 
 .pageTitle {
   margin: 0 0 16px;
   font-size: 26px;
+  color: var(--accent-cyan);
 }
 
 /* Intro callout (the "three modes" blurb). */
 .demoBox {
-  background: #f0f6ff;
-  border: 1px solid #b8d4ff;
-  border-left: 4px solid #007bff;
+  background: rgba(95, 208, 255, 0.06);
+  border: 1px solid rgba(95, 208, 255, 0.22);
+  border-left: 4px solid var(--accent-cyan);
   border-radius: 8px;
   padding: 14px 18px;
   margin: 0 0 24px;
@@ -24,13 +23,13 @@
 
 .demoBox h4 {
   margin: 0 0 8px;
-  color: #0056b3;
+  color: var(--accent-cyan);
 }
 
 .modesList {
   margin: 0;
   padding-left: 20px;
-  color: #444;
+  color: var(--text-muted);
   line-height: 1.6;
 }
 
@@ -40,24 +39,23 @@
 
 /* Grouping cards: Credentials, Model Selection. */
 .card {
-  background: #fff;
-  border: 1px solid #e3e8ee;
+  background: rgba(95, 208, 255, 0.03);
+  border: 1px solid rgba(95, 208, 255, 0.18);
   border-radius: 10px;
   padding: 20px 24px 24px;
   margin: 0 0 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .cardTitle {
   margin: 0 0 14px;
   padding-bottom: 10px;
   font-size: 18px;
-  color: #0056b3;
-  border-bottom: 2px solid #eef3fb;
+  color: var(--accent-cyan);
+  border-bottom: 2px solid rgba(95, 208, 255, 0.15);
 }
 
 .info {
-  color: #1a7f37;
+  color: #7fdca0;
   margin: 0 0 16px;
   line-height: 1.5;
 }
@@ -70,13 +68,13 @@
   display: block;
   margin-bottom: 6px;
   font-weight: 700;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .field input {
   width: 100%;
   padding: 9px 12px;
-  border: 1px solid #ccd2d8;
+  border: 1px solid rgba(95, 208, 255, 0.22);
   border-radius: 6px;
   box-sizing: border-box;
   transition:
@@ -86,14 +84,14 @@
 
 .field input:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px rgba(95, 208, 255, 0.2);
 }
 
 .hint {
   display: block;
   margin-top: 6px;
-  color: #667085;
+  color: var(--text-muted);
   font-size: 13px;
   line-height: 1.4;
 }
@@ -102,35 +100,35 @@
 .keyFields {
   margin-top: 18px;
   padding-top: 18px;
-  border-top: 1px solid #eef1f4;
+  border-top: 1px solid rgba(95, 208, 255, 0.15);
 }
 
 .warning {
-  color: #b8860b;
+  color: var(--accent-amber);
   margin: 4px 0 0;
   font-size: 13px;
   line-height: 1.4;
 }
 
 .modelWarn {
-  color: #8a6d1f;
+  color: var(--accent-amber);
   line-height: 1.5;
   margin: 0 0 18px;
 }
 
 .modelGroup {
-  border: 1px solid #e3e8ee;
+  border: 1px solid rgba(95, 208, 255, 0.18);
   border-radius: 8px;
   margin: 0 0 12px;
   padding: 10px 18px 16px;
-  background: #fafbfc;
+  background: rgba(95, 208, 255, 0.03);
 }
 
 .modelGroup legend {
   font-family: 'Orbitron', sans-serif;
   font-weight: 600;
   font-size: 14px;
-  color: #0056b3;
+  color: var(--accent-cyan);
   padding: 0 8px;
 }
 
@@ -147,9 +145,9 @@
   gap: 7px;
   cursor: pointer;
   padding: 5px 13px;
-  border: 1px solid #d4dae0;
+  border: 1px solid rgba(95, 208, 255, 0.25);
   border-radius: 999px;
-  background: #fff;
+  background: transparent;
   transition:
     background 0.12s ease,
     border-color 0.12s ease,
@@ -157,12 +155,12 @@
 }
 
 .radioLabel:hover {
-  border-color: #9bb8e0;
+  border-color: var(--accent-cyan-dim);
 }
 
 .radioLabel:has(input:checked) {
-  background: #e7f1ff;
-  border-color: #007bff;
-  color: #0056b3;
+  background: rgba(95, 208, 255, 0.14);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
   font-weight: 700;
 }

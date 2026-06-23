@@ -16,7 +16,7 @@ import {
 
 // Client state for the Settings tab: the BYOK provider keys, the per-feature
 // model selection, and the private live-demo access code. Server state stays in
-// TanStack Query — this store only holds what the user types.
+// TanStack Query, this store only holds what the user types.
 //
 // Keys are kept in-memory only (matching the legacy frontend, which despite its
 // warning copy never actually persisted them). That avoids a new storage

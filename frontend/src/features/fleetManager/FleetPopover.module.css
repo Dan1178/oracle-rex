@@ -1,17 +1,19 @@
-/* Ported from static/css/fleet_manager.css (the .fleet-management-window box,
-   .player-select rows, and #planets-section layout). The legacy window followed
-   the mouse; here it is a fixed in-viewport panel (positioning polish is M6). */
+/* Fleet Manager popover window. Console theme (Milestone 7); structure ported
+   from static/css/fleet_manager.css. Solid dark (not translucent) since it
+   floats over the board and must stay readable. */
 
 .window {
   position: fixed;
   top: 80px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #fff;
-  color: #222;
-  border: 1px solid #ccc;
+  background-color: #0a0e16;
+  color: var(--phosphor);
+  border: 1px solid rgba(95, 208, 255, 0.4);
   border-radius: 5px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 0 30px rgba(0, 0, 0, 0.7),
+    0 0 24px rgba(95, 208, 255, 0.12);
   padding: 15px;
   width: 500px;
   max-width: 92vw;
@@ -27,6 +29,7 @@
   display: block;
   font-weight: bold;
   margin-bottom: 10px;
+  color: var(--accent-cyan);
 }
 
 .section {
@@ -46,15 +49,15 @@
 
 .playerSelect select {
   padding: 5px;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(95, 208, 255, 0.22);
   border-radius: 3px;
-  background-color: #f9f9f9;
+  background-color: #03080f;
   cursor: pointer;
 }
 
 .playerSelect select:focus {
   outline: none;
-  border-color: #666;
+  border-color: var(--accent-cyan);
 }
 
 /* Stack the counters; UnitCounter rows are flex boxes that wrap if narrow. */
@@ -66,13 +69,14 @@
 
 .planets {
   margin-bottom: 20px;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(95, 208, 255, 0.18);
   padding: 15px;
   border-radius: 5px;
 }
 
 .planets h3 {
   margin: 0 0 10px;
+  color: var(--accent-cyan);
 }
 
 .planetGrid {
@@ -91,18 +95,21 @@
 }
 
 .planetCard .playerSelect label {
-  color: green;
+  color: #7fdca0;
 }
 
 .close {
-  background: #6c757d;
-  color: white;
+  font-family: 'Orbitron', sans-serif;
+  background: transparent;
+  color: var(--text-muted);
   padding: 8px 18px;
-  border: none;
+  border: 1px solid rgba(95, 208, 255, 0.25);
   border-radius: 5px;
   cursor: pointer;
+  transition: 0.15s ease;
 }
 
 .close:hover {
-  background: #565e64;
+  color: var(--text-primary);
+  border-color: var(--accent-cyan-dim);
 }

@@ -1,13 +1,15 @@
-/* Ported from .response-box / .response-box.loading in static/css/style.css. */
+/* In-flight AI job indicator, styled as a cyan console screen. (M7 theme.) */
 .root {
   margin-top: 20px;
-  padding: 15px;
-  background: #f9f9f9;
-  border: 1px solid #ddd;
+  padding: 15px 18px;
+  background: var(--screen-bg);
+  border: 1px solid rgba(95, 208, 255, 0.35);
   border-radius: 5px;
   white-space: pre-wrap;
   font-family: 'OCR-A', monospace;
   font-weight: 600;
+  color: var(--accent-cyan);
+  box-shadow: inset 0 0 30px rgba(95, 208, 255, 0.06);
 }
 
 .dots::after {
@@ -33,5 +35,46 @@
   }
   75% {
     content: '...';
+  }
+}
+
+/* Indeterminate sweep bar, ported from the M7 mockup: a cyan glow that slides
+   across the track while the job runs. */
+.barTrack {
+  height: 4px;
+  margin-top: 14px;
+  background: rgba(95, 208, 255, 0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  width: 40%;
+  background: var(--accent-cyan);
+  box-shadow: 0 0 10px var(--accent-cyan);
+  animation: sweep 1.8s ease-in-out infinite;
+}
+
+@keyframes sweep {
+  0% {
+    margin-left: -40%;
+  }
+  100% {
+    margin-left: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dots::after {
+    animation: none;
+  }
+
+  /* No sliding: show a static, dimmed full bar so activity is still indicated. */
+  .barFill {
+    animation: none;
+    margin-left: 0;
+    width: 100%;
+    opacity: 0.5;
   }
 }

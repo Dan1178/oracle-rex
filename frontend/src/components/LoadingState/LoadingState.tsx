@@ -12,6 +12,9 @@ export function LoadingState({ message = 'Working' }: LoadingStateProps) {
     <div className={styles.root} role="status" aria-live="polite">
       {message}
       <span className={styles.dots} aria-hidden="true" />
+      <div className={styles.barTrack} aria-hidden="true">
+        <div className={styles.barFill} />
+      </div>
     </div>
   )
 }

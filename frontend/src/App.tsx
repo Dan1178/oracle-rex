@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { Starfield } from './components/Starfield/Starfield'
 import { TabNav, type TabDescriptor } from './components/TabNav/TabNav'
 import { BattleCalculator } from './features/battleCalculator/BattleCalculator'
 import { FleetManagerPanel } from './features/fleetManager/FleetManagerPanel'
@@ -44,37 +45,74 @@ function App() {
   }
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Oracle Rex — Twilight Imperium Companion</h1>
-      <p className={styles.tagline}>
-        An AI strategy assistant for Twilight Imperium: it parses board states, renders
-        game maps, estimates combat odds, and generates faction-specific strategy. Every
-        feature has a one-click <strong>Demo</strong> — no API key needed.
-      </p>
+    <>
+      <Starfield />
+      <div className={styles.container}>
+        <span className={styles.bracketBl} aria-hidden="true" />
+        <span className={styles.bracketBr} aria-hidden="true" />
+        <h1 className={styles.title}>Oracle Rex: Twilight Imperium Companion</h1>
+        <p className={styles.tagline}>
+          An AI strategy assistant for Twilight Imperium: it parses board states,
+          renders game maps, estimates combat odds, and generates faction-specific
+          strategy. Every feature has a one-click <strong>Demo</strong>, no API key
+          needed.
+        </p>
 
-      <TabNav tabs={TABS} activeTab={activeTab} onSelect={setActiveTab} />
+        <div className={styles.ctaBand}>
+          <button
+            type="button"
+            className={`${styles.cta} ${styles.ctaPrimary}`}
+            onClick={() => setActiveTab('strategy')}
+          >
+            Try Demo Scenario
+          </button>
+          <button
+            type="button"
+            className={styles.cta}
+            onClick={() => setActiveTab('rules')}
+          >
+            Open Rules Advisor
+          </button>
+          <button
+            type="button"
+            className={styles.cta}
+            onClick={() => setActiveTab('tactical')}
+          >
+            Open Battle Calculator
+          </button>
+          <button
+            type="button"
+            className={styles.cta}
+            onClick={() => setActiveTab('settings')}
+          >
+            Use Live AI Mode
+          </button>
+        </div>
 
-      <main>
-        <div role="tabpanel" hidden={activeTab !== 'settings'}>
-          <SettingsPanel />
-        </div>
-        <div role="tabpanel" hidden={activeTab !== 'rules'}>
-          <RulesPanel />
-        </div>
-        <div role="tabpanel" hidden={activeTab !== 'strategy'}>
-          <StrategyPanel />
-        </div>
-        <div role="tabpanel" hidden={activeTab !== 'fleet'}>
-          <FleetManagerPanel onExport={exportToMove} />
-        </div>
-        <div role="tabpanel" hidden={activeTab !== 'move'}>
-          <MovePanel seed={moveSeed} />
-        </div>
-        <div role="tabpanel" hidden={activeTab !== 'tactical'}>
-          <BattleCalculator />
-        </div>
-      </main>
-    </div>
+        <TabNav tabs={TABS} activeTab={activeTab} onSelect={setActiveTab} />
+
+        <main>
+          <div role="tabpanel" hidden={activeTab !== 'settings'}>
+            <SettingsPanel />
+          </div>
+          <div role="tabpanel" hidden={activeTab !== 'rules'}>
+            <RulesPanel />
+          </div>
+          <div role="tabpanel" hidden={activeTab !== 'strategy'}>
+            <StrategyPanel />
+          </div>
+          <div role="tabpanel" hidden={activeTab !== 'fleet'}>
+            <FleetManagerPanel onExport={exportToMove} />
+          </div>
+          <div role="tabpanel" hidden={activeTab !== 'move'}>
+            <MovePanel seed={moveSeed} />
+          </div>
+          <div role="tabpanel" hidden={activeTab !== 'tactical'}>
+            <BattleCalculator />
+          </div>
+        </main>
+      </div>
+    </>
   )
 }
 

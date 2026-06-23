@@ -92,7 +92,7 @@ describe('RulesPanel', () => {
         screen.getByRole('heading', { name: /rules answer/i }),
       ).toBeInTheDocument(),
     )
-    expect(screen.getByText(/Space combat — Retreat step/)).toBeInTheDocument()
+    expect(screen.getByText(/Space combat, Retreat step/)).toBeInTheDocument()
     // Question is trimmed before submission.
     expect(captured?.question).toBe('Can I retreat with no ships?')
     expect(captured?.api_key).toBe('sk-test')

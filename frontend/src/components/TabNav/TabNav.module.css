@@ -1,30 +1,44 @@
-/* Ported from `.tab-nav` / `.tab-button` in static/css/style.css. */
+/* Console tab toggles: dark and flat, with a glowing cyan underline on the active
+   tab instead of a solid fill. (Milestone 7 theme.) */
 
 .tabNav {
   display: flex;
-  border-bottom: 1px solid #ccc;
-  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(95, 208, 255, 0.18);
+  margin-bottom: 24px;
 }
 
 .tabButton {
   flex: 1;
-  padding: 10px;
-  background: #ddd;
+  padding: 12px 8px;
+  background: transparent;
   border: none;
   cursor: pointer;
   text-align: center;
-  color: #333;
+  color: var(--text-muted);
   font-family: 'Orbitron-ExtraBold', sans-serif;
   font-weight: 700;
-  font-size: 18px;
+  font-size: 16px;
+  position: relative;
+  transition: color 0.18s ease;
 }
 
 .tabButton:hover {
-  background: #cfcfcf;
+  color: var(--text-primary);
 }
 
 .active,
 .active:hover {
-  background: #007bff;
-  color: white;
+  color: var(--accent-cyan);
+  text-shadow: 0 0 10px rgba(95, 208, 255, 0.5);
+}
+
+.active::after {
+  content: '';
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: -1px;
+  height: 2px;
+  background: var(--accent-cyan);
+  box-shadow: 0 0 10px var(--accent-cyan);
 }

@@ -39,11 +39,25 @@
 }
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
+
+  /* "Imperial Command Console" design tokens (Milestone 7). See
+     .features/milestone_7_ux_theme.md for the locked palette and roles. */
+  --void: #05070d;
+  --console-surface: rgba(10, 14, 20, 0.82);
+  --console-border: rgba(95, 208, 255, 0.28);
+  --screen-bg: #02060c;
+  --phosphor: #cfe9fb;
+  --accent-cyan: #5fd0ff;
+  --accent-cyan-dim: #2a8fc0;
+  --accent-amber: #ffb347;
+  --text-primary: #d7e6f2;
+  --text-muted: #7d93a6;
+  --scanline: rgba(95, 208, 255, 0.05);
 }
 
-/* OCR-A is the main body font, set on <body> so it's inherited by every element
-   — including <li>, <a>, <div>, etc. The old approach enumerated specific tags
+/* OCR-A is the main body font, set on <body> so it's inherited by every element,
+   including <li>, <a>, <div>, etc. The old approach enumerated specific tags
    (p, span, …) and missed <li>, so bulleted advisor-card sections fell back to
    the default font. Headings/buttons opt into the display fonts below. */
 body {
@@ -51,7 +65,8 @@ body {
   font-weight: 600;
   margin: 0;
   padding: 20px;
-  background-color: black;
+  background-color: var(--void);
+  color: var(--text-primary);
 }
 
 h2 {
@@ -66,10 +81,31 @@ button {
   font-weight: 400;
 }
 
-/* Form controls don't inherit font-family by default — opt them back in so they
-   render in OCR-A like the rest of the body text. */
+/* Form controls don't inherit font-family by default, opt them back in so they
+   render in OCR-A like the rest of the body text. The dark field treatment +
+   cyan focus glow is set globally here so every input across the feature panels
+   matches the console without per-panel rules; panels still set their own layout
+   (and may override the border color). */
 input,
 textarea,
 select {
   font-family: inherit;
+  background: #03080f;
+  color: var(--phosphor);
+  border: 1px solid rgba(95, 208, 255, 0.22);
+  border-radius: 4px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+  box-shadow:
+    0 0 0 1px var(--accent-cyan),
+    0 0 14px rgba(95, 208, 255, 0.3);
+}
+
+a {
+  color: var(--accent-cyan);
 }

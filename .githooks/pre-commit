@@ -1,0 +1,10 @@
+#!/bin/sh
+# Auto-format staged frontend files with Prettier before each commit, so a
+# formatting slip never reaches CI (which runs `prettier --check .`).
+# Enable once per clone:  git config core.hooksPath .githooks
+root=$(git rev-parse --show-toplevel)
+staged=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^frontend/.*\.(ts|tsx|css|json|md)$')
+[ -z "$staged" ] && exit 0
+rel=$(echo "$staged" | sed 's#^frontend/##')
+( cd "$root/frontend" && echo "$rel" | xargs npx prettier --write ) || exit 1
+( cd "$root" && echo "$staged" | xargs git add )

@@ -8,8 +8,8 @@ import type { Game, System, Planet } from '../../types/game'
 //
 // NOTE: unlike the Battle Calculator's force_data payload (where the ground
 // "mech" is remapped to "mechs"), the Fleet Manager stores units under their
-// own key — a fleet's ground "mech" lives in fleet.ships.mech, and a planet's
-// in ground_forces.units.mech — matching the backend to_json() shape exactly.
+// own key, a fleet's ground "mech" lives in fleet.ships.mech, and a planet's
+// in ground_forces.units.mech, matching the backend to_json() shape exactly.
 
 export interface FleetUnit {
   /** The key this unit takes in the ships / units / structures map. */
@@ -20,7 +20,7 @@ export interface FleetUnit {
 }
 
 // The fleet (units in a system's space): seven ship classes plus infantry and
-// mech being transported — exactly the rows the legacy fleet section rendered,
+// mech being transported, exactly the rows the legacy fleet section rendered,
 // all stored in system.fleet.ships.
 export const FLEET_UNITS: FleetUnit[] = [
   { unit: 'fighter', label: 'Fighter', icon: '/static/images/ships/fighter_icon.png' },
@@ -123,7 +123,7 @@ function mapPlanet(
 }
 
 /** Apply a ±1 (or any delta) change to a count map, clamping at 0 and dropping
- * keys that reach 0 — the legacy "delete on zero" behavior that keeps the
+ * keys that reach 0, the legacy "delete on zero" behavior that keeps the
  * exported JSON free of empty entries. */
 function applyDelta(
   map: Record<string, number>,
@@ -163,8 +163,8 @@ export function setFleetOwner(game: Game, designation: string, owner: string): G
   })
 }
 
-/** Add `delta` of `unit` to a planet's ground forces — infantry/mech update
- * units, PDS/space dock update structures — creating the ground_forces record
+/** Add `delta` of `unit` to a planet's ground forces, infantry/mech update
+ * units, PDS/space dock update structures, creating the ground_forces record
  * (owned by "None") if absent. */
 export function adjustGroundCount(
   game: Game,
