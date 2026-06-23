@@ -14,9 +14,12 @@ export interface SettingsContextValue {
   accessCode: string
   apiKeys: ApiKeys
   models: ModelSelection
+  /** The selected AI persona id (tone only); 'default' applies no persona. */
+  persona: string
   setAccessCode: (value: string) => void
   setApiKey: (make: ApiMake, value: string) => void
   setModel: (feature: SettingsFeature, value: string) => void
+  setPersona: (value: string) => void
   /**
    * Resolve the live-request credentials for a feature: an access code wins
    * over the BYOK key chosen for the feature's selected model. Returns

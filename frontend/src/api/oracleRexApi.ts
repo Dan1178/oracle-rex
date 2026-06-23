@@ -150,11 +150,15 @@ export async function createJob(
   feature: JobFeature,
   input: JobInput,
   credentials: LiveCredentials,
+  persona?: string,
   signal?: AbortSignal,
 ): Promise<JobCreated> {
+  // A non-default persona (tone only) rides along in the body; the backend
+  // applies it to the structured features.
+  const personaField = persona && persona !== 'default' ? { persona } : {}
   return request(`/jobs/${feature}/`, jobCreatedSchema, 'job-create', {
     method: 'POST',
-    body: { ...input, ...credentials },
+    body: { ...input, ...credentials, ...personaField },
     signal,
   })
 }

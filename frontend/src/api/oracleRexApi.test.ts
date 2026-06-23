@@ -84,6 +84,22 @@ describe('oracleRexApi', () => {
     expect((error as ApiError).message).toBe('No question provided')
   })
 
+  it('sends a non-default persona in the body and omits the default', async () => {
+    let body: Record<string, unknown> | undefined
+    server.use(
+      http.post('*/api/jobs/rules/', async ({ request }) => {
+        body = (await request.json()) as Record<string, unknown>
+        return HttpResponse.json({ job_id: 'j', status: 'queued' }, { status: 202 })
+      }),
+    )
+
+    await createJob('rules', { question: 'q' }, { api_key: 'k', model: 'm' }, 'oracle')
+    expect(body?.persona).toBe('oracle')
+
+    await createJob('rules', { question: 'q' }, { api_key: 'k', model: 'm' }, 'default')
+    expect(body?.persona).toBeUndefined()
+  })
+
   it('fetches and validates a job status', async () => {
     server.use(
       http.get('*/api/jobs/:id/', () =>

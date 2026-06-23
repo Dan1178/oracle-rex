@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 
 import { ApiError, createJob, getJobStatus, runDemo } from '../api/oracleRexApi'
+import { useSettings } from '../store/settingsContext'
 import type {
   JobCreated,
   JobFeature,
@@ -68,6 +69,10 @@ function messageFrom(error: unknown): string {
  * to start a job and `reset` to clear it.
  */
 export function useAiJob(feature: JobFeature): UseAiJobResult {
+  // The global persona (tone only) is sent with every live job; demo jobs keep
+  // the default voice. Read from the settings store rather than threaded through
+  // each panel.
+  const { persona } = useSettings()
   const [jobId, setJobId] = useState<string>()
   const [submitError, setSubmitError] = useState<string>()
   const [timedOut, setTimedOut] = useState(false)
@@ -125,9 +130,9 @@ export function useAiJob(feature: JobFeature): UseAiJobResult {
   const submit = useCallback(
     (input: JobInput, credentials: LiveCredentials) => {
       clearBeforeStart()
-      createMutation.mutate(() => createJob(feature, input, credentials))
+      createMutation.mutate(() => createJob(feature, input, credentials, persona))
     },
-    [feature, clearBeforeStart, createMutation],
+    [feature, clearBeforeStart, createMutation, persona],
   )
 
   const runDemoScenario = useCallback(

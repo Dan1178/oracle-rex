@@ -11,12 +11,17 @@ import {
   useAiJob,
 } from './useAiJob'
 import { createQueryClient } from '../providers/queryClient'
+import { SettingsProvider } from '../store/settings'
 import { server } from '../test/server'
 import { completedRulesResult, demoTacticalResult, jobDict } from '../test/fixtures'
 
 function wrapper({ children }: { children: ReactNode }) {
   const client = createQueryClient()
-  return <QueryClientProvider client={client}>{children}</QueryClientProvider>
+  return (
+    <QueryClientProvider client={client}>
+      <SettingsProvider>{children}</SettingsProvider>
+    </QueryClientProvider>
+  )
 }
 
 afterEach(() => {

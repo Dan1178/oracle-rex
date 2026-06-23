@@ -53,9 +53,16 @@ def _max_tokens(payload):
     return payload.get("_max_tokens")
 
 
+# Optional persona id (tone-only voice), carried as an internal directive like
+# ``_max_tokens``. Applied to the structured features; tac_calc skips it.
+def _persona(payload):
+    return payload.get("_persona")
+
+
 def _run_rules(payload, api_key, model):
     answer = service.get_rules_response(
-        payload.get("question", ""), api_key, model, _max_tokens(payload)
+        payload.get("question", ""), api_key, model, _max_tokens(payload),
+        persona=_persona(payload),
     )
     return {
         "question": payload.get("question", ""),
@@ -67,7 +74,7 @@ def _run_rules(payload, api_key, model):
 def _run_strategy(payload, api_key, model):
     result = service.get_strategy_response(
         payload.get("game_json", {}), payload.get("player_faction", ""),
-        api_key, model, _max_tokens(payload),
+        api_key, model, _max_tokens(payload), persona=_persona(payload),
     )
     return {
         "faction": payload.get("player_faction", ""),
@@ -79,7 +86,7 @@ def _run_strategy(payload, api_key, model):
 def _run_move(payload, api_key, model):
     result = service.get_move_response(
         payload.get("game_json", {}), payload.get("player_faction", ""),
-        api_key, model, _max_tokens(payload),
+        api_key, model, _max_tokens(payload), persona=_persona(payload),
     )
     return {
         "faction": payload.get("player_faction", ""),

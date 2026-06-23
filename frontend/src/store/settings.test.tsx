@@ -21,6 +21,13 @@ describe('settings store', () => {
     })
   })
 
+  it('defaults persona to none and lets the user change it', () => {
+    const { result } = renderHook(() => useSettings(), { wrapper })
+    expect(result.current.persona).toBe('default')
+    act(() => result.current.setPersona('oracle'))
+    expect(result.current.persona).toBe('oracle')
+  })
+
   it('needs no key for a Google (Gemini) model: sends just the model', () => {
     const { result } = renderHook(() => useSettings(), { wrapper })
     // Strategy defaults to Gemini (server-keyed), so it is ready with no key.

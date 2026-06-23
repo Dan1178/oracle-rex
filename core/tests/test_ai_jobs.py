@@ -70,7 +70,7 @@ class TestRunAiJob(TestCase):
         job = self._make_job()
         captured = {}
 
-        def fake(question, api_key, model, max_tokens=None):
+        def fake(question, api_key, model, max_tokens=None, persona=None):
             captured["api_key"] = api_key
             return RulesAnswer(answer="ok")
 

@@ -187,18 +187,22 @@ def _live_demo_token_cap(feature_type) -> int:
     return settings.DEMO_LIVE_MAX_OUTPUT_TOKENS or config.live_demo_max_tokens(feature_type)
 
 
-def _create_ai_job(feature_type, input_payload, api_key, model, live_demo=False):
+def _create_ai_job(feature_type, input_payload, api_key, model, live_demo=False,
+                   persona=None):
     """Create an AIJob row and enqueue it for the background worker.
 
     The BYOK key is encrypted into the task argument and is never written to the
     AIJob row (see core.service.ai.crypto). For a live-demo request the output is
     capped per feature, carried as an internal ``_max_tokens`` directive on the
-    input payload.
+    input payload. A non-default ``persona`` is carried the same way (``_persona``)
+    and applied to the structured features by the worker.
     """
     resolved = config.resolve_model(model)
     if live_demo:
         cap = _live_demo_token_cap(feature_type)
         input_payload = {**input_payload, "_max_tokens": int(cap)}
+    if persona and persona != "default":
+        input_payload = {**input_payload, "_persona": persona}
     job = AIJob.objects.create(
         feature_type=feature_type,
         input_payload_json=input_payload,
@@ -252,6 +256,7 @@ def rules_job_create(request):
         AIJob.FeatureType.RULES,
         {'question': question},
         api_key, model, live_demo,
+        persona=data.get('persona'),
     )
     return _job_created_response(job)
 
@@ -284,6 +289,7 @@ def suggest_job_create(request, type):
         feature_type,
         {'game_json': game_json, 'player_faction': player_faction},
         api_key, model, live_demo,
+        persona=data.get('persona'),
     )
     return _job_created_response(job)
 

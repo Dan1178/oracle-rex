@@ -7,6 +7,7 @@ import {
   type ApiMake,
   type SettingsFeature,
 } from './models'
+import { DEFAULT_PERSONA } from './personas'
 import {
   SettingsContext,
   type ApiKeys,
@@ -30,6 +31,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [accessCode, setAccessCode] = useState('')
   const [apiKeys, setApiKeys] = useState<ApiKeys>(EMPTY_KEYS)
   const [models, setModels] = useState<ModelSelection>({ ...DEFAULT_MODELS })
+  const [persona, setPersona] = useState<string>(DEFAULT_PERSONA)
 
   const setApiKey = useCallback((make: ApiMake, value: string) => {
     setApiKeys((prev) => ({ ...prev, [make]: value }))
@@ -63,12 +65,14 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       accessCode,
       apiKeys,
       models,
+      persona,
       setAccessCode,
       setApiKey,
       setModel,
+      setPersona,
       getCredentials,
     }),
-    [accessCode, apiKeys, models, setApiKey, setModel, getCredentials],
+    [accessCode, apiKeys, models, persona, setApiKey, setModel, getCredentials],
   )
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>

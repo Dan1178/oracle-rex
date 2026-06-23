@@ -17,7 +17,7 @@ fixed-format text block and is returned as plain text.
 import logging
 from typing import Any, Dict
 
-from . import config
+from . import config, personas
 from .clients import get_chat
 from .errors import (
     AIServiceError,
@@ -136,7 +136,8 @@ def _token_budget(default: int, override) -> int:
 
 
 def get_rules_response(
-    question: str, api_key: str, model: str, max_tokens: int = None
+    question: str, api_key: str, model: str, max_tokens: int = None,
+    persona: str = None,
 ) -> RulesAnswer:
     _require(bool(question and question.strip()), "No question was provided.")
     chat = get_chat(
@@ -144,13 +145,13 @@ def get_rules_response(
         _token_budget(config.RULES_MAX_TOKENS, max_tokens),
         config.RULES_REASONING_EFFORT,
     )
-    messages = rules_chat.build_messages(question)
+    messages = personas.apply_persona(rules_chat.build_messages(question), persona)
     return _invoke_structured(chat, messages, RulesAnswer, "rules")
 
 
 def get_strategy_response(
     game_json: Dict[str, Any], player_faction: str, api_key: str = None,
-    model: str = None, max_tokens: int = None,
+    model: str = None, max_tokens: int = None, persona: str = None,
 ) -> StrategicPlan:
     _require(bool(game_json), "No board state was provided.")
     _require(bool(player_faction), "No faction was selected.")
@@ -159,13 +160,15 @@ def get_strategy_response(
         _token_budget(config.STRATEGY_MAX_TOKENS, max_tokens),
         config.STRATEGY_REASONING_EFFORT,
     )
-    messages = strategic_plan_prompt.build_messages(game_json, player_faction)
+    messages = personas.apply_persona(
+        strategic_plan_prompt.build_messages(game_json, player_faction), persona
+    )
     return _invoke_structured(chat, messages, StrategicPlan, "strategy")
 
 
 def get_move_response(
     game_json: Dict[str, Any], player_faction: str, api_key: str = None,
-    model: str = None, max_tokens: int = None,
+    model: str = None, max_tokens: int = None, persona: str = None,
 ) -> TacticalMove:
     _require(bool(game_json), "No board state was provided.")
     _require(bool(player_faction), "No faction was selected.")
@@ -174,7 +177,9 @@ def get_move_response(
         _token_budget(config.MOVE_MAX_TOKENS, max_tokens),
         config.MOVE_REASONING_EFFORT,
     )
-    messages = tactical_move_prompt.build_messages(game_json, player_faction)
+    messages = personas.apply_persona(
+        tactical_move_prompt.build_messages(game_json, player_faction), persona
+    )
     return _invoke_structured(chat, messages, TacticalMove, "move")
 
 
