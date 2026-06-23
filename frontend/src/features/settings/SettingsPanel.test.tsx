@@ -23,10 +23,12 @@ describe('SettingsPanel', () => {
     ]) {
       expect(screen.getByText(heading)).toBeInTheDocument()
     }
-    // Strategy defaults to GPT-5.4. The same model labels appear in the Move
+    // Strategy defaults to Gemini. The same model labels appear in the Move
     // group too, so scope the query to the Strategy fieldset (a11y "group").
     const strategyGroup = screen.getByRole('group', { name: 'Strategy Suggester' })
-    expect(within(strategyGroup).getByRole('radio', { name: 'GPT-5.4' })).toBeChecked()
+    expect(
+      within(strategyGroup).getByRole('radio', { name: /Gemini 3\.5 Flash/ }),
+    ).toBeChecked()
   })
 
   it('lets the user change a feature model selection', () => {

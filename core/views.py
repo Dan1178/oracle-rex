@@ -160,7 +160,22 @@ def _resolve_ai_credentials(data):
             )
         logger.info("Live-demo request authorized (model=%s)", settings.DEMO_LIVE_MODEL)
         return settings.DEMO_LIVE_API_KEY, settings.DEMO_LIVE_MODEL, True
-    return data.get("api_key", ""), data.get("model", "gpt-4"), False
+
+    model = data.get("model", "gpt-4")
+    # Gemini runs on the server-held key (free tier), usable by anyone with no
+    # BYOK key. Because it is the owner's shared key, it goes through the same
+    # capped path as the live demo: per-feature output cap (live_demo=True) plus
+    # the shared daily request limit, so the free quota can't be drained.
+    if config.provider_for_model(config.resolve_model(model)) == config.GOOGLE:
+        if not _live_demo_allow_request():
+            raise _CredentialError(
+                "The shared free-AI request limit for today has been reached. "
+                "Try Demo mode, or use your own API key.",
+                status=429,
+            )
+        return config.gemini_api_key(), model, True
+
+    return data.get("api_key", ""), model, False
 
 
 def _live_demo_token_cap(feature_type) -> int:

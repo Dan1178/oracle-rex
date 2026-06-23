@@ -18,6 +18,18 @@ import os
 OPENAI = "openai"
 XAI = "xai"
 ANTHROPIC = "anthropic"
+GOOGLE = "google"
+
+# Gemini runs on a key held by the server (not BYOK), so demo users get free live
+# AI with no key of their own. Paste your key over <PLACEHOLDER> for local use, or
+# (preferred, and required for production) set the GEMINI_API_KEY env var and do
+# NOT commit the real key. The env var wins when set.
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "<PLACEHOLDER>")
+
+
+def gemini_api_key() -> str:
+    """The server-held Gemini key. Used for all Google-model requests."""
+    return GEMINI_API_KEY
 
 # Models grouped by provider. Add new models here (and, if they belong to a new
 # provider, add a client in ``clients/``) — nothing else needs to change.
@@ -28,12 +40,17 @@ ANTHROPIC = "anthropic"
 OPENAI_MODELS = ["gpt-5.5", "gpt-5.4", "gpt-5.4-mini", "gpt-5.4-nano"]
 XAI_MODELS = ["grok-4.3", "grok-4.20"]
 ANTHROPIC_MODELS = ["claude-opus-4-8", "claude-sonnet-4-6", "claude-haiku-4-5"]
+# Confirm the exact id against Google AI Studio and keep it identical to the
+# matching option value in frontend/src/store/models.ts (a mismatch makes
+# resolve_model fall back to the OpenAI default, which has no server key).
+GEMINI_MODELS = ["gemini-3.5-flash"]
 
 # Reverse lookup: model id -> provider. Built once at import time.
 PROVIDER_FOR_MODEL = {
     **{m: OPENAI for m in OPENAI_MODELS},
     **{m: XAI for m in XAI_MODELS},
     **{m: ANTHROPIC for m in ANTHROPIC_MODELS},
+    **{m: GOOGLE for m in GEMINI_MODELS},
 }
 
 # Used when an unknown / deprecated model id comes in (e.g. the old "gpt-4"

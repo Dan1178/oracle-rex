@@ -59,8 +59,9 @@ export function SettingsPanel() {
           Live AI Credentials
         </h3>
         <p className={styles.info}>
-          Demo mode needs no key. To use Live AI, add at least one API key below, or
-          enter a private live-demo access code.
+          Gemini runs free with no key and is the default for every feature. To use the
+          other providers (GPT, Grok, Claude), add an API key below, or enter a private
+          live-demo access code.
         </p>
 
         <div className={styles.field}>

@@ -42,12 +42,19 @@ const simResult = (overrides = {}) => ({
   ...overrides,
 })
 
+// Tactical defaults to Gemini (server-keyed, no key). seed-model switches it to a
+// BYOK model so the no-key credential path can be exercised.
 function SeedKey() {
-  const { setApiKey } = useSettings()
+  const { setApiKey, setModel } = useSettings()
   return (
-    <button type="button" onClick={() => setApiKey('openai', 'sk-test')}>
-      seed-key
-    </button>
+    <>
+      <button type="button" onClick={() => setModel('tactical', 'gpt-5.4-mini')}>
+        seed-model
+      </button>
+      <button type="button" onClick={() => setApiKey('openai', 'sk-test')}>
+        seed-key
+      </button>
+    </>
   )
 }
 
@@ -166,6 +173,7 @@ describe('BattleCalculator', () => {
     )
 
     renderCalculator()
+    fireEvent.click(screen.getByRole('button', { name: 'seed-model' }))
     fireEvent.click(screen.getByRole('checkbox'))
     fireEvent.click(screen.getByRole('button', { name: /^calculate$/i }))
 

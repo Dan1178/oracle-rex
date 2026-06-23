@@ -10,8 +10,10 @@ import type { JobFeature } from '../types/ai'
 // low-latency models (FAST_OPTIONS) always lead, even when they are not the
 // default selection for that feature.
 
-/** Which provider key a model is billed against (the legacy `data-api-make`). */
-export type ApiMake = 'openai' | 'xai' | 'anthropic'
+/** Which provider key a model is billed against (the legacy `data-api-make`).
+ * `google` (Gemini) is special: its key lives on the server, so a Google model
+ * needs no BYOK key from the user (see the settings store's getCredentials). */
+export type ApiMake = 'openai' | 'xai' | 'anthropic' | 'google'
 
 // The four AI features exposed in Settings. These line up 1:1 with the
 // job-create URL segments (JobFeature), so a feature's selection can be sent
@@ -32,10 +34,20 @@ export interface FeatureModelGroup {
   defaultValue: string
 }
 
-// The two fast, low-latency models offered at the top of every feature group.
-// They lead each list (fastest -> most capable) but are not necessarily the
-// default selection for a given feature.
+// Gemini leads every group and is the default for all features: it is fast and
+// runs on the server-held key, so a user gets live AI with no key of their own.
+// Keep this value identical to GEMINI_MODELS in core/service/ai/config.py.
+const GEMINI: ModelOption = {
+  value: 'gemini-3.5-flash',
+  label: 'Gemini 3.5 Flash (free, no key)',
+  apiMake: 'google',
+}
+
+// The fast, low-latency models at the top of every feature group, ordered
+// fastest -> most capable. Gemini (free, server-keyed) leads, then the two fast
+// BYOK models.
 const FAST_OPTIONS: ModelOption[] = [
+  GEMINI,
   { value: 'gpt-5.4-nano', label: 'GPT-5.4 nano (fast)', apiMake: 'openai' },
   { value: 'claude-haiku-4-5', label: 'Claude Haiku 4.5 (fast)', apiMake: 'anthropic' },
 ]
@@ -55,7 +67,7 @@ export const FEATURE_MODEL_GROUPS: FeatureModelGroup[] = [
   {
     feature: 'rules',
     heading: 'Rules Q&A',
-    defaultValue: 'gpt-5.4-nano',
+    defaultValue: 'gemini-3.5-flash',
     options: [
       ...FAST_OPTIONS,
       { value: 'gpt-5.4-mini', label: 'GPT-5.4 mini', apiMake: 'openai' },
@@ -65,19 +77,19 @@ export const FEATURE_MODEL_GROUPS: FeatureModelGroup[] = [
   {
     feature: 'strategy',
     heading: 'Strategy Suggester',
-    defaultValue: 'gpt-5.4',
+    defaultValue: 'gemini-3.5-flash',
     options: strategyMoveOptions,
   },
   {
     feature: 'move',
     heading: 'Move Suggester',
-    defaultValue: 'gpt-5.4',
+    defaultValue: 'gemini-3.5-flash',
     options: strategyMoveOptions,
   },
   {
     feature: 'tactical',
     heading: 'Tactical Calculator',
-    defaultValue: 'gpt-5.4-mini',
+    defaultValue: 'gemini-3.5-flash',
     options: [
       ...FAST_OPTIONS,
       { value: 'gpt-5.4-mini', label: 'GPT-5.4 mini', apiMake: 'openai' },

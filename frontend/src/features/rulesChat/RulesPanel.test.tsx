@@ -10,12 +10,19 @@ import { completedRulesResult, jobDict, sampleCatalog } from '../../test/fixture
 import { server } from '../../test/server'
 import { RulesPanel } from './RulesPanel'
 
-function SeedKey() {
-  const { setApiKey } = useSettings()
+// Rules defaults to Gemini (server-keyed, no user key). These buttons switch it
+// to a BYOK model and seed an OpenAI key, so the key / no-key paths can be tested.
+function Seeds() {
+  const { setApiKey, setModel } = useSettings()
   return (
-    <button type="button" onClick={() => setApiKey('openai', 'sk-test')}>
-      seed-key
-    </button>
+    <>
+      <button type="button" onClick={() => setModel('rules', 'gpt-5.4-nano')}>
+        seed-model
+      </button>
+      <button type="button" onClick={() => setApiKey('openai', 'sk-test')}>
+        seed-key
+      </button>
+    </>
   )
 }
 
@@ -24,7 +31,7 @@ function renderPanel() {
   return render(
     <QueryClientProvider client={client}>
       <SettingsProvider>
-        <SeedKey />
+        <Seeds />
         <RulesPanel />
       </SettingsProvider>
     </QueryClientProvider>,
@@ -42,8 +49,9 @@ describe('RulesPanel', () => {
     )
   })
 
-  it('asks the user to add a key when asking with no credentials', () => {
+  it('asks the user to add a key when asking with a BYOK model and no credentials', () => {
     renderPanel()
+    fireEvent.click(screen.getByRole('button', { name: 'seed-model' }))
     fireEvent.change(screen.getByLabelText(/rules question/i), {
       target: { value: 'Can I retreat?' },
     })
@@ -81,6 +89,7 @@ describe('RulesPanel', () => {
     )
 
     renderPanel()
+    fireEvent.click(screen.getByRole('button', { name: 'seed-model' }))
     fireEvent.click(screen.getByRole('button', { name: 'seed-key' }))
     fireEvent.change(screen.getByLabelText(/rules question/i), {
       target: { value: '  Can I retreat with no ships?  ' },

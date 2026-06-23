@@ -14,15 +14,25 @@ describe('settings store', () => {
   it('defaults each feature to its recommended model', () => {
     const { result } = renderHook(() => useSettings(), { wrapper })
     expect(result.current.models).toEqual({
-      rules: 'gpt-5.4-nano',
-      strategy: 'gpt-5.4',
-      move: 'gpt-5.4',
-      tactical: 'gpt-5.4-mini',
+      rules: 'gemini-3.5-flash',
+      strategy: 'gemini-3.5-flash',
+      move: 'gemini-3.5-flash',
+      tactical: 'gemini-3.5-flash',
     })
   })
 
-  it('errors when no credential is entered', () => {
+  it('needs no key for a Google (Gemini) model: sends just the model', () => {
     const { result } = renderHook(() => useSettings(), { wrapper })
+    // Strategy defaults to Gemini (server-keyed), so it is ready with no key.
+    expect(result.current.getCredentials('strategy')).toEqual({
+      creds: { model: 'gemini-3.5-flash' },
+    })
+  })
+
+  it('errors when a BYOK model is selected with no credential entered', () => {
+    const { result } = renderHook(() => useSettings(), { wrapper })
+    // The default Gemini model needs no key; a BYOK model with no key errors.
+    act(() => result.current.setModel('strategy', 'gpt-5.4'))
     expect(result.current.getCredentials('strategy')).toEqual({
       error: NO_CREDENTIALS_MESSAGE,
     })
@@ -31,7 +41,9 @@ describe('settings store', () => {
   it('sends the BYOK key matching the selected model provider', () => {
     const { result } = renderHook(() => useSettings(), { wrapper })
 
-    // Strategy defaults to gpt-5.4 (openai), so the OpenAI key should be used.
+    // Pick a BYOK OpenAI model for strategy (the default is now Gemini), so the
+    // OpenAI key should be used.
+    act(() => result.current.setModel('strategy', 'gpt-5.4'))
     act(() => result.current.setApiKey('openai', 'sk-openai'))
     expect(result.current.getCredentials('strategy')).toEqual({
       creds: { api_key: 'sk-openai', model: 'gpt-5.4' },

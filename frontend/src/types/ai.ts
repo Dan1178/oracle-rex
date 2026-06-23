@@ -47,10 +47,13 @@ export interface ForceData {
 }
 
 // Credentials sent with a live job-create body. An access code (private live
-// demo) takes precedence over a BYOK key; exactly one variant is sent.
+// demo) takes precedence over a BYOK key. A Google (Gemini) model sends only the
+// model: the server holds that key, so no api_key or access code is needed.
+// Exactly one variant is sent.
 export type LiveCredentials =
   | { access_code: string }
   | { api_key: string; model: string }
+  | { model: string }
 
 // Per-feature job inputs (before credentials are merged in).
 export interface RulesJobInput {
