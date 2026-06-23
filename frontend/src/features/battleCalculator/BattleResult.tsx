@@ -27,7 +27,7 @@ export function BattleResult({ result, children }: BattleResultProps) {
       {blocked && (
         <p className={styles.blocked}>
           The enemy holds the planet but you brought no ground forces, so the planet
-          cannot be taken — add infantry or mechs to make this winnable.
+          cannot be taken. Add infantry or mechs to make this winnable.
         </p>
       )}
 

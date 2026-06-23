@@ -54,11 +54,11 @@ export function jobDict(overrides: Partial<JobStatus> = {}): JobStatus {
 }
 
 export const completedRulesResult = {
-  answer: 'No — you must have at least one ship to retreat.',
+  answer: 'No, you must have at least one ship to retreat.',
   structured: {
-    answer: 'No — a retreat moves surviving ships, so you need at least one.',
+    answer: 'No, a retreat moves surviving ships, so you need at least one.',
     assumptions: ['Standard space combat retreat.'],
-    rule_basis: ['Space combat — Retreat step'],
+    rule_basis: ['Space combat, Retreat step'],
     caveats: ['Must be announced before hits resolve.'],
     needs_exact_text: false,
   },

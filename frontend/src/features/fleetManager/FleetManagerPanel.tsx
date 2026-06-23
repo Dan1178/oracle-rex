@@ -16,7 +16,7 @@ import {
 import { FleetPopover } from './FleetPopover'
 import styles from './FleetManagerPanel.module.css'
 
-// Fleet Manager — the interactive board editor (ports templates/fleet.html +
+// Fleet Manager, the interactive board editor (ports templates/fleet.html +
 // static/js/fleet_manager.js). A TTS string builds a board; clicking a system
 // hex opens the fleet-management popover for editing ships, ground forces, and
 // owners; the board can be exported to the Move Suggester or saved / loaded /

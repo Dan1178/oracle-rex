@@ -1,26 +1,121 @@
-/* App shell layout, ported from `.container` / `.app-tagline` in
-   static/css/style.css. */
+/* The console shell, the dark, translucent command panel the whole app sits in.
+   Replaces the old white `.container`; the starfield drifts behind it and bleeds
+   through the translucent surface at the edges. (Milestone 7 theme.) */
 
 .container {
+  position: relative;
+  z-index: 1;
   max-width: 1500px;
   margin: 0 auto;
-  background: white;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background: var(--console-surface);
+  backdrop-filter: blur(2px);
+  border: 1px solid var(--console-border);
+  padding: 34px 38px 44px;
+  border-radius: 6px;
+  box-shadow:
+    0 0 40px rgba(95, 208, 255, 0.07),
+    inset 0 0 60px rgba(95, 208, 255, 0.03);
+}
+
+/* HUD corner brackets. Top-left/top-right are the shell's own ::before/::after;
+   the two bottom corners are the explicit <span> elements in App.tsx. */
+.container::before,
+.container::after,
+.bracketBl,
+.bracketBr {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--accent-cyan);
+  opacity: 0.7;
+}
+
+.container::before {
+  top: 10px;
+  left: 10px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.container::after {
+  top: 10px;
+  right: 10px;
+  border-left: none;
+  border-bottom: none;
+}
+
+.bracketBl {
+  bottom: 10px;
+  left: 10px;
+  border-right: none;
+  border-top: none;
+}
+
+.bracketBr {
+  bottom: 10px;
+  right: 10px;
+  border-left: none;
+  border-top: none;
 }
 
 .title {
   font-family: 'Azonix', sans-serif;
   font-weight: normal;
   text-align: center;
-  color: #333;
+  letter-spacing: 2px;
+  color: var(--accent-cyan);
+  text-shadow:
+    0 0 12px rgba(95, 208, 255, 0.55),
+    0 0 28px rgba(95, 208, 255, 0.25);
 }
 
 .tagline {
   text-align: center;
-  color: #555;
+  color: var(--text-muted);
   max-width: 900px;
   margin: 0 auto 24px;
   line-height: 1.5;
+}
+
+.tagline strong {
+  color: var(--accent-amber);
+}
+
+/* Landing CTA band, quick entry points that jump straight to a feature tab. */
+.ctaBand {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 auto 28px;
+}
+
+.cta {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  color: var(--accent-cyan);
+  background: rgba(95, 208, 255, 0.06);
+  border: 1px solid rgba(95, 208, 255, 0.4);
+  border-radius: 4px;
+  transition: 0.15s ease;
+}
+
+.cta:hover {
+  background: rgba(95, 208, 255, 0.16);
+  box-shadow: 0 0 16px rgba(95, 208, 255, 0.3);
+}
+
+.ctaPrimary {
+  background: var(--accent-cyan);
+  color: #02060c;
+  font-weight: bold;
+  box-shadow: 0 0 18px rgba(95, 208, 255, 0.45);
+}
+
+.ctaPrimary:hover {
+  background: #8fe0ff;
 }

@@ -1,14 +1,14 @@
-/* Ported from templates/fleet.html + the tts-input-container / button styles in
-   static/css/style.css. */
+/* Fleet Manager panel. Console theme (Milestone 7); structure ported from
+   templates/fleet.html + the tts-input / button styles. */
 
 .intro {
-  color: #444;
+  color: var(--text-muted);
   margin: 0 0 16px;
   line-height: 1.5;
 }
 
 .byok {
-  color: #444;
+  color: var(--text-muted);
   margin: 0 0 8px;
 }
 
@@ -24,7 +24,7 @@
   flex-grow: 1;
   min-width: 240px;
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(95, 208, 255, 0.22);
   border-radius: 5px;
 }
 
@@ -36,17 +36,22 @@
   margin-bottom: 8px;
 }
 
-.button {
-  background: #007bff;
-  color: white;
+.button,
+.fileLabel {
+  font-family: 'Orbitron', sans-serif;
+  background: var(--accent-cyan);
+  color: #02060c;
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: 0.15s ease;
 }
 
-.button:hover:not(:disabled) {
-  background: #0056b3;
+.button:hover:not(:disabled),
+.fileLabel:hover {
+  background: #8fe0ff;
+  box-shadow: 0 0 16px rgba(95, 208, 255, 0.4);
 }
 
 .button:disabled {
@@ -56,18 +61,6 @@
 
 /* The file input is styled as a button-like label (native file inputs are ugly
    and unstyleable). */
-.fileLabel {
-  background: #007bff;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.fileLabel:hover {
-  background: #0056b3;
-}
-
 .fileInput {
   display: none;
 }
@@ -78,13 +71,13 @@
 }
 
 .message[data-tone='ok'] {
-  color: green;
+  color: #7fdca0;
 }
 
 .message[data-tone='warn'] {
-  color: #b8860b;
+  color: var(--accent-amber);
 }
 
 .message[data-tone='error'] {
-  color: red;
+  color: #ff6b6b;
 }

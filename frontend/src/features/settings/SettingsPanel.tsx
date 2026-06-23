@@ -38,17 +38,17 @@ export function SettingsPanel() {
         <h4>Three ways to use Oracle Rex</h4>
         <ul className={styles.modesList}>
           <li>
-            <strong>Demo mode</strong> — the fastest way to explore. Every feature has a
+            <strong>Demo mode</strong>: the fastest way to explore. Every feature has a
             one-click sample (look for the <em>Demo</em> boxes in each tab) backed by
             saved AI responses. No API key required.
           </li>
           <li>
-            <strong>Live AI (BYOK)</strong> — paste your own provider API key below to
+            <strong>Live AI (BYOK)</strong>: paste your own provider API key below to
             generate fresh responses. Keys stay in this browser tab and are used only
             for your requests.
           </li>
           <li>
-            <strong>Private live demo</strong> — if you were given an access code, enter
+            <strong>Private live demo</strong>: if you were given an access code, enter
             it below to run live AI on a controlled, owner-provided key.
           </li>
         </ul>
@@ -98,7 +98,7 @@ export function SettingsPanel() {
         </div>
 
         <p className={styles.warning}>
-          Keys are kept in memory for this browser tab only — they are not saved to disk
+          Keys are kept in memory for this browser tab only. They are not saved to disk
           or local storage, and are cleared when you close or reload the tab.
         </p>
       </section>
@@ -112,7 +112,7 @@ export function SettingsPanel() {
           every AI type selected.
         </p>
         <p className={styles.modelWarn}>
-          These are reasoning (&ldquo;thinking&rdquo;) models — they deliberate before
+          These are reasoning (&ldquo;thinking&rdquo;) models. They deliberate before
           answering, which improves quality but adds latency. The heaviest models
           (GPT-5.5, Grok 4.20) give the strongest answers but may occasionally time out
           on the hosted demo; the lighter models (GPT-5.4 mini/nano, Grok 4.3) respond

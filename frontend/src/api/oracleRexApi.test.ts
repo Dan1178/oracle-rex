@@ -38,7 +38,7 @@ describe('oracleRexApi', () => {
   it('throws an ApiError when a response fails schema validation', async () => {
     server.use(
       http.post('*/api/build-game-from-tts/', () =>
-        // Missing required `players`/`board` — should not validate.
+        // Missing required `players`/`board`, should not validate.
         HttpResponse.json({ game: { name: 'broken' } }),
       ),
     )

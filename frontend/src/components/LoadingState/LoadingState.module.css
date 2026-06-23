@@ -1,13 +1,15 @@
-/* Ported from .response-box / .response-box.loading in static/css/style.css. */
+/* In-flight AI job indicator, styled as a cyan console screen. (M7 theme.) */
 .root {
   margin-top: 20px;
-  padding: 15px;
-  background: #f9f9f9;
-  border: 1px solid #ddd;
+  padding: 15px 18px;
+  background: var(--screen-bg);
+  border: 1px solid rgba(95, 208, 255, 0.35);
   border-radius: 5px;
   white-space: pre-wrap;
   font-family: 'OCR-A', monospace;
   font-weight: 600;
+  color: var(--accent-cyan);
+  box-shadow: inset 0 0 30px rgba(95, 208, 255, 0.06);
 }
 
 .dots::after {
@@ -33,5 +35,11 @@
   }
   75% {
     content: '...';
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dots::after {
+    animation: none;
   }
 }

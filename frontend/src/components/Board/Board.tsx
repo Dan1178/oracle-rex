@@ -18,7 +18,7 @@ const ringClass: Record<Ring, string | undefined> = {
 /**
  * The tile image id for a position. Mirrors the legacy setBoard logic: a placed
  * system uses its tile_id; Mecatol Rex (0-0) with no tile falls back to "18".
- * Empty slots of a built board return null — there is no `ST_0` asset, so the
+ * Empty slots of a built board return null, there is no `ST_0` asset, so the
  * legacy "0" fallback only ever 404'd and fell through to the CSS ring color;
  * returning null skips that wasted request and renders identically. Also null
  * when no game is loaded yet (the bare grid renders with its CSS ring colors).

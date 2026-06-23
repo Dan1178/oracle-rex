@@ -125,7 +125,7 @@ export async function buildGameFromTts(
 // --- Deterministic battle simulation (Milestone 6C) ------------------------
 
 /**
- * Run the deterministic combat simulation. Synchronous and key-free — returns
+ * Run the deterministic combat simulation. Synchronous and key-free, returns
  * win odds + fleet recommendations directly (no job to poll).
  */
 export async function simulateBattle(

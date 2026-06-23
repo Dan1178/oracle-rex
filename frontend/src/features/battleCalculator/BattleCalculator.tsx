@@ -1,7 +1,11 @@
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 
-import { ErrorState } from '../../components/ErrorState/ErrorState'
+import {
+  CREDENTIAL_HINT,
+  ErrorState,
+  RETRY_HINT,
+} from '../../components/ErrorState/ErrorState'
 import { JobResultView } from '../../components/JobResultView/JobResultView'
 import { LoadingState } from '../../components/LoadingState/LoadingState'
 import { UnitCounter } from '../../components/UnitCounter/UnitCounter'
@@ -26,7 +30,7 @@ import styles from './BattleCalculator.module.css'
 
 // The Battle / Tactical Calculator. As of Milestone 6C the win odds + fleet
 // recommendations come from the deterministic simulator (POST
-// /api/tactical/simulate/) — instant and key-free, so the calculator works with
+// /api/tactical/simulate/), instant and key-free, so the calculator works with
 // zero setup. The "Get the Oracle's take" checkbox additionally runs the
 // tactical AI job (BYOK), now seeded with the computed numbers, for a
 // natural-language explanation rendered beneath the result.
@@ -117,12 +121,12 @@ export function BattleCalculator() {
       <h2 id="tactical-heading">Tactical Calculator</h2>
       <p className={styles.intro}>
         Estimate your odds of winning a space battle and get recommended fleet
-        compositions — computed instantly, no API key required. New here? Click{' '}
+        compositions, computed instantly, with no API key required. New here? Click{' '}
         <strong>Load Example Battle</strong> to preload a scenario.
       </p>
 
       <div className={styles.demoBox}>
-        <h4>Example — no setup needed</h4>
+        <h4>Example: no setup needed</h4>
         <p className={styles.demoDesc}>
           {demoScenario?.description ??
             'Preloads both fleets and computes the combat odds.'}
@@ -179,15 +183,23 @@ export function BattleCalculator() {
         {sim.isPending ? (
           <LoadingState message={LOADING_MESSAGE} />
         ) : simError ? (
-          <ErrorState message={simError} onRetry={handleCalculate} />
+          <ErrorState message={simError} onRetry={handleCalculate} hint={RETRY_HINT} />
         ) : sim.data ? (
           <BattleResult result={sim.data}>
             {credentialError ? (
-              <ErrorState message={credentialError} onRetry={handleCalculate} />
+              <ErrorState
+                message={credentialError}
+                onRetry={handleCalculate}
+                hint={CREDENTIAL_HINT}
+              />
             ) : job.isLoading ? (
               <LoadingState message={EXPLAIN_LOADING_MESSAGE} />
             ) : job.phase === 'error' && job.error ? (
-              <ErrorState message={job.error} onRetry={handleCalculate} />
+              <ErrorState
+                message={job.error}
+                onRetry={handleCalculate}
+                hint={RETRY_HINT}
+              />
             ) : job.phase === 'success' && job.result ? (
               <JobResultView feature="tac_calc" result={job.result} />
             ) : null}

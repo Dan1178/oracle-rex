@@ -1,16 +1,16 @@
-/* Ported from static/css/tactical_calculator.css (fleet/ground sections) plus
-   the shared demo-box rules from static/css/style.css. */
+/* Tactical Calculator panel. Console theme (Milestone 7); structure ported from
+   static/css/tactical_calculator.css + the shared demo-box rules. */
 
 .intro {
-  color: #444;
+  color: var(--text-muted);
   margin: 0 0 16px;
   line-height: 1.5;
 }
 
 .demoBox {
-  background: #f0f6ff;
-  border: 1px solid #b8d4ff;
-  border-left: 4px solid #007bff;
+  background: rgba(95, 208, 255, 0.06);
+  border: 1px solid rgba(95, 208, 255, 0.22);
+  border-left: 4px solid var(--accent-cyan);
   border-radius: 5px;
   padding: 12px 16px;
   margin: 0 0 20px;
@@ -18,29 +18,35 @@
 
 .demoBox h4 {
   margin: 0 0 8px;
-  color: #0056b3;
+  color: var(--accent-cyan);
 }
 
 .demoDesc {
   margin: 0 0 12px;
-  color: #444;
+  color: var(--text-muted);
   line-height: 1.5;
 }
 
-.demoButton {
-  background: #007bff;
-  color: white;
+.demoButton,
+.calculate {
+  font-family: 'Orbitron', sans-serif;
+  background: var(--accent-cyan);
+  color: #02060c;
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: 0.15s ease;
 }
 
-.demoButton:hover:not(:disabled) {
-  background: #0056b3;
+.demoButton:hover:not(:disabled),
+.calculate:hover:not(:disabled) {
+  background: #8fe0ff;
+  box-shadow: 0 0 16px rgba(95, 208, 255, 0.4);
 }
 
-.demoButton:disabled {
+.demoButton:disabled,
+.calculate:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -55,7 +61,7 @@
 .section {
   flex: 1;
   min-width: 320px;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(95, 208, 255, 0.22);
   border-radius: 5px;
   padding: 8px 16px 16px;
 }
@@ -64,6 +70,7 @@
   font-family: 'Orbitron', sans-serif;
   font-weight: 600;
   padding: 0 6px;
+  color: var(--accent-cyan);
 }
 
 .units {
@@ -73,7 +80,7 @@
 }
 
 .groundNote {
-  color: #444;
+  color: var(--text-muted);
   margin: 0 0 12px;
   line-height: 1.5;
 }
@@ -83,27 +90,9 @@
   align-items: center;
   gap: 8px;
   margin: 0 0 16px;
-  color: #444;
+  color: var(--text-muted);
   line-height: 1.5;
   cursor: pointer;
-}
-
-.calculate {
-  background: #007bff;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.calculate:hover:not(:disabled) {
-  background: #0056b3;
-}
-
-.calculate:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 .results {
@@ -113,8 +102,8 @@
 .hint {
   margin: 0;
   padding: 15px;
-  background: #f9f9f9;
-  border: 1px solid #ddd;
+  background: rgba(95, 208, 255, 0.04);
+  border: 1px solid rgba(95, 208, 255, 0.18);
   border-radius: 6px;
-  color: #555;
+  color: var(--text-muted);
 }

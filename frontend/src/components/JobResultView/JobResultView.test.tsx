@@ -8,7 +8,7 @@ describe('JobResultView', () => {
   it('renders a structured rules answer as a card', () => {
     render(<JobResultView feature="rules" result={completedRulesResult} />)
     expect(screen.getByRole('heading', { name: /rules answer/i })).toBeInTheDocument()
-    expect(screen.getByText(/Space combat — Retreat step/)).toBeInTheDocument()
+    expect(screen.getByText(/Space combat, Retreat step/)).toBeInTheDocument()
   })
 
   it('falls back to plain text and shows the demo label for tac_calc', () => {

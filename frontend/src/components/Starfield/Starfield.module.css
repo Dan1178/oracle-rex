@@ -1,0 +1,10 @@
+/* The starfield canvas: a fixed, full-viewport layer pinned behind the console
+   shell. Non-interactive so it never intercepts clicks on the UI above it. */
+.starfield {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}

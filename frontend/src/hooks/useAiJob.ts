@@ -16,10 +16,10 @@ import type {
 // keeps the long provider call off the request path (Milestone 2) and is a
 // direct port of the legacy runAiJob/pollAiJob pair (static/js/app.js).
 
-/** Poll cadence — matches the legacy 1.5s interval. */
+/** Poll cadence, matches the legacy 1.5s interval. */
 export const AI_JOB_POLL_INTERVAL_MS = 1500
 /**
- * Stop polling after 5.5 min — above the backend budget (provider timeout
+ * Stop polling after 5.5 min, above the backend budget (provider timeout
  * ~180s + worker/reaper slack ~300s) so a slow-but-valid job resolves to a real
  * terminal status before the client gives up.
  */

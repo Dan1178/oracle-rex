@@ -14,7 +14,7 @@ import styles from './FleetPopover.module.css'
 // version was a mouse-positioned popover whose counts were read/written through
 // the DOM; here it is a controlled panel rendered for the active system, with
 // every count derived from the System prop and every edit routed back up through
-// callbacks. (The exact mouse-follow positioning is intentionally dropped — a
+// callbacks. (The exact mouse-follow positioning is intentionally dropped, a
 // fixed in-viewport panel is more robust; positioning polish is M6's job.)
 
 export interface FleetPopoverProps {

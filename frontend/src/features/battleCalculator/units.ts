@@ -77,12 +77,12 @@ export const UNIT_LABELS: Record<string, string> = Object.fromEntries(
   [...FLEET_UNITS, ...ENEMY_GROUND_UNITS].map((u) => [u.payloadKey, u.label]),
 )
 
-/** Render a `{ unit: count }` fleet map as "2 Cruiser, 1 War Sun" (or "—"). */
+/** Render a `{ unit: count }` fleet map as "2 Cruiser, 1 War Sun" (or "(none)"). */
 export function formatFleet(fleet: Record<string, number>): string {
   const parts = Object.entries(fleet)
     .filter(([, n]) => n > 0)
     .map(([key, n]) => `${n} ${UNIT_LABELS[key] ?? key}`)
-  return parts.length ? parts.join(', ') : '—'
+  return parts.length ? parts.join(', ') : '(none)'
 }
 
 /** Build the `"<side>-<unit>"` counter id used as a state key and DOM id. */
@@ -130,7 +130,7 @@ function collectSide(
 }
 
 /**
- * Assemble the `force_data` payload from the flat counts map, omitting zeroes —
+ * Assemble the `force_data` payload from the flat counts map, omitting zeroes,
  * a direct port of the legacy getForceCounts().
  */
 export function buildForceData(counts: UnitCounts): ForceData {

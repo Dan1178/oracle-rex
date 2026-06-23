@@ -3,8 +3,8 @@ import { useQuery } from '@tanstack/react-query'
 import { getDemoCatalog, getDemoStatus } from '../api/oracleRexApi'
 import type { DemoCatalog, DemoStatus } from '../types/demo'
 
-// Bootstrap the demo configuration — the one-click sample catalog and the
-// live-demo availability flag — as plain queries. Ported from the legacy
+// Bootstrap the demo configuration, the one-click sample catalog and the
+// live-demo availability flag, as plain queries. Ported from the legacy
 // loadDemoConfig() (static/js/app.js). Both rarely change within a session, so
 // they are treated as effectively static once fetched; failures are non-fatal
 // (demo buttons simply stay unavailable), matching the legacy swallow-on-error.

@@ -63,7 +63,7 @@ describe('fleetModel', () => {
       let game = adjustShipCount(makeGame(), '1', 'fighter', 1)
       game = adjustShipCount(game, '1', 'fighter', -1)
       expect(fleetOf(game, '1')?.ships).toEqual({})
-      // Already zero — stays gone, never negative.
+      // Already zero, stays gone, never negative.
       game = adjustShipCount(game, '1', 'fighter', -1)
       expect(fleetOf(game, '1')?.ships.fighter).toBeUndefined()
     })

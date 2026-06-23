@@ -1,24 +1,38 @@
+/* Failed/timed-out job, styled as an amber alert screen. Amber is the theme's
+   reserved "something needs attention" accent. (M7 theme.) */
 .root {
   margin-top: 20px;
-  padding: 15px;
-  background: #fff5f5;
-  border: 1px solid #f0b8b8;
+  padding: 15px 18px;
+  background: var(--screen-bg);
+  border: 1px solid rgba(255, 179, 71, 0.4);
   border-radius: 5px;
-  color: #a12020;
+  color: var(--accent-amber);
   white-space: pre-wrap;
+  box-shadow: inset 0 0 30px rgba(255, 179, 71, 0.06);
+}
+
+.hint {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 .retry {
-  margin-top: 10px;
-  padding: 6px 14px;
-  border: 1px solid #a12020;
+  margin-top: 12px;
+  padding: 8px 16px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(255, 179, 71, 0.5);
   border-radius: 4px;
-  background: white;
-  color: #a12020;
+  background: rgba(255, 179, 71, 0.07);
+  color: var(--accent-amber);
   cursor: pointer;
+  transition: 0.15s ease;
 }
 
 .retry:hover {
-  background: #a12020;
-  color: white;
+  background: rgba(255, 179, 71, 0.18);
+  box-shadow: 0 0 16px rgba(255, 179, 71, 0.3);
 }

@@ -4,7 +4,7 @@ import type { CredentialResult } from './credentials'
 import type { ApiMake, SettingsFeature } from './models'
 
 // The settings context shape and consumer hook live here (separate from the
-// provider component) so the provider file can export only a component — which
+// provider component) so the provider file can export only a component, which
 // keeps React Fast Refresh working in dev.
 
 export type ApiKeys = Record<ApiMake, string>
