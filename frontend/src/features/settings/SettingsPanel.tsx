@@ -47,18 +47,17 @@ export function SettingsPanel() {
         <h4>Three ways to use Oracle Rex</h4>
         <ul className={styles.modesList}>
           <li>
-            <strong>Demo mode</strong>: the fastest way to explore. Every feature has a
-            one-click sample (look for the <em>Demo</em> boxes in each tab) backed by
-            saved AI responses. No API key required.
+            <strong>Free live AI (default)</strong>: every feature runs live on a free,
+            rate-limited Gemini model with no key needed. Just use it.
           </li>
           <li>
-            <strong>Live AI (BYOK)</strong>: paste your own provider API key below to
-            generate fresh responses. Keys stay in this browser tab and are used only
-            for your requests.
+            <strong>Bring your own key (BYOK)</strong>: add an OpenAI, xAI, or Anthropic
+            key below to use those providers. Keys stay in this browser tab and are used
+            only for your requests. A private live-demo access code also works.
           </li>
           <li>
-            <strong>Private live demo</strong>: if you were given an access code, enter
-            it below to run live AI on a controlled, owner-provided key.
+            <strong>Saved demos</strong>: every tab has a one-click sample (the boxes in
+            each tab) backed by saved responses. Instant, and a reliable fallback.
           </li>
         </ul>
       </div>

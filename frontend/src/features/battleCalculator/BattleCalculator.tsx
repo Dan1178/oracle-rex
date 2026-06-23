@@ -126,7 +126,7 @@ export function BattleCalculator() {
       </p>
 
       <div className={styles.demoBox}>
-        <h4>Example: no setup needed</h4>
+        <h4>Or load an example battle (instant)</h4>
         <p className={styles.demoDesc}>
           {demoScenario?.description ??
             'Preloads both fleets and computes the combat odds.'}

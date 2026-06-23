@@ -54,40 +54,9 @@ function App() {
         <p className={styles.tagline}>
           An AI strategy assistant for Twilight Imperium: it parses board states,
           renders game maps, estimates combat odds, and generates faction-specific
-          strategy. Every feature has a one-click <strong>Demo</strong>, no API key
-          needed.
+          strategy. Every feature runs on <strong>free live AI</strong> with no key
+          needed; saved demos remain as an instant fallback.
         </p>
-
-        <div className={styles.ctaBand}>
-          <button
-            type="button"
-            className={`${styles.cta} ${styles.ctaPrimary}`}
-            onClick={() => setActiveTab('strategy')}
-          >
-            Try Demo Scenario
-          </button>
-          <button
-            type="button"
-            className={styles.cta}
-            onClick={() => setActiveTab('rules')}
-          >
-            Open Rules Advisor
-          </button>
-          <button
-            type="button"
-            className={styles.cta}
-            onClick={() => setActiveTab('tactical')}
-          >
-            Open Battle Calculator
-          </button>
-          <button
-            type="button"
-            className={styles.cta}
-            onClick={() => setActiveTab('settings')}
-          >
-            Use Live AI Mode
-          </button>
-        </div>
 
         <TabNav tabs={TABS} activeTab={activeTab} onSelect={setActiveTab} />
 

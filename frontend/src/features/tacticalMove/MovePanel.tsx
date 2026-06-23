@@ -63,7 +63,7 @@ export function MovePanel({ seed }: MovePanelProps) {
       </p>
 
       <div className={styles.demoBox}>
-        <h4>Demo: no API key needed</h4>
+        <h4>Or load a sample puzzle (instant)</h4>
         <p className={styles.demoDesc}>
           {demoScenario?.description ??
             'Loads a sample board, selects a faction, and shows a saved move recommendation.'}

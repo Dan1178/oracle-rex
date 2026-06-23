@@ -51,7 +51,7 @@ export function StrategyPanel() {
       </p>
 
       <div className={styles.demoBox}>
-        <h4>Demo: no API key needed</h4>
+        <h4>Or load a sample board (instant)</h4>
         <p className={styles.demoDesc}>
           {demoScenario?.description ??
             'Loads a balanced sample board, auto-selects a faction, and shows a saved strategy.'}
