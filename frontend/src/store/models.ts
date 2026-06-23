@@ -1,10 +1,14 @@
 import type { JobFeature } from '../types/ai'
 
-// The per-feature AI model catalog, mirrored verbatim from the legacy Settings
-// tab (templates/settings.html). Each radio group there is `<feature>-ai-model`
-// with a `data-api-make` per option; here that becomes a typed option list plus
-// the default (the option that was `checked`). The settings store uses
-// `apiMake` to pick which BYOK key to send for the selected model.
+// The per-feature AI model catalog. Originally mirrored from the legacy Settings
+// tab (templates/settings.html); each radio group is `<feature>-ai-model` with a
+// `data-api-make` per option, which here becomes a typed option list plus the
+// default. The settings store uses `apiMake` to pick which BYOK key to send for
+// the selected model.
+//
+// Ordering convention: every group runs fastest -> most capable, so the two fast
+// low-latency models (FAST_OPTIONS) always lead, even when they are not the
+// default selection for that feature.
 
 /** Which provider key a model is billed against (the legacy `data-api-make`). */
 export type ApiMake = 'openai' | 'xai' | 'anthropic'
@@ -28,13 +32,22 @@ export interface FeatureModelGroup {
   defaultValue: string
 }
 
+// The two fast, low-latency models offered at the top of every feature group.
+// They lead each list (fastest -> most capable) but are not necessarily the
+// default selection for a given feature.
+const FAST_OPTIONS: ModelOption[] = [
+  { value: 'gpt-5.4-nano', label: 'GPT-5.4 nano (fast)', apiMake: 'openai' },
+  { value: 'claude-haiku-4-5', label: 'Claude Haiku 4.5 (fast)', apiMake: 'anthropic' },
+]
+
+// Strategy + Move share the same option list, ordered fastest -> most capable.
 const strategyMoveOptions: ModelOption[] = [
+  ...FAST_OPTIONS,
   { value: 'gpt-5.4', label: 'GPT-5.4', apiMake: 'openai' },
-  { value: 'gpt-5.5', label: 'GPT-5.5 (most capable)', apiMake: 'openai' },
   { value: 'grok-4.3', label: 'Grok 4.3', apiMake: 'xai' },
-  { value: 'grok-4.20', label: 'Grok 4.20', apiMake: 'xai' },
   { value: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6', apiMake: 'anthropic' },
-  { value: 'claude-haiku-4-5', label: 'Claude Haiku 4.5', apiMake: 'anthropic' },
+  { value: 'grok-4.20', label: 'Grok 4.20', apiMake: 'xai' },
+  { value: 'gpt-5.5', label: 'GPT-5.5 (most capable)', apiMake: 'openai' },
 ]
 
 // Ordered to match the Settings tab layout (Rules, Strategy, Move, Tactical).
@@ -44,10 +57,9 @@ export const FEATURE_MODEL_GROUPS: FeatureModelGroup[] = [
     heading: 'Rules Q&A',
     defaultValue: 'gpt-5.4-nano',
     options: [
-      { value: 'gpt-5.4-nano', label: 'GPT-5.4 nano (fast)', apiMake: 'openai' },
+      ...FAST_OPTIONS,
       { value: 'gpt-5.4-mini', label: 'GPT-5.4 mini', apiMake: 'openai' },
       { value: 'grok-4.3', label: 'Grok 4.3', apiMake: 'xai' },
-      { value: 'claude-haiku-4-5', label: 'Claude Haiku 4.5', apiMake: 'anthropic' },
     ],
   },
   {
@@ -67,10 +79,10 @@ export const FEATURE_MODEL_GROUPS: FeatureModelGroup[] = [
     heading: 'Tactical Calculator',
     defaultValue: 'gpt-5.4-mini',
     options: [
+      ...FAST_OPTIONS,
       { value: 'gpt-5.4-mini', label: 'GPT-5.4 mini', apiMake: 'openai' },
       { value: 'grok-4.20', label: 'Grok 4.20 (math/logic)', apiMake: 'xai' },
       { value: 'gpt-5.5', label: 'GPT-5.5 (most capable)', apiMake: 'openai' },
-      { value: 'claude-haiku-4-5', label: 'Claude Haiku 4.5', apiMake: 'anthropic' },
     ],
   },
 ]

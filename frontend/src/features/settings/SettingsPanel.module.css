@@ -2,7 +2,7 @@
    states, pill-style model options on the dark console surface. */
 
 .settings {
-  max-width: 880px;
+  width: 100%;
 }
 
 .pageTitle {
