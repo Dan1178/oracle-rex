@@ -1,12 +1,10 @@
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 
-import {
-  CREDENTIAL_HINT,
-  ErrorState,
-  RETRY_HINT,
-} from '../../components/ErrorState/ErrorState'
-import { JobResultView } from '../../components/JobResultView/JobResultView'
+import { DemoBox } from '../../components/DemoBox/DemoBox'
+import { EmptyHint } from '../../components/EmptyHint/EmptyHint'
+import { ErrorState, RETRY_HINT } from '../../components/ErrorState/ErrorState'
+import { JobResultArea } from '../../components/JobResultArea/JobResultArea'
 import { LoadingState } from '../../components/LoadingState/LoadingState'
 import { ResetButton } from '../../components/ResetButton/ResetButton'
 import { UnitCounter } from '../../components/UnitCounter/UnitCounter'
@@ -139,21 +137,16 @@ export function BattleCalculator() {
         <strong>Load Example Battle</strong> to preload a scenario.
       </p>
 
-      <div className={styles.demoBox}>
-        <h4>Or load an example battle (instant)</h4>
-        <p className={styles.demoDesc}>
-          {demoScenario?.description ??
-            'Preloads both fleets and computes the combat odds.'}
-        </p>
-        <button
-          type="button"
-          className={styles.demoButton}
-          onClick={handleDemo}
-          disabled={!demoReady || sim.isPending}
-        >
-          Load Example Battle
-        </button>
-      </div>
+      <DemoBox
+        title="Or load an example battle (instant)"
+        description={
+          demoScenario?.description ??
+          'Preloads both fleets and computes the combat odds.'
+        }
+        buttonLabel="Load Example Battle"
+        onClick={handleDemo}
+        disabled={!demoReady || sim.isPending}
+      />
 
       <h3>Fleets</h3>
       <div className={styles.fleets}>
@@ -201,29 +194,20 @@ export function BattleCalculator() {
           <ErrorState message={simError} onRetry={handleCalculate} hint={RETRY_HINT} />
         ) : sim.data ? (
           <BattleResult result={sim.data}>
-            {credentialError ? (
-              <ErrorState
-                message={credentialError}
-                onRetry={handleCalculate}
-                hint={CREDENTIAL_HINT}
-              />
-            ) : job.isLoading ? (
-              <LoadingState message={EXPLAIN_LOADING_MESSAGE} />
-            ) : job.phase === 'error' && job.error ? (
-              <ErrorState
-                message={job.error}
-                onRetry={handleCalculate}
-                hint={RETRY_HINT}
-              />
-            ) : job.phase === 'success' && job.result ? (
-              <JobResultView feature="tac_calc" result={job.result} />
-            ) : null}
+            <JobResultArea
+              job={job}
+              feature="tac_calc"
+              loadingMessage={EXPLAIN_LOADING_MESSAGE}
+              onJobRetry={handleCalculate}
+              credentialError={credentialError}
+              onCredentialRetry={handleCalculate}
+            />
           </BattleResult>
         ) : (
-          <p className={styles.hint}>
+          <EmptyHint>
             Odds of Victory: not yet calculated. Set your fleets and click Calculate, or
             load the example battle.
-          </p>
+          </EmptyHint>
         )}
       </div>
     </section>

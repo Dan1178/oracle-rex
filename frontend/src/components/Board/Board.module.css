@@ -42,6 +42,30 @@
   font-size: 6.5vw;
 }
 
+/* Mobile: the desktop board is sized for a wide landscape viewport
+   (width: 80vw, height: 160vh, font-size: 6.5vw). In narrow portrait that 160vh
+   balloons into a screen-filling vertical scroll, and the 80vw box can nudge
+   past the padded container width and clip the edge hexes.
+
+   Per the design call, the hexes deliberately keep their 6.5vw font size on
+   mobile (so they do NOT shrink relative to desktop — small phones zoom to read
+   the tiles). We only retarget the grid BOX: full content width so it can never
+   overflow the container, and a height that matches the map's actual ~76vw
+   vertical extent instead of 160vh, removing the huge empty scroll. The em-based
+   hex offsets are untouched, so the layout is identical, just no longer adrift
+   in a giant container. Desktop rules above are unchanged. */
+@media (max-width: 640px) {
+  .boardPreview {
+    min-height: 0;
+    margin: 12px 0;
+  }
+
+  .hexGrid {
+    width: 100%;
+    height: 85vw;
+  }
+}
+
 .hex {
   font-size: inherit;
   position: absolute;

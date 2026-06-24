@@ -2,8 +2,18 @@
 
 ## Status
 
-Planned (2026-06-22). Not started. Two related UX improvements, anchored on the
-Tactical Calculator.
+Two related UX improvements, anchored on the Tactical Calculator.
+
+- **Part A (unit caps): DONE** (2026-06-23). Implemented and verified (77 frontend
+  tests). Caps confirmed against the rules: War Sun 2, Flagship 1, Carrier 4,
+  Dreadnought 5, Cruiser 8, Destroyer 8, PDS 6, Space Dock 3, Mech 4; Fighters and
+  Infantry uncapped. `UnitDef.max` drives a disabled up-arrow + a clamp in
+  `increment`.
+- **Part B (per-tab reset): DONE** (2026-06-23). Implemented and verified (79
+  frontend tests). A shared `ResetButton` (with a themed confirm dialog) on Rules,
+  Strategy, Move, Fleet Manager, and Tactical Calculator clears that tab's state;
+  Settings is excluded (it would wipe API keys). `useBoardSuggester` gained a
+  `reset()` for the two board panels.
 
 ---
 
@@ -88,7 +98,7 @@ to every feature tab.
 
 - A small reusable confirmation step. Two options: a themed `ConfirmDialog`
   component (matches the console theme, preferred) or `window.confirm` as a
-  minimal fallback. Recommend the themed dialog for portfolio polish.
+  minimal fallback. Recommend the themed dialog for a more polished feel.
 - A shared `ResetButton` placed consistently per tab; the actual reset logic lives
   in each panel since each owns its state.
 

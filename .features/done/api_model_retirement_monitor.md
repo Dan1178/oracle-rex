@@ -2,7 +2,25 @@
 
 ## Status
 
-Planned (sketched 2026-06-22). Not started.
+Done (2026-06-23). Implemented as `scripts/check_model_availability.py` (stdlib
+only, imports `config.py` as the watch list) plus
+`.github/workflows/model-retirement-check.yml` (weekly cron + `workflow_dispatch`,
+job-fail alerting). Two refinements over the original sketch:
+
+- **Google / Gemini is also checked.** `config.py` now has `GEMINI_MODELS`
+  served by a server-held key, and a retired Gemini model would silently break
+  the free live-demo path. The script lists all four providers (Gemini via
+  `generativelanguage.googleapis.com/v1beta/models`, a different response shape).
+- **Matching is date-suffix aware, not bare prefix.** A configured id is present
+  only if a live id equals it or appends `-<date>` (e.g. `claude-haiku-4-5` ->
+  `claude-haiku-4-5-20251001`). Bare prefix matching would let `gpt-5.4-mini`
+  satisfy a retired `gpt-5.4` and hide the retirement.
+
+Exit codes: 0 = all present; 1 = a model is missing (the alert); 2 = a provider
+could not be checked (missing key / API error). `--allow-missing-keys` lets a
+local run skip providers whose key is absent; CI runs without it so a missing
+secret surfaces. Remaining manual step: add the four API keys as repository
+secrets, then trigger once via `workflow_dispatch` to confirm a clean pass.
 
 ## Objective
 
@@ -86,7 +104,7 @@ miss.
   be prefix-aware (configured id is a prefix of a live id) or it will
   false-positive. Same care for the xAI / Grok ids.
 - GitHub disables scheduled workflows after 60 days of repo inactivity. Not a
-  concern for an active repo, but worth knowing for a dormant portfolio project.
+  concern for an active repo, but worth knowing for a dormant project.
 
 ## Build steps
 

@@ -42,3 +42,18 @@
   background: var(--accent-cyan);
   box-shadow: 0 0 10px var(--accent-cyan);
 }
+
+/* Mobile: six tabs cannot fit one row at 16px on a phone. As an equal-flex row
+   they overflow and clip the trailing tabs off-screen (unreachable). Wrap to two
+   rows of three and shrink the type so every tab stays visible and tappable. */
+@media (max-width: 640px) {
+  .tabNav {
+    flex-wrap: wrap;
+  }
+
+  .tabButton {
+    flex: 1 1 33%;
+    padding: 10px 4px;
+    font-size: 13px;
+  }
+}

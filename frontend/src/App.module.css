@@ -81,3 +81,16 @@
 .tagline strong {
   color: var(--accent-amber);
 }
+
+/* Mobile: reclaim the ~20% of width the desktop side padding eats on a phone,
+   and trim the oversized title so it doesn't dominate the first screen. */
+@media (max-width: 640px) {
+  .container {
+    padding: 20px 16px 28px;
+  }
+
+  .title {
+    font-size: 1.6rem;
+    letter-spacing: 1px;
+  }
+}

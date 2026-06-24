@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned (sketched 2026-06-22). Not started. Post-core polish / portfolio flair.
+Planned (sketched 2026-06-22). Not started. Post-core polish.
 
 ## Objective
 
@@ -19,8 +19,8 @@ prompt.
 
 The app is already themed as "Oracle Rex," a sci-fi command console (see
 `milestone_7_ux_theme.md`). A selectable AI persona is a cheap, memorable
-portfolio differentiator that rides on top of the existing prompt layer with no
-change to the game logic or schemas.
+differentiator that rides on top of the existing prompt layer with no change to
+the game logic or schemas.
 
 ## Proposed personas
 
