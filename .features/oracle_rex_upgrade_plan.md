@@ -4,7 +4,7 @@
 
 Modernize Oracle Rex from an older AI demo into a polished, reliable, portfolio-ready AI strategy assistant for Twilight Imperium.
 
-The goal is **not** to add a large number of new features. The priority is to make the existing app reliable, maintainable, easier to demo, and technically impressive as a resume/portfolio project.
+The goal is **not** to add a large number of new features. The priority is to make the existing app reliable, maintainable, easier to demo, and technically impressive as a portfolio project.
 
 ## Current Major Features
 
@@ -276,7 +276,7 @@ the local two-process dev loop is acceptable.
 
 ### Options considered
 
-- **Option A — Celery + Redis.** Standard, strongest resume keyword, but on Render
+- **Option A — Celery + Redis.** Standard, strongest keyword, but on Render
   means a Redis add-on *plus* a worker dyno (more cost/ops) and free-tier worker
   spin-down. Over-engineered for this load. Rejected.
 - **Option B — RQ / Huey / Django-Q.** Sweet spot. **Django-Q2 with the ORM broker
@@ -904,26 +904,6 @@ React Frontend
     -> Game Data Validators
     -> Combat Simulator
     -> Database
-```
-
-### 5. Prepare Resume Bullets
-
-Potential bullets:
-
-```text
-Modernized Oracle Rex, a Twilight Imperium AI strategy assistant, by migrating the frontend from vanilla JavaScript to React/TypeScript, upgrading deprecated LLM integrations, and implementing structured AI response schemas for rules, strategy, and tactical recommendations.
-```
-
-```text
-Reworked long-running AI requests for Render deployment using asynchronous job processing and status polling, reducing request timeouts and improving reliability of hosted inference workflows.
-```
-
-```text
-Built validation scripts and tests to reconcile system, planet, and board-state data against canonical Milty Draft data, improving correctness of generated map displays and AI strategy context.
-```
-
-```text
-Optimized combat calculator workflows with reusable simulation logic, probability thresholds, and fleet recommendation outputs for tactical decision support.
 ```
 
 ## Acceptance Criteria
