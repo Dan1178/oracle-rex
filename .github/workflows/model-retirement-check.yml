@@ -1,0 +1,32 @@
+name: Model retirement check
+
+# Layer 2 backstop for AI model retirements (see
+# .features/done/api_model_retirement_monitor.md). Weekly, plus on demand, it
+# checks that every model in core/service/ai/config.py is still served by its
+# provider. A missing model fails the job, and GitHub emails the repo owner when
+# a scheduled workflow fails.
+
+on:
+  schedule:
+    # Mondays at 13:00 UTC. Cron is UTC-only on GitHub Actions.
+    - cron: "0 13 * * 1"
+  workflow_dispatch:
+
+jobs:
+  check-models:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13.2"
+      # The script is stdlib-only and imports config.py directly, so there is no
+      # dependency install step.
+      - name: Check configured models against live provider lists
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python scripts/check_model_availability.py

@@ -1,14 +1,10 @@
 import { useState } from 'react'
 
 import { Board } from '../../components/Board/Board'
-import {
-  CREDENTIAL_HINT,
-  ErrorState,
-  RETRY_HINT,
-} from '../../components/ErrorState/ErrorState'
+import { DemoBox } from '../../components/DemoBox/DemoBox'
+import { ErrorState } from '../../components/ErrorState/ErrorState'
 import { FactionSelect } from '../../components/FactionSelect/FactionSelect'
-import { JobResultView } from '../../components/JobResultView/JobResultView'
-import { LoadingState } from '../../components/LoadingState/LoadingState'
+import { JobResultArea } from '../../components/JobResultArea/JobResultArea'
 import { ResetButton } from '../../components/ResetButton/ResetButton'
 import { useDemoConfig } from '../../hooks/useDemoConfig'
 import { useResultScroll } from '../../hooks/useResultScroll'
@@ -56,21 +52,16 @@ export function StrategyPanel() {
         setup.
       </p>
 
-      <div className={styles.demoBox}>
-        <h4>Or load a sample board (instant)</h4>
-        <p className={styles.demoDesc}>
-          {demoScenario?.description ??
-            'Loads a balanced sample board, auto-selects a faction, and shows a saved strategy.'}
-        </p>
-        <button
-          type="button"
-          className={styles.demoButton}
-          onClick={handleDemo}
-          disabled={!demoReady || busy}
-        >
-          Load Sample Milty Draft Board
-        </button>
-      </div>
+      <DemoBox
+        title="Or load a sample board (instant)"
+        description={
+          demoScenario?.description ??
+          'Loads a balanced sample board, auto-selects a faction, and shows a saved strategy.'
+        }
+        buttonLabel="Load Sample Milty Draft Board"
+        onClick={handleDemo}
+        disabled={!demoReady || busy}
+      />
 
       <p className={styles.byok}>
         Have your own TTS String? Generate a game (6 player only):{' '}
@@ -123,24 +114,15 @@ export function StrategyPanel() {
       <Board game={game} />
 
       <div className={styles.results} ref={resultsRef}>
-        {credentialError ? (
-          <ErrorState
-            message={credentialError}
-            onRetry={board.suggest}
-            hint={CREDENTIAL_HINT}
-          />
-        ) : job.isLoading ? (
-          <LoadingState message={LOADING_MESSAGE} />
-        ) : job.phase === 'error' && job.error ? (
-          <ErrorState message={job.error} onRetry={board.retry} hint={RETRY_HINT} />
-        ) : job.phase === 'success' && job.result ? (
-          <JobResultView feature="strategy" result={job.result} />
-        ) : (
-          <p className={styles.hint}>
-            Your strategy will appear here. Load the sample board above, or paste a TTS
-            string and click Generate, then Get Strategy.
-          </p>
-        )}
+        <JobResultArea
+          job={job}
+          feature="strategy"
+          loadingMessage={LOADING_MESSAGE}
+          onJobRetry={board.retry}
+          credentialError={credentialError}
+          onCredentialRetry={board.suggest}
+          emptyHint="Your strategy will appear here. Load the sample board above, or paste a TTS string and click Generate, then Get Strategy."
+        />
       </div>
     </section>
   )

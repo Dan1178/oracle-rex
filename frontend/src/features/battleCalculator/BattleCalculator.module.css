@@ -7,26 +7,6 @@
   line-height: 1.5;
 }
 
-.demoBox {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(95, 208, 255, 0.12);
-  border-radius: 5px;
-  padding: 12px 16px;
-  margin: 0 0 20px;
-}
-
-.demoBox h4 {
-  margin: 0 0 8px;
-  color: var(--text-muted);
-}
-
-.demoDesc {
-  margin: 0 0 12px;
-  color: var(--text-muted);
-  line-height: 1.5;
-}
-
-.demoButton,
 .calculate {
   font-family: 'Orbitron', sans-serif;
   background: var(--accent-cyan);
@@ -38,13 +18,11 @@
   transition: 0.15s ease;
 }
 
-.demoButton:hover:not(:disabled),
 .calculate:hover:not(:disabled) {
   background: #8fe0ff;
   box-shadow: 0 0 16px rgba(95, 208, 255, 0.4);
 }
 
-.demoButton:disabled,
 .calculate:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -98,11 +76,14 @@
   margin-top: 20px;
 }
 
-.hint {
-  margin: 0;
-  padding: 15px;
-  background: rgba(95, 208, 255, 0.04);
-  border: 1px solid rgba(95, 208, 255, 0.18);
-  border-radius: 6px;
-  color: var(--text-muted);
+/* Mobile: the 320px min-width fleet columns overflow a phone's width. Let them
+   shrink and stack one per row, and tighten the unit grid gaps. */
+@media (max-width: 640px) {
+  .section {
+    min-width: 0;
+  }
+
+  .units {
+    gap: 10px 12px;
+  }
 }

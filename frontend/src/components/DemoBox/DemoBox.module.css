@@ -1,0 +1,44 @@
+/* The "try it with no setup" callout shared by the advisor panels and the
+   Tactical Calculator. Owns the box chrome, heading, description, and the demo
+   action button (was copy-pasted as `.demoBox` / `.demoButton` in each panel's
+   module). */
+
+.demoBox {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(95, 208, 255, 0.12);
+  border-radius: 5px;
+  padding: 12px 16px;
+  margin: 0 0 20px;
+}
+
+.demoBox h4 {
+  margin: 0 0 8px;
+  color: var(--text-muted);
+}
+
+.desc {
+  margin: 0 0 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.button {
+  font-family: 'Orbitron', sans-serif;
+  background: var(--accent-cyan);
+  color: #02060c;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.button:hover:not(:disabled) {
+  background: #8fe0ff;
+  box-shadow: 0 0 16px rgba(95, 208, 255, 0.4);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

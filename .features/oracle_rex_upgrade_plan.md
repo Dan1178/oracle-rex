@@ -2,9 +2,9 @@
 
 ## Purpose
 
-Modernize Oracle Rex from an older AI demo into a polished, reliable, portfolio-ready AI strategy assistant for Twilight Imperium.
+Modernize Oracle Rex from an older AI demo into a polished, reliable AI strategy assistant for Twilight Imperium.
 
-The goal is **not** to add a large number of new features. The priority is to make the existing app reliable, maintainable, easier to demo, and technically impressive as a portfolio project.
+The goal is **not** to add a large number of new features. The priority is to make the existing app reliable, maintainable, easier to demo, and technically solid.
 
 ## Current Major Features
 
@@ -61,7 +61,7 @@ Follow these principles during the upgrade:
 - Separate prompts, model calls, response schemas, and UI rendering.
 - Treat long-running AI calls as asynchronous jobs or streaming responses, not normal blocking web requests.
 - Make the public demo safe by default: no owner-paid API key exposed to anonymous users.
-- Provide sample scenarios so non-TI interviewers can understand the app quickly.
+- Provide sample scenarios so people unfamiliar with TI can understand the app quickly.
 - Add tests around parsing, data correctness, and calculator behavior.
 
 ---
@@ -374,11 +374,11 @@ completed_at
 
 ---
 
-# Milestone 3 — Demo Mode and Portfolio Usability
+# Milestone 3 — Demo Mode and Usability
 
 ## Objective
 
-Make the hosted app usable by interviewers without requiring API keys or Twilight Imperium setup knowledge.
+Make the hosted app usable by first-time visitors without requiring API keys or Twilight Imperium setup knowledge.
 
 ## Required Modes
 
@@ -401,7 +401,7 @@ Implement or clearly support three modes:
 
 Optional but useful.
 
-- Owner-controlled access for interviews.
+- Owner-controlled access for sharing a live demo.
 - Could use an access code or environment flag.
 - Uses backend API key with strict limits.
 
@@ -500,8 +500,8 @@ If private live demo mode is implemented, add:
 
 ## Acceptance Criteria
 
-- An interviewer can open the app and try each major feature without an API key.
-- An interviewer does not need to know what a TTS string is.
+- A first-time visitor can open the app and try each major feature without an API key.
+- A first-time visitor does not need to know what a TTS string is.
 - Demo mode cannot run up owner AI costs.
 - Live AI remains available through BYOK or controlled private access.
 
@@ -773,7 +773,7 @@ Example:
 The AI request failed. You can retry, switch to demo mode, or provide your own API key in Live AI Mode.
 ```
 
-### Portfolio-Friendly Landing Page
+### Landing Page
 
 Add a short landing page or intro section:
 
@@ -844,11 +844,11 @@ npm run build
 
 ---
 
-# Milestone 9 — Portfolio Packaging
+# Milestone 9 — Documentation and Packaging
 
 ## Objective
 
-Make the upgraded project easy to understand for recruiters/interviewers.
+Make the upgraded project easy to understand for new visitors and contributors.
 
 ## Tasks
 
@@ -908,9 +908,9 @@ React Frontend
 
 ## Acceptance Criteria
 
-- Portfolio page can link to app, GitHub, screenshots, and walkthrough video.
+- README/project page can link to app, GitHub, screenshots, and walkthrough video.
 - Public demo works without API keys.
-- Technical story is clear to a non-TI interviewer.
+- Technical story is clear to someone unfamiliar with TI.
 
 ---
 
@@ -1071,7 +1071,7 @@ Use this order when working through the project:
 9. Migrate each feature into React one at a time.
 10. Optimize calculator/board rendering performance where needed.
 11. Improve UX/theme and advisor result cards.
-12. Add screenshots, README updates, and portfolio packaging.
+12. Add screenshots, README updates, and project documentation.
 
 ---
 
@@ -1087,5 +1087,5 @@ The upgrade is complete when:
 - AI outputs are structured and validated.
 - Planet/system/tile data mismatches are fixed and covered by validation.
 - Battle calculator and board rendering are responsive enough for demo use.
-- README, screenshots, and portfolio story are updated.
+- README, screenshots, and project documentation are updated.
 - Project can be explained as a productionized AI decision-support app, not just a chatbot wrapper.

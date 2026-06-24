@@ -1,12 +1,7 @@
 import { useState } from 'react'
 
-import {
-  CREDENTIAL_HINT,
-  ErrorState,
-  RETRY_HINT,
-} from '../../components/ErrorState/ErrorState'
-import { JobResultView } from '../../components/JobResultView/JobResultView'
-import { LoadingState } from '../../components/LoadingState/LoadingState'
+import { DemoBox } from '../../components/DemoBox/DemoBox'
+import { JobResultArea } from '../../components/JobResultArea/JobResultArea'
 import { useAiJob } from '../../hooks/useAiJob'
 import { useDemoConfig } from '../../hooks/useDemoConfig'
 import { useSettings } from '../../store/settingsContext'
@@ -71,8 +66,7 @@ export function RulesPanel() {
       </p>
 
       {chips.length > 0 && (
-        <div className={styles.demoBox}>
-          <h4>Try a sample question</h4>
+        <DemoBox title="Try a sample question">
           <div className={styles.chips}>
             {chips.map((chip) => (
               <button
@@ -86,7 +80,7 @@ export function RulesPanel() {
               </button>
             ))}
           </div>
-        </div>
+        </DemoBox>
       )}
 
       <textarea
@@ -106,23 +100,15 @@ export function RulesPanel() {
       </button>
 
       <div className={styles.results}>
-        {credentialError ? (
-          <ErrorState
-            message={credentialError}
-            onRetry={handleAsk}
-            hint={CREDENTIAL_HINT}
-          />
-        ) : job.isLoading ? (
-          <LoadingState message={LOADING_MESSAGE} />
-        ) : job.phase === 'error' && job.error ? (
-          <ErrorState message={job.error} onRetry={retry} hint={RETRY_HINT} />
-        ) : job.phase === 'success' && job.result ? (
-          <JobResultView feature="rules" result={job.result} />
-        ) : (
-          <p className={styles.hint}>
-            Your answer will appear here. Pick a sample question or ask your own.
-          </p>
-        )}
+        <JobResultArea
+          job={job}
+          feature="rules"
+          loadingMessage={LOADING_MESSAGE}
+          onJobRetry={retry}
+          credentialError={credentialError}
+          onCredentialRetry={handleAsk}
+          emptyHint="Your answer will appear here. Pick a sample question or ask your own."
+        />
       </div>
     </section>
   )

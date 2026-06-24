@@ -48,8 +48,8 @@ A structured, vendorable source exists — confirmed, no rulebook scraping neede
     assets**. So: vendor the **mechanical JSON only**, **never the images**
     (those remain Asmodee/FFG IP — and we already serve our own tile/unit art).
   - ⚠️ The Unlicense waives the *repo authors'* rights, but the underlying game
-    content is Asmodee IP. For a personal/portfolio project a mechanical subset
-    is low-risk; keep to **facts/mechanics (tech name, prereqs, type, stat
+    content is Asmodee IP. For a personal, non-commercial project a mechanical
+    subset is low-risk; keep to **facts/mechanics (tech name, prereqs, type, stat
     effects), not flavor text**, and **attribute the source** anyway (as done for
     Milty Draft in M4) for good hygiene.
 

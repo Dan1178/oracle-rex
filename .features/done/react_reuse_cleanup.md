@@ -2,7 +2,10 @@
 
 ## Status
 
-Planned (2026-06-22). Not started. Optional polish, not a gap.
+Done (2026-06-23). Extracted `JobResultArea`, `DemoBox`, and `EmptyHint`
+components; the four panels and their CSS modules now route the result-area
+ladder, demo callout, and empty-hint styling through them. tsc / eslint / 79
+tests all pass; behavior and appearance unchanged.
 
 ## Context
 

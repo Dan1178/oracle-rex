@@ -19,9 +19,10 @@ Oracle Rex supports three modes so it can be explored with or without an API key
 - **Live AI (BYOK)** — paste your own provider API key in **Settings** to generate
   fresh responses. Keys stay in the browser and are sent only with your own
   requests (encrypted on the backend before the job runs; never stored).
-- **Private live demo** — for interviews: an owner-set access code unlocks a
-  controlled backend key behind a cheap model, an output-token cap, and a daily
-  request limit (see the live-demo env vars under *Deployment*).
+- **Private live demo** — an owner-set access code unlocks a controlled backend
+  key behind a cheap model, an output-token cap, and a daily request limit (see
+  the live-demo env vars under *Deployment*). Lets you share a live demo without
+  exposing your own key.
 
 The following tabs make up all the functions of this application:
   
@@ -160,9 +161,9 @@ Optional environment variables:
 Demo mode needs no configuration — the sample scenarios and cached responses live
 in [`core/demo/`](core/demo) and are served by the `/api/demo/` endpoints.
 
-The optional **private live demo** lets an interviewer run *live* AI on the
-owner's key without exposing it. It is **off unless both** an access code and a
-backend key are set:
+The optional **private live demo** lets someone with the access code run *live*
+AI on the owner's key without exposing it. It is **off unless both** an access
+code and a backend key are set:
 
 - `DEMO_LIVE_ACCESS_CODE` — code a user enters in Settings to unlock live AI on
   the owner's key.

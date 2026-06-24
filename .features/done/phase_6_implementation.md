@@ -338,8 +338,9 @@ Once the math is deterministic, the LLM's job changes from *compute* to
   summary / key_factors / threats / advice), rendered as an AdvisorCard like the
   other features — a cleaner result than the legacy text format. This is optional
   but recommended; bump `PROMPT_VERSIONS["tac_calc"]`.
-- This is the "deterministic sim + LLM narration" pairing that makes the resume
-  bullet ("Optimized combat calculator workflows … probability thresholds …") true.
+- This is the "deterministic sim + LLM narration" pairing: the win odds and
+  recommended fleet compositions come from real probability math, with the LLM
+  narrating the computed numbers rather than guessing them.
 
 ### 6C.4 — Demo mode simplification
 
@@ -369,8 +370,8 @@ the result live instead of serving a cached one. The cached demo response
   sustain-damage assignment order, bombardment vs. Planetary Shield) against the
   rules rather than inheriting the prompt's approximations.
 - **Where the sim runs: backend (recommended).** Python backend keeps the logic
-  testable in the existing test suite and supports the "productionized backend
-  combat simulator" portfolio story. A frontend TS sim would be even faster and
+  testable in the existing test suite and keeps the combat simulator in the
+  productionized backend. A frontend TS sim would be even faster and
   offline-capable but duplicates rules logic and moves it out of the tested
   Python core. Recommend backend.
 - **Monte Carlo vs exact.** Monte Carlo first (simpler, fast enough). Note exact
