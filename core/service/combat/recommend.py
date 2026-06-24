@@ -29,6 +29,19 @@ SEARCH_TRIALS = 1000
 MAX_UNITS = 40  # hard bound so the greedy walk always terminates
 _EPSILON = 1e-9
 
+# Per-player component limits (TI4 PoK): the recommendation must never suggest
+# more of a unit than a player physically owns (this prevented nonsense like 40
+# cruisers against a maxed-out enemy). Only the recommendation's candidate units
+# need a cap here; infantry is token-extendable, so it is intentionally uncapped.
+# Keep these in sync with frontend/src/features/battleCalculator/units.ts.
+CAPS: Dict[str, int] = {
+    "cruiser": 8,
+    "dreadnought": 5,
+    "destroyer": 8,
+    "war_sun": 2,
+    "mechs": 4,
+}
+
 Fleet = Dict[str, int]
 
 
@@ -88,6 +101,19 @@ def recommend_fleets(
     def total_units() -> int:
         return sum(fleet.values()) + sum(ground.values())
 
+    def can_add(unit: str, is_ground: bool) -> bool:
+        cap = CAPS.get(unit)
+        target = ground if is_ground else fleet
+        return cap is None or target.get(unit, 0) < cap
+
+    # When the greedy step can't improve the odds, fall back to raw space power
+    # in priority order, skipping any type already at its component cap (so a
+    # maxed enemy yields a full legal fleet, not a pile of one capped unit).
+    space_order = ["cruiser", "dreadnought", "war_sun", "destroyer"]
+
+    def next_space() -> str | None:
+        return next((u for u in space_order if can_add(u, False)), None)
+
     current = evaluate(fleet, ground)
     while current < REC_THRESHOLD and total_units() < MAX_UNITS:
         best_unit: str | None = None
@@ -102,6 +128,8 @@ def recommend_fleets(
         # uses common random numbers (same seed every call), so these marginal
         # gains are comparable without sampling noise.
         for unit, is_ground in candidates:
+            if not can_add(unit, is_ground):
+                continue
             target = ground if is_ground else fleet
             target[unit] = target.get(unit, 0) + 1
             wp = evaluate(fleet, ground)
@@ -117,12 +145,20 @@ def recommend_fleets(
             # No candidate improved the odds (the all-zero early regime): make
             # structural progress toward a winnable composition instead of
             # stalling — first enough space power to clear, then enough ground.
-            if space_clear_prob(fleet) < MIN_THRESHOLD:
-                best_unit, best_is_ground = "cruiser", False
-            elif planet and sum(ground.values()) <= enemy_ground_total:
+            # Respect component caps; if nothing addable remains, stop growing.
+            space_unit = next_space()
+            if space_clear_prob(fleet) < MIN_THRESHOLD and space_unit:
+                best_unit, best_is_ground = space_unit, False
+            elif (
+                planet
+                and sum(ground.values()) <= enemy_ground_total
+                and can_add("infantry", True)
+            ):
                 best_unit, best_is_ground = "infantry", True
+            elif space_unit:
+                best_unit, best_is_ground = space_unit, False
             else:
-                best_unit, best_is_ground = "cruiser", False
+                break
 
         target = ground if best_is_ground else fleet
         target[best_unit] = target.get(best_unit, 0) + 1

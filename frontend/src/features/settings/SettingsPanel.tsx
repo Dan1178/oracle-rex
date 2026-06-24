@@ -112,6 +112,30 @@ export function SettingsPanel() {
         </p>
       </section>
 
+      <section className={styles.card} aria-labelledby="persona-heading">
+        <h3 id="persona-heading" className={styles.cardTitle}>
+          AI Personality
+        </h3>
+        <p className={styles.info}>
+          Give Oracle Rex a voice. This changes tone only, not the accuracy of answers,
+          and applies to live AI responses (not saved demo responses).
+        </p>
+        <div className={styles.field}>
+          <label htmlFor="persona-select">Personality</label>
+          <select
+            id="persona-select"
+            value={persona}
+            onChange={(e) => setPersona(e.target.value)}
+          >
+            {PERSONAS.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </section>
+
       <section className={styles.card} aria-labelledby="models-heading">
         <h3 id="models-heading" className={styles.cardTitle}>
           Model Selection
@@ -157,30 +181,6 @@ export function SettingsPanel() {
             </div>
           </fieldset>
         ))}
-      </section>
-
-      <section className={styles.card} aria-labelledby="persona-heading">
-        <h3 id="persona-heading" className={styles.cardTitle}>
-          AI Personality
-        </h3>
-        <p className={styles.info}>
-          Give Oracle Rex a voice. This changes tone only, not the accuracy of answers,
-          and applies to live AI responses (not saved demo responses).
-        </p>
-        <div className={styles.field}>
-          <label htmlFor="persona-select">Personality</label>
-          <select
-            id="persona-select"
-            value={persona}
-            onChange={(e) => setPersona(e.target.value)}
-          >
-            {PERSONAS.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.label}
-              </option>
-            ))}
-          </select>
-        </div>
       </section>
     </section>
   )

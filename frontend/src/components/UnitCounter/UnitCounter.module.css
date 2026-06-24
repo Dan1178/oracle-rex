@@ -14,6 +14,31 @@
   text-align: center;
 }
 
+/* Instant, themed tooltip naming the unit (the icons aren't all obvious). Shows
+   on hover/focus with no delay, unlike the native `title` attribute. */
+.icon::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  padding: 3px 8px;
+  background: #0a0e16;
+  color: var(--phosphor);
+  border: 1px solid rgba(95, 208, 255, 0.4);
+  border-radius: 4px;
+  font-family: 'OCR-A', monospace;
+  font-size: 11px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.icon:hover::after {
+  opacity: 1;
+}
+
 .icon img {
   width: 30px;
   height: 30px;

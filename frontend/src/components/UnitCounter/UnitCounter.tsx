@@ -37,7 +37,7 @@ export function UnitCounter({
   const atMax = max !== undefined && count >= max
   return (
     <div className={styles.root} role="group" aria-label={label}>
-      <span className={styles.icon} title={label}>
+      <span className={styles.icon} data-tooltip={label}>
         <img src={icon} alt={label} className={tintClass(side)} />
       </span>
       <div className={styles.arrows}>
