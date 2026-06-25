@@ -45,6 +45,15 @@
   display: block;
 }
 
+/* Shaded 3D unit art (e.g. the war sun): pre-tinted, no CSS filter. Shown
+   larger so the depth/detail actually reads, and nudged up so the bigger glyph
+   stays vertically centered against the steppers and count. */
+.threeD {
+  width: 46px !important;
+  height: 46px !important;
+  margin: -8px -8px -8px 0;
+}
+
 /* Tint friendly icons blue, enemy icons red (verbatim filters from legacy). */
 .friendly {
   filter: invert(16%) sepia(26%) saturate(7375%) hue-rotate(232deg) brightness(81%)

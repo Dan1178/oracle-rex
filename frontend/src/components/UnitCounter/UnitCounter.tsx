@@ -12,6 +12,13 @@ export interface UnitCounterProps {
   icon: string
   /** Tints the icon blue (friendly) or red (enemy); omit for no tint. */
   side?: Side
+  /**
+   * Pre-tinted ("baked") per-side icons for shaded 3D art. When a matching
+   * `side` entry exists it is used verbatim and the CSS filter tint is skipped
+   * (the filter only reads cleanly on flat silhouettes). Rendered larger so the
+   * 3D detail is visible.
+   */
+  tinted?: Record<Side, string>
   count: number
   /** Per-player component limit; the increase control disables at this count. */
   max?: number
@@ -29,16 +36,22 @@ export function UnitCounter({
   label,
   icon,
   side,
+  tinted,
   count,
   max,
   onIncrement,
   onDecrement,
 }: UnitCounterProps) {
   const atMax = max !== undefined && count >= max
+  // Prefer a baked per-side tint (3D art); otherwise fall back to the neutral
+  // icon recolored by the CSS filter classes.
+  const bakedIcon = side ? tinted?.[side] : undefined
+  const iconSrc = bakedIcon ?? icon
+  const imgClass = bakedIcon ? styles.threeD : tintClass(side)
   return (
     <div className={styles.root} role="group" aria-label={label}>
       <span className={styles.icon} data-tooltip={label}>
-        <img src={icon} alt={label} className={tintClass(side)} />
+        <img src={iconSrc} alt={label} className={imgClass} />
       </span>
       <div className={styles.arrows}>
         <button

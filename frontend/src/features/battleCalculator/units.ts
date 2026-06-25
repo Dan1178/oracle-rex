@@ -14,6 +14,14 @@ export interface UnitDef {
   /** Absolute URL of the icon (served by Django under /static). */
   icon: string
   /**
+   * Pre-tinted ("baked") per-side icons for shaded 3D art. When present, the
+   * counter uses these directly instead of recoloring `icon` with the CSS filter
+   * tint. The filter tint (invert/sepia/hue-rotate) only reads cleanly on flat
+   * single-color silhouettes; on a shaded render it goes muddy, so 3D units ship
+   * a blue (friendly) and red (enemy) bake instead.
+   */
+  tinted?: Record<Side, string>
+  /**
    * The key this unit takes in the force_data payload. Matches `unit` for every
    * unit except the ground "mech", which the backend prompt expects as "mechs"
    * (preserved from the legacy getForceCounts mapping).
@@ -44,7 +52,19 @@ export const FLEET_UNITS: UnitDef[] = [
   ship('cruiser', 'Cruiser', 'cruiser_icon.png', 8),
   ship('carrier', 'Carrier', 'carrier_icon.png', 4),
   ship('dreadnought', 'Dreadnought', 'dread_icon.png', 5),
-  ship('war_sun', 'War Sun', 'war_sun_icon.png', 2),
+  {
+    // Pilot 3D icon: a shaded render with baked blue/red tints (see `tinted`).
+    // The other units are still flat silhouettes recolored by CSS filter.
+    unit: 'war_sun',
+    label: 'War Sun',
+    icon: '/static/images/ships/war_sun_3d.png',
+    payloadKey: 'war_sun',
+    max: 2,
+    tinted: {
+      friendly: '/static/images/ships/war_sun_3d_friendly.png',
+      enemy: '/static/images/ships/war_sun_3d_enemy.png',
+    },
+  },
   ship('flagship', 'Flagship', 'flagship_icon.png', 1),
 ]
 

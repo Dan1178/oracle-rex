@@ -116,6 +116,7 @@ export function BattleCalculator() {
               key={id}
               label={unit.label}
               icon={unit.icon}
+              tinted={unit.tinted}
               side={side}
               count={counts[id] ?? 0}
               max={unit.max}
