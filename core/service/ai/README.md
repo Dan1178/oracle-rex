@@ -62,7 +62,7 @@ the model id automatically. The Anthropic client lazily imports
 in place.
 
 All current models are reasoning ("thinking") models — `gpt-5.5` / `gpt-5.4` /
-`gpt-5.4-mini` / `gpt-5.4-nano`, `grok-4.3` / `grok-4.20`, and the Claude 4.x
+`gpt-5.4-mini` / `gpt-5.4-nano`, `grok-4.3`, and the Claude 4.x
 family. Two consequences live in `config.py`:
 
 - **Token limits cover reasoning + output.** Reasoning is billed against

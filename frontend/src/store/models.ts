@@ -58,7 +58,6 @@ const strategyMoveOptions: ModelOption[] = [
   { value: 'gpt-5.4', label: 'GPT-5.4', apiMake: 'openai' },
   { value: 'grok-4.3', label: 'Grok 4.3', apiMake: 'xai' },
   { value: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6', apiMake: 'anthropic' },
-  { value: 'grok-4.20', label: 'Grok 4.20', apiMake: 'xai' },
   { value: 'gpt-5.5', label: 'GPT-5.5 (most capable)', apiMake: 'openai' },
 ]
 
@@ -93,7 +92,7 @@ export const FEATURE_MODEL_GROUPS: FeatureModelGroup[] = [
     options: [
       ...FAST_OPTIONS,
       { value: 'gpt-5.4-mini', label: 'GPT-5.4 mini', apiMake: 'openai' },
-      { value: 'grok-4.20', label: 'Grok 4.20 (math/logic)', apiMake: 'xai' },
+      { value: 'grok-4.3', label: 'Grok 4.3 (math/logic)', apiMake: 'xai' },
       { value: 'gpt-5.5', label: 'GPT-5.5 (most capable)', apiMake: 'openai' },
     ],
   },

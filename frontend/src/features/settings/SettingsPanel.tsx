@@ -147,9 +147,8 @@ export function SettingsPanel() {
         <p className={styles.modelWarn}>
           These are reasoning (&ldquo;thinking&rdquo;) models. They deliberate before
           answering, which improves quality but adds latency. The heaviest models
-          (GPT-5.5, Grok 4.20) give the strongest answers but may occasionally time out
-          on the hosted demo; the lighter models (GPT-5.4 mini/nano, Grok 4.3) respond
-          faster.
+          (GPT-5.5) give the strongest answers but may occasionally time out on the
+          hosted demo; the lighter models (GPT-5.4 mini/nano, Grok 4.3) respond faster.
         </p>
 
         {FEATURE_MODEL_GROUPS.map((group) => (

@@ -299,7 +299,6 @@ uncomment the worker service and Postgres database in `render.yaml` and set
 
 ## LLMs in Use:
     - grok-4.3
-    - grok-4.20
     - gpt-5.5
     - gpt-5.4
     - gpt-5.4-mini

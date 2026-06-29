@@ -38,7 +38,7 @@ def gemini_api_key() -> str:
 # before answering, which improves quality but uses extra tokens and latency (see
 # the token limits and ``*_REASONING_EFFORT`` settings below).
 OPENAI_MODELS = ["gpt-5.5", "gpt-5.4", "gpt-5.4-mini", "gpt-5.4-nano"]
-XAI_MODELS = ["grok-4.3", "grok-4.20"]
+XAI_MODELS = ["grok-4.3"]
 ANTHROPIC_MODELS = ["claude-opus-4-8", "claude-sonnet-4-6", "claude-haiku-4-5"]
 # Confirm the exact id against Google AI Studio and keep it identical to the
 # matching option value in frontend/src/store/models.ts (a mismatch makes
